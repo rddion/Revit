@@ -51,7 +51,7 @@ namespace Troyan
 
             // Передаём данные дальше (можно использовать categoryNames в WPF)
             SendToWpfApp(categories, categoryNames);
-            MainWindow mainWindow = new MainWindow();
+            MainWindow mainWindow = new MainWindow(categoryNames);
             mainWindow.Show();
             return Result.Succeeded;
         }
