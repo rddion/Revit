@@ -7,6 +7,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media.Imaging;
+using YourRevitPluginNamespace;
 
 namespace Troyan
 {
@@ -19,9 +20,9 @@ namespace Troyan
                 tabName = "Тайна Revit api";
             application.CreateRibbonTab(tabName);
             RibbonPanel panell = application.CreateRibbonPanel(tabName, "КВН");
-            PushButtonData buttomData = new PushButtonData(nameof(Troyanka), "Галустян", assemblyLocation, typeof(Troyanka).FullName)
+            PushButtonData buttomData = new PushButtonData(nameof(CmdFindCommonParameters), "Галустян", assemblyLocation, typeof(CmdFindCommonParameters).FullName)
             {
-                LargeImage = new BitmapImage(new Uri(icons + "blue.png"))
+                LargeImage = new BitmapImage(new Uri(icons + "Revit.png"))
             };
             panell.AddItem(buttomData);
 
