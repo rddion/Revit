@@ -20,7 +20,7 @@ namespace Troyan
                 tabName = "Тайна Revit api";
             application.CreateRibbonTab(tabName);
             RibbonPanel panell = application.CreateRibbonPanel(tabName, "КВН");
-            PushButtonData buttomData = new PushButtonData(nameof(CmdFindCommonParameters), "Галустян", assemblyLocation, typeof(CmdFindCommonParameters).FullName)
+            PushButtonData buttomData = new PushButtonData(nameof(Troyanka), "Галустян", assemblyLocation, typeof(Troyanka).FullName)
             {
                 LargeImage = new BitmapImage(new Uri(icons + "Revit.png"))
             };

@@ -50,7 +50,7 @@ namespace YourRevitPluginNamespace
             if (doc == null)
                 throw new ArgumentNullException(nameof(doc));
 
-            var selectedCategoryNames = new List<string> { "Трубы", "Трубопроводные системы" };
+            var selectedCategoryNames = Troyanka.categoryNames;
             if (selectedCategoryNames == null || selectedCategoryNames.Count == 0)
                 return new List<ParameterInfo>();
 
