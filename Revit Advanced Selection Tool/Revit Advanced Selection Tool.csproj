@@ -54,5 +54,11 @@
     <Compile Include="Class3.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Wpf\Wpf.csproj">
+      <Project>{8af96486-4017-47ff-bc4e-cb496e654d43}</Project>
+      <Name>Wpf</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
