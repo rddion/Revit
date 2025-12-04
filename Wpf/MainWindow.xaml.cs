@@ -31,17 +31,17 @@ namespace Wpf
             static int indexOfCondition = 0, marginVerticalConditions = 20; //Индекс условия для Dictionary и переменная вертикального Margin 
             static List<Control> controls = new List<Control>(); // Коллекция элементов условий типа Conrol для возможности изменять параметры элемента, например Margin
 
-            public MainWindow(string[] categories)
+            public MainWindow(List<string> categories)
             {
 
                 InitializeComponent();
                 this.Topmost = true;
 
-                for (int i = 0; i < categories.Length; i++)
+                foreach (string category in categories)
                 {
-                list.Add(categories[0]);
-                baseCollection.Add(categories[0]);
-                    parameters.Add("parametr" + i.ToString()); //TODO: удалить. Заполнение коллекции параметрами
+                list.Add(category);
+                baseCollection.Add(category);
+                   // parameters.Add("parametr" + i.ToString()); //TODO: удалить. Заполнение коллекции параметрами
                 }
 
                 foreach (string s in list)
