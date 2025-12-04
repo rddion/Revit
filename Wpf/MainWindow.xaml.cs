@@ -30,10 +30,10 @@ namespace Wpf
             Dictionary<int, UIElement> conditionElements = new Dictionary<int, UIElement>(); // Коллекция элементов условий UIElement с индексами
             static int indexOfCondition = 0, marginVerticalConditions = 20; //Индекс условия для Dictionary и переменная вертикального Margin 
             static List<Control> controls = new List<Control>(); // Коллекция элементов условий типа Conrol для возможности изменять параметры элемента, например Margin
-
+            public static bool proverka = false;
             public MainWindow(List<string> categories)
             {
-
+                
                 InitializeComponent();
                 this.Topmost = true;
 
@@ -54,6 +54,7 @@ namespace Wpf
                 imageBad.Visibility = Visibility.Hidden;
             }
 
+            
             private void Button_Click(object sender, RoutedEventArgs e)
             {
                 IList ilist = lView.SelectedItems;
@@ -68,7 +69,7 @@ namespace Wpf
                     strings.Add((string)s);
                 }
                 
-
+                proverka = true;
             }
 
             private void Button_Click_1(object sender, RoutedEventArgs e)
