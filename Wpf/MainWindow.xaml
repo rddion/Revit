@@ -23,9 +23,9 @@
         <Button Content="Добавить правило" HorizontalAlignment="Left" Margin="594,410,0,0" VerticalAlignment="Top" Height="31" Width="151" Click="Button_Click_5"/>
         <Label Content="Конструктор правил" HorizontalAlignment="Left" Margin="432,14,0,0" VerticalAlignment="Top"/>
         <Grid Name="grid" Margin="225,45,10,89" Background="AliceBlue" Height="370">
-            <Image Source="C:\Users\r.zakrevskiy\Desktop\Test\ClassLibrary2\obj\Debug\icon\image.jpg" Visibility="Hidden"/>
-            <Image Name="imageGood" Source="C:\Users\r.zakrevskiy\Desktop\Test\ClassLibrary2\obj\Debug\icon\good.jpg" Visibility="Visible"/>
-            <Image Name="imageBad" Source="C:\Users\r.zakrevskiy\Desktop\Test\ClassLibrary2\obj\Debug\icon\bad.jpg" Visibility="Visible"/>
+            <Image Source="D:\Revit Advanced Selection Tool\Wpf\bin\Debug\images\image.jpg" Visibility="Hidden"/>
+            <Image Name="imageGood" Source="D:\Revit Advanced Selection Tool\Wpf\bin\Debug\images\good.jpg" Visibility="Visible"/>
+            <Image Name="imageBad" Source="D:\Revit Advanced Selection Tool\Wpf\bin\Debug\images\bad.jpg" Visibility="Visible"/>
 
         </Grid>
         <Button Content="Найти и выбрать" HorizontalAlignment="Left" Margin="237,410,0,0" VerticalAlignment="Top" Width="155" Height="31"/>
