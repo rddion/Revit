@@ -31,10 +31,10 @@ namespace YourRevitPluginNamespace
     }
 
     // Класс с выбранными именами категорий (внешний)
-    public static class Troyanka
+    public static class MainWindow
     {
         // Пример (на практике заполняется из UI)
-        public static List<string> categoryNames = new List<string>();
+        public static List<string> strings = new List<string>();
     }
 
     // Основной класс команды или утилиты
@@ -50,7 +50,7 @@ namespace YourRevitPluginNamespace
             if (doc == null)
                 throw new ArgumentNullException(nameof(doc));
 
-            var selectedCategoryNames = Troyanka.categoryNames;
+            var selectedCategoryNames = MainWindow.strings;
             if (selectedCategoryNames == null || selectedCategoryNames.Count == 0)
                 return new List<ParameterInfo>();
 
