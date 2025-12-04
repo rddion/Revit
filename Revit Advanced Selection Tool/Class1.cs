@@ -41,8 +41,7 @@ namespace Troyan
             ElementSet elements)
         {
             var doc = commandData.Application.ActiveUIDocument.Document;
-           
-            
+
             // Получаем отфильтрованные категории
             var categories = GetCategories(doc);
 
