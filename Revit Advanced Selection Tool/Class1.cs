@@ -8,6 +8,7 @@ using Autodesk.Revit.UI;
 using System.IO;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Json;
+using Wpf;
 
 namespace Troyan
 {
@@ -49,7 +50,8 @@ namespace Troyan
 
             // Передаём данные дальше (можно использовать categoryNames в WPF)
             SendToWpfApp(categories, categoryNames);
-
+            MainWindow mainWindow = new MainWindow();
+            mainWindow.Show();
             return Result.Succeeded;
         }
 
