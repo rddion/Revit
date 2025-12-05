@@ -26,11 +26,14 @@ namespace Wpf
             List<string> list = new List<string>(); // Входная коллекция категорий
             static ObservableCollection<string> strings = new ObservableCollection<string>(); // Динамическая коллекция категорий
             List<string> baseCollection = new List<string>(); // Базовая коллекция категорий для обновления списка
-            ObservableCollection<string> parameters = new ObservableCollection<string>(); //Коллекция параметров
+            public ObservableCollection<string> parameters = new ObservableCollection<string>(); //Коллекция параметров
             Dictionary<int, UIElement> conditionElements = new Dictionary<int, UIElement>(); // Коллекция элементов условий UIElement с индексами
             static int indexOfCondition = 0, marginVerticalConditions = 20; //Индекс условия для Dictionary и переменная вертикального Margin 
             static List<Control> controls = new List<Control>(); // Коллекция элементов условий типа Conrol для возможности изменять параметры элемента, например Margin
-            public static bool proverka = false;
+            public static bool proverka = false; // поле для запуска класса по определению параметров
+            public static string[,] uslovia =new string[0,3]; // массив условий для параметров
+            public static string[][] unions = new string[0][]; // массив И/ИЛИ между условиями
+            
             public MainWindow(List<string> categories)
             {
                 
@@ -256,6 +259,12 @@ namespace Wpf
                     imageBad.Visibility = Visibility.Hidden;
                 }
 
+            }
+
+            private void Click_Search(object sender, RoutedEventArgs e)
+            {
+                
+            
             }
 
         
