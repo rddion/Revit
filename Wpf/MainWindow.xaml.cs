@@ -24,7 +24,7 @@ namespace Wpf
         public partial class MainWindow : Window
         {
             List<string> list = new List<string>(); // Входная коллекция категорий
-            static ObservableCollection<string> strings = new ObservableCollection<string>(); // Динамическая коллекция категорий
+            public static ObservableCollection<string> strings = new ObservableCollection<string>(); // Динамическая коллекция категорий
             List<string> baseCollection = new List<string>(); // Базовая коллекция категорий для обновления списка
             public ObservableCollection<string> parameters = new ObservableCollection<string>(); //Коллекция параметров
             Dictionary<int, UIElement> conditionElements = new Dictionary<int, UIElement>(); // Коллекция элементов условий UIElement с индексами
