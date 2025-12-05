@@ -1,14 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Autodesk.Revit.Attributes;
+﻿using Autodesk.Revit.Attributes;
 using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
+using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Json;
+using System.Text;
 using Wpf;
+using YourRevitPluginNamespace;
 
 namespace Troyan
 {
@@ -41,17 +42,37 @@ namespace Troyan
             ElementSet elements)
         {
             var doc = commandData.Application.ActiveUIDocument.Document;
-
             // Получаем отфильтрованные категории
             var categories = GetCategories(doc);
 
             // Создаём массив ТОЛЬКО из имён
             var categoryNames = categories.Select(c => c.Name).ToList();
 
-            // Передаём данные дальше (можно использовать categoryNames в WPF)
+            // Передаём данные дальше 
             SendToWpfApp(categories, categoryNames);
-            MainWindow mainWindow = new MainWindow(categoryNames);
-            mainWindow.Show();
+            Wpf.MainWindow mainWindow = new Wpf.MainWindow(categoryNames);
+            mainWindow.ShowDialog(); // ← ЖДЁМ, пока пользователь закроет окно!
+
+            //  2. ТОЛЬКО ТЕПЕРЬ проверяем флаг
+            if (Wpf.MainWindow.proverka == true)
+            {
+                //  3. Запускаем анализ
+                var commonParams = ParameterIntersectionHelper.GetCommonParameters(doc);
+
+                //  4. Показываем результат
+                if (commonParams.Any())
+                {
+                    string text = string.Join("\n",
+                        commonParams.Select(p => $"{p.Name} → {p.StorageType}"));
+                    TaskDialog.Show("Общие параметры",
+                        $"Найдено: {commonParams.Count}\n\n{text}");
+                }
+                else
+                {
+                    TaskDialog.Show("Результат", "Общих параметров не найдено.");
+                }
+            }
+
             return Result.Succeeded;
         }
 
