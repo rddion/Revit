@@ -50,7 +50,8 @@ namespace YourRevitPluginNamespace
         {
             if (doc == null)
                 throw new ArgumentNullException(nameof(doc));
-            var selectedCategoryNames = Wpf.MainWindow.strings;
+            var result = Wpf.MainWindow.strings;
+            var selectedCategoryNames = new List<string>(result);
             if (selectedCategoryNames == null || selectedCategoryNames.Count == 0)
                 return new List<ParameterInfo>();
 
