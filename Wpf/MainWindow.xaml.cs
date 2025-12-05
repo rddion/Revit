@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
@@ -32,9 +33,10 @@ namespace Wpf
             static List<Control> controls = new List<Control>(); // Коллекция элементов условий типа Conrol для возможности изменять параметры элемента, например Margin
             public static bool proverka = false; // поле для запуска класса по определению параметров
             public static string[,] uslovia =new string[0,3]; // массив условий для параметров
-            public static string[][] unions = new string[0][]; // массив И/ИЛИ между условиями
-            
-            public MainWindow(List<string> categories)
+            public static string[] unions = new string[0]; // массив И/ИЛИ между условиями
+            public bool invert = false; // переменная для проверки нужно ли инвертировать выделение
+
+        public MainWindow(List<string> categories)
             {
                 
                 InitializeComponent();
@@ -120,6 +122,7 @@ namespace Wpf
                 parametr.Width = 200;
                 parametr.HorizontalAlignment = HorizontalAlignment.Left;
                 parametr.VerticalAlignment = VerticalAlignment.Top;
+                parametr.Name = "parametr";
                 parametr.Margin = new Thickness(20, marginVerticalConditions, 0, 0);
                 parametr.ItemsSource = parameters;
                 conditionElements.Add(indexOfCondition++, parametr);
@@ -138,6 +141,7 @@ namespace Wpf
                 condition1.Width = 100;
                 condition1.HorizontalAlignment = HorizontalAlignment.Left;
                 condition1.VerticalAlignment = VerticalAlignment.Top;
+                condition1.Name = "condition1";
                 condition1.Margin = new Thickness(240, marginVerticalConditions, 0, 0);
                 condition1.ItemsSource = conditions;
                 condition1.SelectedIndex = 0;
@@ -150,6 +154,7 @@ namespace Wpf
                 value.Width = 150;
                 value.HorizontalAlignment = HorizontalAlignment.Left;
                 value.VerticalAlignment = VerticalAlignment.Top;
+                value.Name = "Value";
                 value.Margin = new Thickness(360, marginVerticalConditions, 0, 0);
                 conditionElements.Add(indexOfCondition++, value);
                 grid.Children.Add(value);
@@ -162,6 +167,7 @@ namespace Wpf
                 close.VerticalAlignment = VerticalAlignment.Top;
                 close.Background = Brushes.AliceBlue;
                 close.Content = "X";
+                close.Name = "close";
                 close.Foreground = Brushes.Gray;
                 close.Margin = new Thickness(515, marginVerticalConditions, 0, 0);
                 close.Click += Close_Click;
@@ -177,6 +183,7 @@ namespace Wpf
                     souz.HorizontalAlignment = HorizontalAlignment.Left;
                     souz.VerticalAlignment = VerticalAlignment.Top;
                     souz.Background = Brushes.AliceBlue;
+                    souz.Name = "souz";
                     souz.ItemsSource = new string[] { "И", "ИЛИ" };
                     souz.Margin = new Thickness(20, marginVerticalConditions - 25, 0, 0);
                     conditionElements.Add(indexOfCondition++, souz);
@@ -261,11 +268,102 @@ namespace Wpf
 
             }
 
-            private void Click_Search(object sender, RoutedEventArgs e)
+        private void Button_Click_6(object sender, RoutedEventArgs e)
+        {
+            invert = true;
+        }
+
+        private void Click_Search(object sender, RoutedEventArgs e)
             {
-                
-            
+            uslovia = new string[0, 3];
+            unions = new string[0];
+            int j = 0, k = 0, x = 0;
+            for (int i = 0; i < controls.Count; i++)
+            {
+
+
+                if (controls[i].Name != "close" && controls[i].Name != "souz")
+                {
+                    string[,] vremUsl = uslovia;
+                    uslovia = new string[k + 1, 3];
+                    for (int q = 0; q < vremUsl.GetLength(0); q++)
+                    {
+                        for (int r = 0; r < 3; r++)
+                        {
+                            uslovia[q, r] = vremUsl[q, r];
+                        }
+                    }
+
+                    if (controls[i].Name == "parametr" || controls[i].Name == "condition1")
+                    {
+                        if (((Selector)controls[i]).SelectedItem == null)
+                        {
+                            Window window = new Window();
+                            window.Title = "Ошибка";
+                            window.Width = 400;
+                            window.Height = 150;
+                            window.Content = "Ошибка: Не заполнены поля условий в конструкторе правил";
+                            window.Activate();
+                            window.Topmost = true;
+                            window.ShowDialog();
+                            break;
+                        }
+
+                        uslovia[k, j] = ((Selector)controls[i]).SelectedValue.ToString();
+                    }
+                    if (controls[i].Name == "Value")
+                    {
+                        if (((TextBox)controls[i]).Text == "")
+                        {
+                            Window window = new Window();
+                            window.Title = "Ошибка";
+                            window.Width = 400;
+                            window.Height = 150;
+                            window.Content = "Ошибка: Не заполнены поля условий в конструкторе правил";
+                            window.Activate();
+                            window.Topmost = true;
+                            window.ShowDialog();
+                            break;
+                        }
+                        uslovia[k, j] = ((TextBox)controls[i]).Text;
+                    }
+                    j++;
+                }
+
+
+
+                if (controls[i].Name == "souz")
+                {
+                    string[] vremUnion = unions;
+                    unions = new string[x + 1];
+                    for (int q = 0; q < vremUnion.Length; q++)
+                    {
+                        unions[q] = vremUnion[q];
+                    }
+                    if (((Selector)controls[i]).SelectedItem == null)
+                    {
+                        Window window = new Window();
+                        window.Title = "Ошибка";
+                        window.Width = 400;
+                        window.Height = 150;
+                        window.Content = "Ошибка: Не заполнены поля условий в конструкторе правил";
+                        window.Activate();
+                        window.Topmost = true;
+                        window.ShowDialog();
+                        break;
+                    }
+                    unions[x] = ((Selector)controls[i]).SelectedValue.ToString();
+                    x++;
+                }
+
+                if (j == 3)
+                {
+                    k++;
+                    j = 0;
+                }
             }
+
+        }
 
         
 
