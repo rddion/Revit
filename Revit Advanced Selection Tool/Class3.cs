@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+
 namespace YourRevitPluginNamespace
 {
     // Вспомогательный класс для хранения параметра (имя + тип)
@@ -49,8 +50,7 @@ namespace YourRevitPluginNamespace
         {
             if (doc == null)
                 throw new ArgumentNullException(nameof(doc));
-
-            var selectedCategoryNames = MainWindow.strings;
+            var selectedCategoryNames = Wpf.MainWindow.strings;
             if (selectedCategoryNames == null || selectedCategoryNames.Count == 0)
                 return new List<ParameterInfo>();
 
