@@ -1,5 +1,6 @@
 ﻿using Autodesk.Revit.Attributes;
 using Autodesk.Revit.DB;
+using Autodesk.Revit.DB.Visual;
 using Autodesk.Revit.UI;
 using System;
 using System.Collections.Generic;
@@ -8,11 +9,51 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Json;
 using System.Text;
+using System.Threading;
+using System.Windows.Documents;
 using Wpf;
 using YourRevitPluginNamespace;
 
 namespace Troyan
 {
+   public class ll
+    {
+        public Document _doc;
+        private readonly SynchronizationContext _uiContext;
+        private readonly Wpf.MainWindow _mainWindow;
+
+        public ll(Document doc, Wpf.MainWindow mainWindow)
+        {
+            _doc = doc;
+            _uiContext = SynchronizationContext.Current;
+            _mainWindow = mainWindow;
+        }
+        public void lol()
+        { 
+            
+            Wpf.MainWindow.proverka = false;    
+            while (!Wpf.MainWindow.proverka) 
+            { 
+                Thread.Sleep(100);
+            }
+            var commonParams = ParameterIntersectionHelper.GetCommonParameters(_doc);
+            if (Wpf.MainWindow.proverka == true)
+            {
+                //  3. Запускаем анализ
+
+                //  4. Показываем результат
+                if (commonParams.Any())
+                {
+                    _mainWindow.parameters.Clear(); // сначала очищаем
+                    foreach (var p in commonParams)
+                    {
+                        _mainWindow.parameters.Add($"{p.Name} → {p.StorageType}");
+                    }
+                }
+            }
+        }
+    }
+
     [DataContract]
     public class CategoryInfo
     {
@@ -32,6 +73,7 @@ namespace Troyan
         [DataMember]
         public List<CategoryInfo> Categories { get; set; }
     }
+   
 
     [Transaction(TransactionMode.ReadOnly)]
     public class Troyanka : IExternalCommand
@@ -51,29 +93,36 @@ namespace Troyan
             // Передаём данные дальше 
             SendToWpfApp(categories, categoryNames);
             Wpf.MainWindow mainWindow = new Wpf.MainWindow(categoryNames);
-            mainWindow.ShowDialog(); // ← ЖДЁМ, пока пользователь закроет окно!
-
+             mainWindow.Show(); // ← ЖДЁМ, пока пользователь закроет окно!
+            ll ll = new ll(doc, mainWindow);   
+          // ThreadStart threadStart = new ThreadStart(ll.lol);
+            Thread threadStop = new Thread(ll.lol);
+            threadStop.IsBackground = true;
+            threadStop.Start();
+           
+           // var commonParams = ParameterIntersectionHelper.GetCommonParameters(doc);
             //  2. ТОЛЬКО ТЕПЕРЬ проверяем флаг
-            if (Wpf.MainWindow.proverka == true)
-            {
-                //  3. Запускаем анализ
-                var commonParams = ParameterIntersectionHelper.GetCommonParameters(doc);
+            //if (Wpf.MainWindow.proverka == true)
+            //{
+            //    //  3. Запускаем анализ
 
-                //  4. Показываем результат
-                if (commonParams.Any())
-                {
-                    string text = string.Join("\n",
-                        commonParams.Select(p => $"{p.Name} → {p.StorageType}"));
-                    TaskDialog.Show("Общие параметры",
-                        $"Найдено: {commonParams.Count}\n\n{text}");
-                }
-                else
-                {
-                    TaskDialog.Show("Результат", "Общих параметров не найдено.");
-                }
-            }
+            //    //  4. Показываем результат
+            //    if (commonParams.Any())
+            //    {
+            //        string text = string.Join("\n",
+            //            commonParams.Select(p => $"{p.Name} → {p.StorageType}"));
+            //        TaskDialog.Show("Общие параметры",
+            //            $"Найдено: {commonParams.Count}\n\n{text}");
+                   
+            //    }
+            //    else
+            //    {
+            //        TaskDialog.Show("Результат", "Общих параметров не найдено.");
+            //    }
+            //}
 
             return Result.Succeeded;
+            
         }
 
         private List<CategoryInfo> GetCategories(Document doc)
