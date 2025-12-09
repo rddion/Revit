@@ -38,6 +38,7 @@ namespace Wpf
             public static IList selectCategories = new List<string>(); //выбранные категории
             bool test = false; // проверка для возможности снятия выбора категории вручную
             IList preSelected = new List<string>(); // коллекция выбранных категорий до использования строки поиска
+            public static List<string> exitSelect= new List<string>(); 
 
         public MainWindow(List<string> categories)
             {
@@ -76,11 +77,10 @@ namespace Wpf
             //{
             //    strings.Add((string)s);
             //}
-            strings.Clear();                                            //тестово
-                for (int i=0; i<selectCategories.Count; i++)            //
-                {                                                       //
-                    strings.Add((string)selectCategories[i]);          //
-                }                                                       //тестово
+                foreach(string category in selectCategories)
+                {
+                    exitSelect.Add(category);
+                }                                       
                 lView.ItemsSource=selectCategories;
                 proverka = true;                            
             }
