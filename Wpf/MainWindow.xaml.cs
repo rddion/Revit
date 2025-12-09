@@ -65,20 +65,24 @@ namespace Wpf
             
             private void Button_Click(object sender, RoutedEventArgs e)
             {
-                //IList ilist = lView.SelectedItems;
-                //list.Clear();
-                //foreach (string s in ilist)
-                //{
-                //    list.Add((string)s);
-                //}
-                //strings.Clear();
-                //foreach (string s in list)
-                //{
-                //    strings.Add((string)s);
-                //}
-
+            //IList ilist = lView.SelectedItems;
+            //list.Clear();
+            //foreach (string s in ilist)
+            //{
+            //    list.Add((string)s);
+            //}
+            //strings.Clear();
+            //foreach (string s in list)
+            //{
+            //    strings.Add((string)s);
+            //}
+            strings.Clear();                                            //тестово
+                for (int i=0; i<selectCategories.Count; i++)            //
+                {                                                       //
+                    strings.Add((string)selectCategories[i]);          //
+                }                                                       //тестово
                 lView.ItemsSource=selectCategories;
-                proverka = true;
+                proverka = true;                            
             }
 
             private void Button_Click_1(object sender, RoutedEventArgs e)
