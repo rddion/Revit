@@ -48,6 +48,7 @@ namespace Troyan
                     foreach (var p in commonParams)
                     {
                         _mainWindow.parameters.Add($"{p.Name} → {p.StorageType}");
+                        
                     }
                 }
             }
@@ -129,7 +130,7 @@ namespace Troyan
         {
             var categories = new List<CategoryInfo>();
             var cats = doc.Settings.Categories;
-
+            
             foreach (Category cat in cats)
             {
                 if (cat == null || string.IsNullOrWhiteSpace(cat.Name))
