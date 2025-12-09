@@ -46,6 +46,8 @@ namespace Wpf
                 InitializeComponent();
                 this.Topmost = true;
                 list = categories;
+                baseCollection.Clear();
+                strings.Clear();
                 foreach (string category in list)
                 {
                 
