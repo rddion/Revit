@@ -99,6 +99,7 @@ namespace Wpf
             {
                 strings.Clear();
                 selectCategories.Clear();
+                exitSelect.Clear();
                 foreach (string s in baseCollection)
                 {
                     strings.Add(s.ToString());
