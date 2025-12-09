@@ -35,7 +35,7 @@ namespace Wpf
             public static string[,] uslovia =new string[0,3]; // массив условий для параметров
             public static string[] unions = new string[0]; // массив И/ИЛИ между условиями
             public bool invert = false; // переменная для проверки нужно ли инвертировать выделение
-            public IList selectCategories = new List<string>(); //выбранные категории
+            public static IList selectCategories = new List<string>(); //выбранные категории
             bool test = false; // проверка для возможности снятия выбора категории вручную
             IList preSelected = new List<string>(); // коллекция выбранных категорий до использования строки поиска
 
