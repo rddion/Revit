@@ -5,22 +5,20 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Wpf"
         mc:Ignorable="d"
-           Title="Revit Advanced Selection Tool" Height="520" Width="800" >
+           Title="Revit Advanced Selection Tool" Height="570" Width="800" >
     <Grid>
-        <ListView  Name="lView" Height="280" Width="200" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,40,0,0" FontSize="14" Background="AliceBlue">
+        <ListView  Name="lView" Height="280" Width="200" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,40,0,0" FontSize="14" Background="AliceBlue" SelectionChanged="lView_SelectionChanged">
             <ListView.View>
                 <GridView>
                     <GridViewColumn Width="500"/>
                 </GridView>
             </ListView.View>
         </ListView>
-        <Button Content="Применить" HorizontalAlignment="Left" Margin="35,330,0,0" VerticalAlignment="Top" Height="30" Width="130" Click="Button_Click" FontSize="14" Background="AliceBlue" />
-        <Button Content="Выбрать все" HorizontalAlignment="Left" Margin="35,365,0,0" VerticalAlignment="Top" Height="30" Width="130" FontSize="14" Background="AliceBlue" Click="Button_Click_1" />
-        <Button Content="Снять выбор" HorizontalAlignment="Left" Margin="35,400,0,0" VerticalAlignment="Top" Height="30" Width="130" FontSize="14" Background="AliceBlue" Click="Button_Click_2" />
-        <Button Content="Обновить список" HorizontalAlignment="Left" Margin="35,435,0,0" VerticalAlignment="Top" Height="30" Width="130" FontSize="14" Background="AliceBlue" Click="Button_Click_3" />
-        <TextBox Name="search" HorizontalAlignment="Left" Margin="1,5,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="150" Height="30" FontSize="12" ToolTip="Поиск по категориям" />
-        <Button Content="Поиск" HorizontalAlignment="Left" Margin="151,5,0,0" VerticalAlignment="Top" RenderTransformOrigin="0,0.57" Height="30" Width="49" FontSize="12" Click="Button_Click_4"/>
-        <Button Content="Добавить правило" HorizontalAlignment="Left" Margin="594,410,0,0" VerticalAlignment="Top" Height="31" Width="151" Click="Button_Click_5"/>
+        <Button ToolTip="Начать поиск по выбранным категориям" Content="Применить" HorizontalAlignment="Left" Margin="35,350,0,0" VerticalAlignment="Top" Height="30" Width="130" Click="Button_Click" FontSize="14" Background="AliceBlue" />
+        <Button Content="Выбрать все" HorizontalAlignment="Left" Margin="35,385,0,0" VerticalAlignment="Top" Height="30" Width="130" FontSize="14" Background="AliceBlue" Click="Button_Click_1" />
+        <Button Content="Снять выбор" HorizontalAlignment="Left" Margin="35,420,0,0" VerticalAlignment="Top" Height="30" Width="130" FontSize="14" Background="AliceBlue" Click="Button_Click_2" />
+        <Button ToolTip="Очистить список выбранных категорий и показать первоначальный список" Content="Обновить список" HorizontalAlignment="Left" Margin="35,455,0,0" VerticalAlignment="Top" Height="30" Width="130" FontSize="14" Background="AliceBlue" Click="Button_Click_3" />
+        <TextBox Name="search" HorizontalAlignment="Left" Margin="1,5,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="199" Height="30" FontSize="12" ToolTip="Поиск по категориям" TextChanged="Text_changed"/>
         <Label Content="Конструктор правил" HorizontalAlignment="Left" Margin="432,14,0,0" VerticalAlignment="Top" FontSize="16" FontWeight="DemiBold" FontStyle="Oblique"/>
         <Grid Name="grid" Margin="225,45,10,89" Background="AliceBlue" Height="370">
             <Image Source="D:\Revit Advanced Selection Tool\Wpf\bin\Debug\images\image.jpg" Visibility="Hidden"/>
@@ -28,9 +26,11 @@
             <Image Name="imageBad" Source="D:\Revit Advanced Selection Tool\Wpf\bin\Debug\images\bad.jpg" Visibility="Visible"/>
 
         </Grid>
-        <Button Content="Найти и выбрать" HorizontalAlignment="Left" Margin="237,410,0,0" VerticalAlignment="Top" Width="155" Height="31" Click="Click_Search"/>
-        <Button Content="Инвертировать выбор" HorizontalAlignment="Left" Margin="415,410,0,0" VerticalAlignment="Top" Width="155" Height="31" Click="Button_Click_6"/>
+        <Button Content="Добавить правило" HorizontalAlignment="Left" Margin="594,450,0,0" VerticalAlignment="Top" Height="31" Width="151" Click="Button_Click_5"/>
+        <Button Content="Найти и выбрать" HorizontalAlignment="Left" Margin="237,450,0,0" VerticalAlignment="Top" Width="155" Height="31" Click="Click_Search"/>
+        <Button Content="Инвертировать выбор" HorizontalAlignment="Left" Margin="415,450,0,0" VerticalAlignment="Top" Width="155" Height="31" Click="Button_Click_6"/>
         <Label Content="Категории" Margin="60,35,600,440" FontWeight="DemiBold" FontSize="14" FontStyle="Oblique"/>
+        <Label Name="selCat" Content="" HorizontalAlignment="Left" Margin="0,319,0,0" VerticalAlignment="Top" Width="200"/>
 
 
 

@@ -35,6 +35,9 @@ namespace Wpf
             public static string[,] uslovia =new string[0,3]; // массив условий для параметров
             public static string[] unions = new string[0]; // массив И/ИЛИ между условиями
             public bool invert = false; // переменная для проверки нужно ли инвертировать выделение
+            public IList selectCategories = new List<string>(); //выбранные категории
+            bool test = false; // проверка для возможности снятия выбора категории вручную
+            IList preSelected = new List<string>(); // коллекция выбранных категорий до использования строки поиска
 
         public MainWindow(List<string> categories)
             {
@@ -46,7 +49,7 @@ namespace Wpf
                 {
                 list.Add(category);
                 baseCollection.Add(category);
-                   // parameters.Add("parametr" + i.ToString()); //TODO: удалить. Заполнение коллекции параметрами
+                   
                 }
 
                 foreach (string s in list)
@@ -62,18 +65,19 @@ namespace Wpf
             
             private void Button_Click(object sender, RoutedEventArgs e)
             {
-                IList ilist = lView.SelectedItems;
-                list.Clear();
-                foreach (string s in ilist)
-                {
-                    list.Add((string)s);
-                }
-                strings.Clear();
-                foreach (string s in list)
-                {
-                    strings.Add((string)s);
-                }
-                
+                //IList ilist = lView.SelectedItems;
+                //list.Clear();
+                //foreach (string s in ilist)
+                //{
+                //    list.Add((string)s);
+                //}
+                //strings.Clear();
+                //foreach (string s in list)
+                //{
+                //    strings.Add((string)s);
+                //}
+
+                lView.ItemsSource=selectCategories;
                 proverka = true;
             }
 
@@ -90,6 +94,7 @@ namespace Wpf
             private void Button_Click_3(object sender, RoutedEventArgs e)
             {
                 strings.Clear();
+                selectCategories.Clear();
                 foreach (string s in baseCollection)
                 {
                     strings.Add(s.ToString());
@@ -100,19 +105,21 @@ namespace Wpf
             private void Button_Click_4(object sender, RoutedEventArgs e)
             {
                 StringBuilder sb = new StringBuilder(search.Text.ToString());
+                List<string> vrem = new List<string>();
                 list.Clear();
                 foreach (string s in strings)
                 {
                     list.Add(s.ToString());
                 }
-                strings.Clear();
+                
                 foreach (string s in list)
                 {
                     if ((s.ToLower()).Contains((sb.ToString()).ToLower()))
                     {
-                        strings.Add(s);
+                        vrem.Add(s);
                     }
                 }
+                lView.ItemsSource = vrem;
             }
 
             private void Button_Click_5(object sender, RoutedEventArgs e)
@@ -268,34 +275,147 @@ namespace Wpf
 
             }
 
-        private void Button_Click_6(object sender, RoutedEventArgs e)
-        {
-            invert = true;
-        }
-
-        private void Click_Search(object sender, RoutedEventArgs e)
+            private void Button_Click_6(object sender, RoutedEventArgs e)
             {
-            uslovia = new string[0, 3];
-            unions = new string[0];
-            int j = 0, k = 0, x = 0;
-            for (int i = 0; i < controls.Count; i++)
+                invert = true;
+            }
+
+            private void Text_changed(object sender, RoutedEventArgs e)
             {
-
-
-                if (controls[i].Name != "close" && controls[i].Name != "souz")
+                StringBuilder sb = new StringBuilder(search.Text.ToString());
+                List<string> vrem = new List<string>();
+                if (!test)
                 {
-                    string[,] vremUsl = uslovia;
-                    uslovia = new string[k + 1, 3];
-                    for (int q = 0; q < vremUsl.GetLength(0); q++)
+                    foreach (var s in lView.SelectedItems)
                     {
-                        for (int r = 0; r < 3; r++)
+                        preSelected.Add(s);
+                    }
+                }
+                list.Clear();
+                foreach (string s in strings)
+                {
+                    list.Add(s.ToString());
+                }
+
+                foreach (string s in list)
+                {
+                    if ((s.ToLower()).Contains((sb.ToString()).ToLower()))
+                    {
+                        vrem.Add(s);
+                    }
+                }
+                test = true;
+                lView.ItemsSource = vrem;
+                test = false;
+
+
+                if (search.Text.Length < 1)
+                {
+                    IList some = new List<string>();
+                    some = lView.SelectedItems;
+                    lView.ItemsSource = strings;
+                    for (int i = 0; i < some.Count; i++)
+                    {
+                        lView.SelectedItems.Add(some[i]);
+                    }
+                    test = false;
+                    for (int i = 0; i < preSelected.Count; i++)
+                    {
+                        lView.SelectedItems.Add(preSelected[i]);
+                        selCat.Content = String.Format("Выбрано {0} категорий", selectCategories.Count);
+                    }
+                    preSelected.Clear();
+
+                }
+            }
+
+            private void lView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+            {
+                selectCategories = lView.SelectedItems;
+
+
+                if (test == false)
+                {
+                    if (e.RemovedItems.Count > 0)
+                    {
+                        preSelected.Remove(e.RemovedItems[0]);
+                    }
+                    selCat.Content = String.Format("Выбрано {0} категорий", selectCategories.Count);
+                }
+                
+
+            }
+
+
+
+
+            private void Click_Search(object sender, RoutedEventArgs e)
+            {
+                uslovia = new string[0, 3];
+                unions = new string[0];
+                int j = 0, k = 0, x = 0;
+                for (int i = 0; i < controls.Count; i++)
+                {
+
+
+                    if (controls[i].Name != "close" && controls[i].Name != "souz")
+                    {
+                        string[,] vremUsl = uslovia;
+                        uslovia = new string[k + 1, 3];
+                        for (int q = 0; q < vremUsl.GetLength(0); q++)
                         {
-                            uslovia[q, r] = vremUsl[q, r];
+                            for (int r = 0; r < 3; r++)
+                            {
+                                uslovia[q, r] = vremUsl[q, r];
+                            }
                         }
+
+                        if (controls[i].Name == "parametr" || controls[i].Name == "condition1")
+                        {
+                            if (((Selector)controls[i]).SelectedItem == null)
+                            {
+                                Window window = new Window();
+                                window.Title = "Ошибка";
+                                window.Width = 400;
+                                window.Height = 150;
+                                window.Content = "Ошибка: Не заполнены поля условий в конструкторе правил";
+                                window.Activate();
+                                window.Topmost = true;
+                                window.ShowDialog();
+                                break;
+                            }
+
+                            uslovia[k, j] = ((Selector)controls[i]).SelectedValue.ToString();
+                        }
+                        if (controls[i].Name == "Value")
+                        {
+                            if (((TextBox)controls[i]).Text == "")
+                            {
+                                Window window = new Window();
+                                window.Title = "Ошибка";
+                                window.Width = 400;
+                                window.Height = 150;
+                                window.Content = "Ошибка: Не заполнены поля условий в конструкторе правил";
+                                window.Activate();
+                                window.Topmost = true;
+                                window.ShowDialog();
+                                break;
+                            }
+                            uslovia[k, j] = ((TextBox)controls[i]).Text;
+                        }
+                        j++;
                     }
 
-                    if (controls[i].Name == "parametr" || controls[i].Name == "condition1")
+
+
+                    if (controls[i].Name == "souz")
                     {
+                        string[] vremUnion = unions;
+                        unions = new string[x + 1];
+                        for (int q = 0; q < vremUnion.Length; q++)
+                        {
+                            unions[q] = vremUnion[q];
+                        }
                         if (((Selector)controls[i]).SelectedItem == null)
                         {
                             Window window = new Window();
@@ -308,62 +428,18 @@ namespace Wpf
                             window.ShowDialog();
                             break;
                         }
+                        unions[x] = ((Selector)controls[i]).SelectedValue.ToString();
+                        x++;
+                    }
 
-                        uslovia[k, j] = ((Selector)controls[i]).SelectedValue.ToString();
-                    }
-                    if (controls[i].Name == "Value")
+                    if (j == 3)
                     {
-                        if (((TextBox)controls[i]).Text == "")
-                        {
-                            Window window = new Window();
-                            window.Title = "Ошибка";
-                            window.Width = 400;
-                            window.Height = 150;
-                            window.Content = "Ошибка: Не заполнены поля условий в конструкторе правил";
-                            window.Activate();
-                            window.Topmost = true;
-                            window.ShowDialog();
-                            break;
-                        }
-                        uslovia[k, j] = ((TextBox)controls[i]).Text;
+                        k++;
+                        j = 0;
                     }
-                    j++;
                 }
 
-
-
-                if (controls[i].Name == "souz")
-                {
-                    string[] vremUnion = unions;
-                    unions = new string[x + 1];
-                    for (int q = 0; q < vremUnion.Length; q++)
-                    {
-                        unions[q] = vremUnion[q];
-                    }
-                    if (((Selector)controls[i]).SelectedItem == null)
-                    {
-                        Window window = new Window();
-                        window.Title = "Ошибка";
-                        window.Width = 400;
-                        window.Height = 150;
-                        window.Content = "Ошибка: Не заполнены поля условий в конструкторе правил";
-                        window.Activate();
-                        window.Topmost = true;
-                        window.ShowDialog();
-                        break;
-                    }
-                    unions[x] = ((Selector)controls[i]).SelectedValue.ToString();
-                    x++;
-                }
-
-                if (j == 3)
-                {
-                    k++;
-                    j = 0;
-                }
             }
-
-        }
 
         
 
