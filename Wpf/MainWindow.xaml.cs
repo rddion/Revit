@@ -77,6 +77,7 @@ namespace Wpf
             //{
             //    strings.Add((string)s);
             //}
+                exitSelect.Clear();
                 foreach(string category in selectCategories)
                 {
                     exitSelect.Add(category);
