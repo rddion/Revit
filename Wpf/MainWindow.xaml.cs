@@ -323,6 +323,7 @@ namespace Wpf
                     {
                         lView.SelectedItems.Add(preSelected[i]);
                         selCat.Content = String.Format("Выбрано {0} категорий", selectCategories.Count);
+                        //
                     }
                     preSelected.Clear();
 
