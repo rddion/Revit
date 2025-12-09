@@ -45,10 +45,10 @@ namespace Wpf
                 
                 InitializeComponent();
                 this.Topmost = true;
-
-                foreach (string category in categories)
+                list = categories;
+                foreach (string category in list)
                 {
-                list.Add(category);
+                
                 baseCollection.Add(category);
                    
                 }
