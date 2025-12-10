@@ -90,12 +90,18 @@ namespace Wpf
                 exitParameters.CollectionChanged += ExitParameters_Changed;
             }
 
-        
+            public void ThreadMethod()
+            {
+                parameters.Clear();
+                foreach (string parametr in exitParameters)
+                {
+                    parameters.Add(parametr);
+                }
+            }
 
             private void ExitParameters_Changed(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
             {
-                Thread thread = Thread.CurrentThread;
-                thread.Join();
+               
                     parameters.Clear();
                     foreach (string parametr in exitParameters)
                     {
