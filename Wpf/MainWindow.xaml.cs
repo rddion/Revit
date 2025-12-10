@@ -95,7 +95,7 @@ namespace Wpf
             private void ExitParameters_Changed(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
             {
                 Thread thread = Thread.CurrentThread;
-                thread.Start();
+                thread.Join();
                     parameters.Clear();
                     foreach (string parametr in exitParameters)
                     {
