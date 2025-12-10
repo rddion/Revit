@@ -83,6 +83,7 @@ namespace Wpf
                     exitSelect.Add(category);
                 }                                       
                 lView.ItemsSource=selectCategories;
+                parameters.Clear();
                 proverka = true;                            
             }
 
