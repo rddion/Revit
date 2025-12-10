@@ -39,6 +39,7 @@ namespace Wpf
             bool test = false; // проверка для возможности снятия выбора категории вручную
             IList preSelected = new List<string>(); // коллекция выбранных категорий до использования строки поиска
             public static List<string> exitSelect= new List<string>(); // итоговая выходная коллекция выбранных категорий для RevitAPI
+            public List<string> exitParameters= new List<string>();//
 
         public MainWindow(List<string> categories)
             {
@@ -51,6 +52,7 @@ namespace Wpf
                 strings.Clear();
                 selectCategories.Clear();
                 controls.Clear();
+                exitParameters.Clear();//
                 marginVerticalConditions = 20;
                 foreach (string category in list)
                 {
@@ -84,6 +86,10 @@ namespace Wpf
                 }                                       
                 lView.ItemsSource=selectCategories;
                 parameters.Clear();
+                foreach (string s in exitParameters)//
+                    {                               //
+                        parameters.Add(s);          //
+                    }                               //
                 proverka = true;                            
             }
 
