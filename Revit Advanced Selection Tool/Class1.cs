@@ -29,28 +29,29 @@ namespace Troyan
             _mainWindow = mainWindow;
         }
         public void lol()
-        { 
-            
-            Wpf.MainWindow.proverka = false;    
-            while (!Wpf.MainWindow.proverka) 
-            { 
-                Thread.Sleep(100);
-            }
-            var commonParams = ParameterIntersectionHelper.GetCommonParameters(_doc);
-            if (Wpf.MainWindow.proverka == true)
+        {
+            while (true)
             {
-                //  3. Запускаем анализ
-
-                //  4. Показываем результат
-                if (commonParams.Any())
+                while (!Wpf.MainWindow.proverka)
                 {
-                    _mainWindow.parameters.Clear(); // сначала очищаем
-                    foreach (var p in commonParams)
+                    Thread.Sleep(100);
+                }
+               
+                var commonParams = ParameterIntersectionHelper.GetCommonParameters(_doc);
+                if (Wpf.MainWindow.proverka == true)
+                {
+           _mainWindow.exitParameters.Clear();
+                    //  4. Показываем результат
+                    if (commonParams.Any())
                     {
-                        _mainWindow.parameters.Add($"{p.Name} → {p.StorageType}");
-                        
+                        foreach (var p in commonParams)
+                        {
+                            _mainWindow.exitParameters.Add($"{p.Name} → {p.StorageType}");
+
+                        }
                     }
                 }
+                Wpf.MainWindow.proverka = false;
             }
         }
     }
