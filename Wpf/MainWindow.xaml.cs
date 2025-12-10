@@ -29,7 +29,7 @@ namespace Wpf
             List<string> baseCollection = new List<string>(); // Базовая коллекция категорий для обновления списка
             public ObservableCollection<string> parameters = new ObservableCollection<string>(); //Коллекция параметров
             Dictionary<int, UIElement> conditionElements = new Dictionary<int, UIElement>(); // Коллекция элементов условий UIElement с индексами
-            static int indexOfCondition = 0, marginVerticalConditions = 20; //Индекс условия для Dictionary и переменная вертикального Margin 
+            static int indexOfCondition = 0, marginVerticalConditions; //Индекс условия для Dictionary и переменная вертикального Margin 
             static List<Control> controls = new List<Control>(); // Коллекция элементов условий типа Conrol для возможности изменять параметры элемента, например Margin
             public static bool proverka = false; // поле для запуска класса по определению параметров
             public static string[,] uslovia =new string[0,3]; // массив условий для параметров
@@ -38,7 +38,7 @@ namespace Wpf
             public static IList selectCategories = new List<string>(); //выбранные категории
             bool test = false; // проверка для возможности снятия выбора категории вручную
             IList preSelected = new List<string>(); // коллекция выбранных категорий до использования строки поиска
-            public static List<string> exitSelect= new List<string>(); 
+            public static List<string> exitSelect= new List<string>(); // итоговая выходная коллекция выбранных категорий для RevitAPI
 
         public MainWindow(List<string> categories)
             {
@@ -46,8 +46,12 @@ namespace Wpf
                 InitializeComponent();
                 this.Topmost = true;
                 list = categories;
+                parameters.Clear();
                 baseCollection.Clear();
                 strings.Clear();
+                selectCategories.Clear();
+                controls.Clear();
+                marginVerticalConditions = 20;
                 foreach (string category in list)
                 {
                 
@@ -68,17 +72,11 @@ namespace Wpf
             
             private void Button_Click(object sender, RoutedEventArgs e)
             {
-            //IList ilist = lView.SelectedItems;
-            //list.Clear();
-            //foreach (string s in ilist)
-            //{
-            //    list.Add((string)s);
-            //}
-            //strings.Clear();
-            //foreach (string s in list)
-            //{
-            //    strings.Add((string)s);
-            //}
+                if(search.Text.Length > 0)
+                {
+                    search.Text = "";
+                }
+           
                 exitSelect.Clear();
                 foreach(string category in selectCategories)
                 {
@@ -103,31 +101,12 @@ namespace Wpf
                 strings.Clear();
                 selectCategories.Clear();
                 exitSelect.Clear();
+                parameters.Clear();
                 foreach (string s in baseCollection)
                 {
                     strings.Add(s.ToString());
                 }
                 lView.ItemsSource = strings;
-            }
-
-            private void Button_Click_4(object sender, RoutedEventArgs e)
-            {
-                StringBuilder sb = new StringBuilder(search.Text.ToString());
-                List<string> vrem = new List<string>();
-                list.Clear();
-                foreach (string s in strings)
-                {
-                    list.Add(s.ToString());
-                }
-                
-                foreach (string s in list)
-                {
-                    if ((s.ToLower()).Contains((sb.ToString()).ToLower()))
-                    {
-                        vrem.Add(s);
-                    }
-                }
-                lView.ItemsSource = vrem;
             }
 
             private void Button_Click_5(object sender, RoutedEventArgs e)
