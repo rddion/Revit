@@ -101,12 +101,13 @@ namespace Wpf
 
             private void ExitParameters_Changed(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
             {
-               
-                    parameters.Clear();
-                    foreach (string parametr in exitParameters)
-                    {
-                        parameters.Add(parametr);
-                    }
+                    ThreadStart thread = new ThreadStart(ThreadMethod);
+                    Dispatcher.BeginInvoke(thread,null);
+                    //parameters.Clear();
+                    //foreach (string parametr in exitParameters)
+                    //{
+                    //    parameters.Add(parametr);
+                    //}
             }
 
             private void Button_Click_1(object sender, RoutedEventArgs e)
