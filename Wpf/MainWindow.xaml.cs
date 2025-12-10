@@ -53,6 +53,7 @@ namespace Wpf
                 strings.Clear();
                 selectCategories.Clear();
                 controls.Clear();
+                exitParameters.Clear();
                 marginVerticalConditions = 20;
                 foreach (string category in list)
                 {
