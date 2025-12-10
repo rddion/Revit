@@ -139,6 +139,8 @@ namespace Troyan
                 // 1. Исключаем все аннотации
                 if (cat.CategoryType == CategoryType.Annotation)
                     continue;
+                if (cat.CategoryType != CategoryType.Model)
+                    continue;
 
                 // 2. Исключаем "Линии"
                 if (cat.Id.IntegerValue == (int)BuiltInCategory.OST_Lines)
