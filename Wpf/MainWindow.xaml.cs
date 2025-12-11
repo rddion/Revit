@@ -66,12 +66,16 @@ namespace Wpf
                 {
                     strings.Add(s);
                 }
-
+                apply.Click += Apply_HandlerRevit;
                 lView.ItemsSource = strings;
                 imageGood.Visibility = Visibility.Visible;
                 imageBad.Visibility = Visibility.Hidden;
             }
-
+            
+            public virtual void Apply_HandlerRevit(object sender, RoutedEventArgs e)
+            {
+                
+            }
             
             private void Button_Click(object sender, RoutedEventArgs e)
             {
@@ -87,28 +91,33 @@ namespace Wpf
                 }                                       
                 lView.ItemsSource=selectCategories;
                 parameters.Clear();
-                proverka = true;
+                //proverka = true;
                 exitParameters.CollectionChanged += ExitParameters_Changed;
             }
 
             public void ThreadMethod()
             {
+                if(exitParameters.Count > 0) { 
                 parameters.Clear();
                 foreach (string parametr in exitParameters)
                 {
                     parameters.Add(parametr);
+                } 
                 }
+                Dispatcher.BeginInvokeShutdown(System.Windows.Threading.DispatcherPriority.Normal);
             }
 
             private void ExitParameters_Changed(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
             {
                     ThreadStart thread = new ThreadStart(ThreadMethod);
                     Dispatcher.BeginInvoke(thread,null);
-                    //parameters.Clear();
-                    //foreach (string parametr in exitParameters)
-                    //{
-                    //    parameters.Add(parametr);
-                    //}
+                    
+
+            //parameters.Clear();
+            //foreach (string parametr in exitParameters)
+            //{
+            //    parameters.Add(parametr);
+            //}
             }
 
             private void Button_Click_1(object sender, RoutedEventArgs e)
