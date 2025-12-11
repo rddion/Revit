@@ -32,27 +32,33 @@ namespace Troyan
         {
             while (true)
             {
-                while (!Wpf.MainWindow.proverka)
+                if (Troyanka.Test)
                 {
-                    Thread.Sleep(100);
-                }
-               
-                var commonParams = ParameterIntersectionHelper.GetCommonParameters(_doc);
-                if (Wpf.MainWindow.proverka == true)
-                {
-           _mainWindow.exitParameters.Clear();
-                    //  4. Показываем результат
-                    if (commonParams.Any())
+                    while (!Wpf.MainWindow.proverka)
                     {
-                        foreach (var p in commonParams)
-                        {
-                            _mainWindow.exitParameters.Add($"{p.Name} → {p.StorageType}");
-
-                        }
+                        Thread.Sleep(100);
                     }
+
+                    var commonParams = ParameterIntersectionHelper.GetCommonParameters(_doc);
+                    
+                        _mainWindow.exitParameters.Clear();
+                        //  4. Показываем результат
+                        if (commonParams.Any())
+                        {
+                            foreach (var p in commonParams)
+                            {
+                                _mainWindow.exitParameters.Add($"{p.Name} → {p.StorageType}");
+
+                            }
+                        }
+                    
+                    Wpf.MainWindow.proverka = false;
+                    
                 }
-                Wpf.MainWindow.proverka = false;
+                else break;
             }
+            Wpf.MainWindow.proverka = false;
+            Thread.CurrentThread.Abort();
         }
     }
 
@@ -77,9 +83,14 @@ namespace Troyan
     }
    
 
+
+
+
     [Transaction(TransactionMode.ReadOnly)]
     public class Troyanka : IExternalCommand
     {
+        private static bool test = true;
+        public static bool Test { get { return test; } set { test = value; } }
         public Result Execute(
             ExternalCommandData commandData,
             ref string message,
@@ -88,7 +99,7 @@ namespace Troyan
             var doc = commandData.Application.ActiveUIDocument.Document;
             // Получаем отфильтрованные категории
             var categories = GetCategories(doc);
-
+            test = true;
             // Создаём массив ТОЛЬКО из имён
             var categoryNames = categories.Select(c => c.Name).ToList();
 
@@ -99,9 +110,9 @@ namespace Troyan
             ll ll = new ll(doc, mainWindow);   
           // ThreadStart threadStart = new ThreadStart(ll.lol);
             Thread threadStop = new Thread(ll.lol);
-            threadStop.IsBackground = true;
+            threadStop.IsBackground = false;
             threadStop.Start();
-           
+            mainWindow.Closing += MainWindow_Closing;
            // var commonParams = ParameterIntersectionHelper.GetCommonParameters(doc);
             //  2. ТОЛЬКО ТЕПЕРЬ проверяем флаг
             //if (Wpf.MainWindow.proverka == true)
@@ -125,6 +136,11 @@ namespace Troyan
 
             return Result.Succeeded;
             
+        }
+
+        private void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            Test = false;
         }
 
         private List<CategoryInfo> GetCategories(Document doc)
