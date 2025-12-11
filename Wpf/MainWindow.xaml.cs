@@ -102,9 +102,9 @@ namespace Wpf
                 foreach (string parametr in exitParameters)
                 {
                     parameters.Add(parametr);
-                } 
                 }
-                Dispatcher.BeginInvokeShutdown(System.Windows.Threading.DispatcherPriority.Normal);
+                
+                
             }
 
             private void ExitParameters_Changed(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)

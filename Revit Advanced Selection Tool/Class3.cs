@@ -4,6 +4,8 @@ using Autodesk.Revit.UI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Threading;
 
 
 namespace YourRevitPluginNamespace
@@ -46,93 +48,100 @@ namespace YourRevitPluginNamespace
         /// </summary>
         /// <param name="doc">Текущий документ Revit</param>
         /// <returns>Список общих параметров</returns>
+        /// 
+        static object obj = new object();
+
         public static List<ParameterInfo> GetCommonParameters(Document doc)
         {
-            if (doc == null)
-                throw new ArgumentNullException(nameof(doc));
-            var result = Wpf.MainWindow.exitSelect;
-            var selectedCategoryNames = new List<string>(result);
-            if (selectedCategoryNames == null || selectedCategoryNames.Count == 0)
-                return new List<ParameterInfo>();
-
-            // 1. Получаем все категории документа
-            var allDocCategories = new List<CategoryInfo>();
-            foreach (Category cat in doc.Settings.Categories)
+            lock (obj)
             {
-                if (cat != null && cat.Name != null && cat.Id != null)
+                if (doc == null)
+                    throw new ArgumentNullException(nameof(doc));
+                var result = Wpf.MainWindow.exitSelect;
+                var selectedCategoryNames = new List<string>(result);
+                if (selectedCategoryNames == null || selectedCategoryNames.Count == 0)
+                    return new List<ParameterInfo>();
+
+                // 1. Получаем все категории документа
+                var allDocCategories = new List<CategoryInfo>();
+                foreach (Category cat in doc.Settings.Categories)
                 {
-                    allDocCategories.Add(new CategoryInfo
+                    if (cat != null && cat.Name != null && cat.Id != null)
                     {
-                        Name = cat.Name,
-                        Id = cat.Id
-                    });
-                }
-
-            }
-            // 2. Создаём словарь имя -> ElementId
-            var nameToId = allDocCategories
-                .GroupBy(c => c.Name) // на случай дубликатов
-                .ToDictionary(g => g.Key, g => g.First().Id);
-
-            // 3. Получаем ElementId для выбранных имён
-            var selectedIds = new List<ElementId>();
-            foreach (var name in selectedCategoryNames)
-            {
-                if (nameToId.TryGetValue(name, out ElementId id))
-                {
-                    selectedIds.Add(id);
-                }
-            }
-
-            if (selectedIds.Count == 0)
-                return new List<ParameterInfo>();
-
-            // 4. Берём по одному элементу из каждой категории
-            var sampleElements = new List<Element>();
-            foreach (ElementId id in selectedIds)
-            {
-                var collector = new FilteredElementCollector(doc)
-                    .OfCategoryId(id)
-                    .WhereElementIsNotElementType();
-
-                var element = collector.FirstOrDefault();
-                if (element != null)
-                {
-                    sampleElements.Add(element);
-                }
-            }
-
-            if (sampleElements.Count == 0)
-                return new List<ParameterInfo>();
-
-            // 5. Собираем параметры каждого элемента
-            var paramLists = new List<List<ParameterInfo>>();
-            foreach (Element elem in sampleElements)
-            {
-                var elemParams = new List<ParameterInfo>();
-                foreach (Parameter param in elem.Parameters)
-                {
-                    if (param?.Definition?.Name != null)
-                    {
-                        elemParams.Add(new ParameterInfo
+                        allDocCategories.Add(new CategoryInfo
                         {
-                            Name = param.Definition.Name,
-                            StorageType = param.StorageType
+                            Name = cat.Name,
+                            Id = cat.Id
                         });
                     }
+
                 }
-                paramLists.Add(elemParams);
-            }
+                // 2. Создаём словарь имя -> ElementId
+                var nameToId = allDocCategories
+                    .GroupBy(c => c.Name) // на случай дубликатов
+                    .ToDictionary(g => g.Key, g => g.First().Id);
 
-            // 6. Находим пересечение всех списков
-            var commonParams = new HashSet<ParameterInfo>(paramLists[0]);
-            for (int i = 1; i < paramLists.Count; i++)
-            {
-                commonParams.IntersectWith(paramLists[i]);
-            }
+                // 3. Получаем ElementId для выбранных имён
+                var selectedIds = new List<ElementId>();
+                foreach (var name in selectedCategoryNames)
+                {
+                    if (nameToId.TryGetValue(name, out ElementId id))
+                    {
+                        selectedIds.Add(id);
+                    }
+                }
 
-            return commonParams.ToList();
+                if (selectedIds.Count == 0)
+                    return new List<ParameterInfo>();
+
+                // 4. Берём по одному элементу из каждой категории
+                var sampleElements = new List<Element>();
+                foreach (ElementId id in selectedIds)
+                {
+                    var collector = new FilteredElementCollector(doc)
+                        .OfCategoryId(id)
+                        .WhereElementIsNotElementType();
+
+                    var element = collector.FirstOrDefault();
+                    if (element != null)
+                    {
+                        sampleElements.Add(element);
+                    }
+                }
+
+                if (sampleElements.Count == 0)
+                    return new List<ParameterInfo>();
+
+                // 5. Собираем параметры каждого элемента
+                var paramLists = new List<List<ParameterInfo>>();
+                foreach (Element elem in sampleElements)
+                {
+                    var elemParams = new List<ParameterInfo>();
+                    foreach (Parameter param in elem.Parameters)
+                    {
+                        if (param?.Definition?.Name != null)
+                        {
+                            elemParams.Add(new ParameterInfo
+                            {
+                                Name = param.Definition.Name,
+                                StorageType = param.StorageType
+                            });
+                        }
+                    }
+                    paramLists.Add(elemParams);
+                }
+
+                // 6. Находим пересечение всех списков
+                var commonParams = new HashSet<ParameterInfo>(paramLists[0]);
+                for (int i = 1; i < paramLists.Count; i++)
+                {
+                    commonParams.IntersectWith(paramLists[i]);
+                }
+
+                return commonParams.ToList();
+            }
         }
+        
     }
 
     // Вспомогательный класс для хранения категории
