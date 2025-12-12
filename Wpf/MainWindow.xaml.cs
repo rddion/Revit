@@ -66,7 +66,7 @@ namespace Wpf
                 {
                     strings.Add(s);
                 }
-                apply.Click += Apply_HandlerRevit;
+                
                 lView.ItemsSource = strings;
                 imageGood.Visibility = Visibility.Visible;
                 imageBad.Visibility = Visibility.Hidden;
@@ -92,17 +92,19 @@ namespace Wpf
                 @event.Invoke(sender,e);
             }
 
-            public void ThreadMethod()
+        public void ThreadMethod()
+        {
+            if (exitParameters.Count > 0)
             {
-                if(exitParameters.Count > 0) { 
                 parameters.Clear();
                 foreach (string parametr in exitParameters)
                 {
                     parameters.Add(parametr);
                 }
-                
-                
+
+
             }
+        }
 
             private void ExitParameters_Changed(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
             {
