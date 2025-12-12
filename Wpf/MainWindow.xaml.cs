@@ -74,6 +74,7 @@ namespace Wpf
             }
 
             public event EventHandler @event=null;
+            public event EventHandler SearchingEvent = null;
             private void Button_Click(object sender, RoutedEventArgs e)
             {
                 if(search.Text.Length > 0)
@@ -463,6 +464,8 @@ namespace Wpf
 
                     
                 }
+
+                 SearchingEvent.Invoke(sender, e);
 
             }
 
