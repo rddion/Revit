@@ -49,12 +49,12 @@ namespace YourRevitPluginNamespace
         /// <param name="doc">Текущий документ Revit</param>
         /// <returns>Список общих параметров</returns>
         /// 
-        static object obj = new object();
+        //static object obj = new object();
 
         public static List<ParameterInfo> GetCommonParameters(Document doc)
         {
-            lock (obj)
-            {
+            //lock (obj)
+            //{
                 if (doc == null)
                     throw new ArgumentNullException(nameof(doc));
                 var result = Wpf.MainWindow.exitSelect;
@@ -139,7 +139,7 @@ namespace YourRevitPluginNamespace
                 }
 
                 return commonParams.ToList();
-            }
+            //}
         }
         
     }
