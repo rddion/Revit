@@ -71,12 +71,8 @@ namespace Wpf
                 imageGood.Visibility = Visibility.Visible;
                 imageBad.Visibility = Visibility.Hidden;
             }
-            
-            public virtual void Apply_HandlerRevit(object sender, RoutedEventArgs e)
-            {
-                
-            }
-            
+
+            public event EventHandler @event=null;
             private void Button_Click(object sender, RoutedEventArgs e)
             {
                 if(search.Text.Length > 0)
@@ -93,6 +89,7 @@ namespace Wpf
                 parameters.Clear();
                 //proverka = true;
                 exitParameters.CollectionChanged += ExitParameters_Changed;
+                @event.Invoke(sender,e);
             }
 
             public void ThreadMethod()
