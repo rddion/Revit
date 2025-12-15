@@ -520,7 +520,7 @@ namespace Wpf
                     
                 }
 
-                 //SearchingEvent.Invoke(sender, e);
+                 SearchingEvent.Invoke(sender, e);
 
             }
 
