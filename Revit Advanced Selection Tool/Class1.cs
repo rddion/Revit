@@ -50,7 +50,7 @@ namespace Troyan
                     foreach (var p in commonParams)
                     {
                         _mainWindow.exitParameters.Add($"{p.Name} → {p.StorageType}");
-
+                        _mainWindow.storageTypesOfParameters.Add(p.StorageType.ToString());
                     }
                 }
 

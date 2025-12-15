@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.SqlServer.Server;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -14,6 +15,7 @@ using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Converters;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
@@ -374,6 +376,8 @@ namespace Wpf
 
             private void Click_Search(object sender, RoutedEventArgs e)
             {
+                TextBox currentText= new TextBox();
+                ComboBox currentParametr = new ComboBox();
                 uslovia = new string[0, 3];
                 unions = new string[0];
                 int j = 0, k = 0, x = 0;
@@ -408,6 +412,10 @@ namespace Wpf
                                 break;
                             }
 
+                            if (controls[i].Name == "parametr")
+                            {
+                                currentParametr = (ComboBox)controls[i];    
+                            }
                             uslovia[k, j] = ((Selector)controls[i]).SelectedValue.ToString();
                         }
                         if (controls[i].Name == "Value")
@@ -424,6 +432,8 @@ namespace Wpf
                                 window.ShowDialog();
                                 break;
                             }
+                            controls[i].Background = Brushes.White;
+                            currentText = ((TextBox)controls[i]);
                             uslovia[k, j] = ((TextBox)controls[i]).Text;
                         }
                         j++;
@@ -457,6 +467,51 @@ namespace Wpf
 
                     if (j == 3)
                     {
+                        string storageType = "String";
+                        int actualIndex=0;
+
+                        for (int y=0; y<exitParameters.Count;y++)
+                        {
+                            if (exitParameters[y] == currentParametr.SelectedValue.ToString())
+                            {
+                                actualIndex = y;
+                                continue;
+                            }       
+                        } 
+
+                        try
+                        {
+                            Convert.ToInt32(currentText.Text);
+                            storageType = "Integer";
+                        }
+                        catch { }
+
+                        if (storageType != "Integer")
+                        {
+                            try
+                            {
+                                Convert.ToDouble(currentText.Text);
+                                storageType = "Double";
+                            }   
+                             catch {}
+                        }
+                       
+
+                        if (storageTypesOfParameters[actualIndex] == "Integer" && (storageType=="Double" || storageType=="String"))
+                        {
+                            BrushValueSerializer brushValueSerializer = new BrushValueSerializer();
+                            currentText.Background = (Brush)brushValueSerializer.ConvertFromString("#FFFF6C6C", null);
+                            currentText.Text = String.Format("Введите целое число");
+                            break;
+                        }
+
+                        if (storageTypesOfParameters[actualIndex] == "Double" && storageType=="String")
+                        {
+                            BrushValueSerializer brushValueSerializer = new BrushValueSerializer();
+                            currentText.Background = (Brush)brushValueSerializer.ConvertFromString("#FFFF6C6C", null);
+                            currentText.Text = String.Format("Введите число");
+                            break;
+                        }
                         
                         k++;
                         j = 0;
@@ -465,7 +520,7 @@ namespace Wpf
                     
                 }
 
-                 SearchingEvent.Invoke(sender, e);
+                 //SearchingEvent.Invoke(sender, e);
 
             }
 
