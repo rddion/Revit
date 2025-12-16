@@ -1,24 +1,17 @@
-﻿using Microsoft.SqlServer.Server;
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Converters;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using System.Text.RegularExpressions;
+
 namespace Wpf
 {
     /// <summary>
@@ -469,6 +462,17 @@ namespace Wpf
                     {
                         string storageType = "String";
                         int actualIndex=0;
+                        Regex regex = new Regex(@"^\d*\.\d*$");
+
+                        if (regex.IsMatch(currentText.Text))
+                        {
+                            try
+                            {
+                                Convert.ToInt32(Regex.Replace(currentText.Text, @"\.", ""));
+                                currentText.Text = Regex.Replace(currentText.Text, @"\.", ",");
+                            }
+                            catch { }
+                        }
 
                         for (int y=0; y<exitParameters.Count;y++)
                         {
@@ -513,10 +517,6 @@ namespace Wpf
                             break;
                         }
                         
-                        if (storageTypesOfParameters[actualIndex] == "ElementId")
-                            {
-                                grid.Children.Insert(actualIndex, new ComboBox());
-                            }
 
                         k++;
                         j = 0;
@@ -525,7 +525,7 @@ namespace Wpf
                     
                 }
 
-                 SearchingEvent.Invoke(sender, e);
+                 //SearchingEvent.Invoke(sender, e);
 
             }
 
