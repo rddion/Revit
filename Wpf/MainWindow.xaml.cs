@@ -513,6 +513,11 @@ namespace Wpf
                             break;
                         }
                         
+                        if (storageTypesOfParameters[actualIndex] == "ElementId")
+                            {
+                                grid.Children.Insert(actualIndex, new ComboBox());
+                            }
+
                         k++;
                         j = 0;
                     }
