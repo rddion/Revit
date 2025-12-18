@@ -48,6 +48,7 @@ namespace Wpf
                 this.Topmost = true;
                 this.MaxHeight = 570;
                 this.MaxWidth = 800;
+                button_invert.IsEnabled = false;
                 list = categories;
                 parameters.Clear();
                 baseCollection.Clear();
@@ -375,30 +376,87 @@ namespace Wpf
 
             private void Click_Search(object sender, RoutedEventArgs e)
             {
-            TextBox currentText = new TextBox();
-            ComboBox currentParametr = new ComboBox();
-            bool breaking = false;
-            uslovia = new string[0, 3];
-            unions = new string[0];
-            int j = 0, k = 0, x = 0;
-                for (int i = 0; i < controls.Count; i++)
-                {
-
-
-                    if (controls[i].Name != "close" && controls[i].Name != "souz")
+                button_invert.IsEnabled = true;
+                TextBox currentText = new TextBox();
+                ComboBox currentParametr = new ComboBox();
+                bool breaking = false;
+                uslovia = new string[0, 3];
+                unions = new string[0];
+                int j = 0, k = 0, x = 0;
+                    for (int i = 0; i < controls.Count; i++)
                     {
-                        string[,] vremUsl = uslovia;
-                        uslovia = new string[k + 1, 3];
-                        for (int q = 0; q < vremUsl.GetLength(0); q++)
+
+
+                        if (controls[i].Name != "close" && controls[i].Name != "souz")
                         {
-                            for (int r = 0; r < 3; r++)
+                            string[,] vremUsl = uslovia;
+                            uslovia = new string[k + 1, 3];
+                            for (int q = 0; q < vremUsl.GetLength(0); q++)
                             {
-                                uslovia[q, r] = vremUsl[q, r];
+                                for (int r = 0; r < 3; r++)
+                                {
+                                    uslovia[q, r] = vremUsl[q, r];
+                                }
                             }
+
+                                if (controls[i].Name == "parametr" || controls[i].Name == "condition1")
+                                {
+                                    if (((Selector)controls[i]).SelectedItem == null)
+                                    {
+                                        Window window = new Window();
+                                        window.Title = "Ошибка";
+                                        window.Width = 400;
+                                        window.Height = 150;
+                                        window.HorizontalAlignment = HorizontalAlignment.Center;
+                                        window.VerticalAlignment = VerticalAlignment.Center;
+                                        window.Margin = new Thickness(0,0,0,0);
+                                        window.Content = "Ошибка: Не заполнены поля условий в конструкторе правил";
+                                        window.Activate();
+                                        window.Topmost = true;
+                                        window.ShowDialog();
+                                        break;
+                                    }
+
+                                    if (controls[i].Name == "parametr")
+                                    {
+                                        currentParametr = (ComboBox)controls[i];    
+                                    }
+                                    uslovia[k, j] = ((Selector)controls[i]).SelectedValue.ToString();
+                                }
+                                if (controls[i].Name == "Value")
+                                {
+                                    if (((TextBox)controls[i]).Text == "")
+                                    {
+                                        Window window = new Window();
+                                        window.Title = "Ошибка";
+                                        window.Width = 400;
+                                        window.Height = 150;
+                                        window.HorizontalAlignment = HorizontalAlignment.Center;
+                                        window.VerticalAlignment = VerticalAlignment.Center;
+                                        window.Margin = new Thickness(0,0,0,0);
+                                        window.Content = "Ошибка: Не заполнены поля условий в конструкторе правил";
+                                        window.Activate();
+                                        window.Topmost = true;
+                                        window.ShowDialog();
+                                        break;
+                                    }
+                                    controls[i].Background = Brushes.White;
+                                    currentText = ((TextBox)controls[i]);
+                                    uslovia[k, j] = ((TextBox)controls[i]).Text;
+                                }
+                                j++;
                         }
 
-                            if (controls[i].Name == "parametr" || controls[i].Name == "condition1")
+
+
+                            if (controls[i].Name == "souz")
                             {
+                                string[] vremUnion = unions;
+                                unions = new string[x + 1];
+                                for (int q = 0; q < vremUnion.Length; q++)
+                                {
+                                    unions[q] = vremUnion[q];
+                                }
                                 if (((Selector)controls[i]).SelectedItem == null)
                                 {
                                     Window window = new Window();
@@ -414,140 +472,84 @@ namespace Wpf
                                     window.ShowDialog();
                                     break;
                                 }
-
-                                if (controls[i].Name == "parametr")
-                                {
-                                    currentParametr = (ComboBox)controls[i];    
-                                }
-                                uslovia[k, j] = ((Selector)controls[i]).SelectedValue.ToString();
+                                unions[x] = ((Selector)controls[i]).SelectedValue.ToString();
+                                x++;
                             }
-                            if (controls[i].Name == "Value")
+
+                            if (j == 3)
                             {
-                                if (((TextBox)controls[i]).Text == "")
+                                string storageType = "String";
+                                int actualIndex=0;
+                                Regex regex = new Regex(@"^\d*\.\d*$");
+
+                                if (regex.IsMatch(currentText.Text))
                                 {
-                                    Window window = new Window();
-                                    window.Title = "Ошибка";
-                                    window.Width = 400;
-                                    window.Height = 150;
-                                    window.HorizontalAlignment = HorizontalAlignment.Center;
-                                    window.VerticalAlignment = VerticalAlignment.Center;
-                                    window.Margin = new Thickness(0,0,0,0);
-                                    window.Content = "Ошибка: Не заполнены поля условий в конструкторе правил";
-                                    window.Activate();
-                                    window.Topmost = true;
-                                    window.ShowDialog();
+                                    try
+                                    {
+                                        Convert.ToInt32(Regex.Replace(currentText.Text, @"\.", ""));
+                                        currentText.Text = Regex.Replace(currentText.Text, @"\.", ",");
+                                    }
+                                    catch { }
+                                }
+
+                                for (int y = 0; y < exitParameters.Count; y++)
+                                {
+                                    if (exitParameters[y] == currentParametr.SelectedValue.ToString())
+                                    {
+                                        actualIndex = y;
+                                        continue;
+                                    }
+                                }
+
+                                try
+                                {
+                                    Convert.ToInt32(currentText.Text);
+                                    storageType = "Integer";
+                                }
+                                catch { }
+
+                                if (storageType != "Integer")
+                                {
+                                    try
+                                    {
+                                        Convert.ToDouble(currentText.Text);
+                                        storageType = "Double";
+                                    }
+                                    catch { }
+                                }
+
+
+                                if (storageTypesOfParameters[actualIndex] == "Integer" && (storageType=="Double" || storageType=="String"))
+                                {
+                                    BrushValueSerializer brushValueSerializer = new BrushValueSerializer();
+                                    currentText.Background = (Brush)brushValueSerializer.ConvertFromString("#FFF18B8B", null);
+                                    currentText.Background.Opacity = 70;
+                                    currentText.Text = String.Format("Введите целое число");
+                                    breaking = true;
                                     break;
                                 }
-                                controls[i].Background = Brushes.White;
-                                currentText = ((TextBox)controls[i]);
-                                uslovia[k, j] = ((TextBox)controls[i]).Text;
-                            }
-                            j++;
-                        }
 
-
-
-                        if (controls[i].Name == "souz")
-                        {
-                            string[] vremUnion = unions;
-                            unions = new string[x + 1];
-                            for (int q = 0; q < vremUnion.Length; q++)
-                            {
-                                unions[q] = vremUnion[q];
-                            }
-                            if (((Selector)controls[i]).SelectedItem == null)
-                            {
-                                Window window = new Window();
-                                window.Title = "Ошибка";
-                                window.Width = 400;
-                                window.Height = 150;
-                                window.HorizontalAlignment = HorizontalAlignment.Center;
-                                window.VerticalAlignment = VerticalAlignment.Center;
-                                window.Margin = new Thickness(0,0,0,0);
-                                window.Content = "Ошибка: Не заполнены поля условий в конструкторе правил";
-                                window.Activate();
-                                window.Topmost = true;
-                                window.ShowDialog();
-                                break;
-                            }
-                            unions[x] = ((Selector)controls[i]).SelectedValue.ToString();
-                            x++;
-                        }
-
-                        if (j == 3)
-                        {
-                            string storageType = "String";
-                            int actualIndex=0;
-                            Regex regex = new Regex(@"^\d*\.\d*$");
-
-                            if (regex.IsMatch(currentText.Text))
-                            {
-                                try
+                                if (storageTypesOfParameters[actualIndex] == "Double" && storageType=="String")
                                 {
-                                    Convert.ToInt32(Regex.Replace(currentText.Text, @"\.", ""));
-                                    currentText.Text = Regex.Replace(currentText.Text, @"\.", ",");
+                                    BrushValueSerializer brushValueSerializer = new BrushValueSerializer();
+                                    currentText.Background = (Brush)brushValueSerializer.ConvertFromString("#FFF18B8B", null);
+                                    currentText.Background.Opacity = 70;
+                                    currentText.Text = String.Format("Введите число");
+                                    breaking = true;
+                                    break;
                                 }
-                                catch { }
-                            }
-
-                            for (int y = 0; y < exitParameters.Count; y++)
-                            {
-                                if (exitParameters[y] == currentParametr.SelectedValue.ToString())
-                                {
-                                    actualIndex = y;
-                                    continue;
-                                }
-                            }
-
-                            try
-                            {
-                                Convert.ToInt32(currentText.Text);
-                                storageType = "Integer";
-                            }
-                            catch { }
-
-                            if (storageType != "Integer")
-                            {
-                                try
-                                {
-                                    Convert.ToDouble(currentText.Text);
-                                    storageType = "Double";
-                                }
-                                catch { }
-                            }
-
-
-                            if (storageTypesOfParameters[actualIndex] == "Integer" && (storageType=="Double" || storageType=="String"))
-                            {
-                                BrushValueSerializer brushValueSerializer = new BrushValueSerializer();
-                                currentText.Background = (Brush)brushValueSerializer.ConvertFromString("#FFF18B8B", null);
-                                currentText.Background.Opacity = 70;
-                                currentText.Text = String.Format("Введите целое число");
-                                breaking = true;
-                                break;
-                            }
-
-                            if (storageTypesOfParameters[actualIndex] == "Double" && storageType=="String")
-                            {
-                                BrushValueSerializer brushValueSerializer = new BrushValueSerializer();
-                                currentText.Background = (Brush)brushValueSerializer.ConvertFromString("#FFF18B8B", null);
-                                currentText.Background.Opacity = 70;
-                                currentText.Text = String.Format("Введите число");
-                                breaking = true;
-                                break;
-                            }
                         
 
-                            k++;
-                            j = 0;
-                        }
+                                k++;
+                                j = 0;
+                            }
 
 
-                }
-                if (!breaking)
-                {
-                    SearchingEvent.Invoke(sender, e);
-                }
+                    }
+                    if (!breaking)
+                    {
+                        SearchingEvent.Invoke(sender, e);
+                    }
 
             }
 
