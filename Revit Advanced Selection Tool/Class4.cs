@@ -174,9 +174,113 @@ public static class RevitRuleFilter
         }
 
         // Выделяем результат
+        var filteredIds = GetFilteredElementIds(uidoc, out _);
         uidoc.Selection.SetElementIds(resultElements.ToList());
     }
+    public static HashSet<ElementId> GetFilteredElementIds(UIDocument uidoc, out List<Element> allElementsInCategories)
+    {
+        allElementsInCategories = new List<Element>();
 
+        if (uidoc == null) throw new ArgumentNullException(nameof(uidoc));
+
+        // Преобразуем операторы (как раньше)
+        for (int i = 0; i < Wpf.MainWindow.uslovia.GetLength(0); i++)
+        {
+            switch (Wpf.MainWindow.uslovia[i, 1]) // только оператор (столбец 1)
+            {
+                case "Равно": Wpf.MainWindow.uslovia[i, 1] = "Equals"; break;
+                case "Не равно": Wpf.MainWindow.uslovia[i, 1] = "NotEquals"; break;
+                case "Содержит": Wpf.MainWindow.uslovia[i, 1] = "Contains"; break;
+                case "Начинается с": Wpf.MainWindow.uslovia[i, 1] = "StartsWith"; break;
+                case "Больше": Wpf.MainWindow.uslovia[i, 1] = "GreaterThan"; break;
+                case "Меньше": Wpf.MainWindow.uslovia[i, 1] = "LessThan"; break;
+            }
+        }
+
+        int conditionCount = Wpf.MainWindow.uslovia.GetLength(0);
+        if (conditionCount == 0)
+        {
+            return new HashSet<ElementId>(); // пустой результат
+        }
+
+        // Извлекаем условия
+        string[] paramNames = new string[conditionCount];
+        RuleOperator[] operators = new RuleOperator[conditionCount];
+        string[] values = new string[conditionCount];
+
+        for (int i = 0; i < conditionCount; i++)
+        {
+            paramNames[i] = Wpf.MainWindow.uslovia[i, 0]?.Trim() ?? "";
+            string opStr = Wpf.MainWindow.uslovia[i, 1]?.Trim() ?? "Equals";
+            values[i] = Wpf.MainWindow.uslovia[i, 2] ?? "";
+
+            operators[i] = Enum.TryParse(opStr, true, out RuleOperator op) ? op : RuleOperator.Equals;
+        }
+
+        // Группировка по "ИЛИ"
+        var groups = new List<List<(string, RuleOperator, string)>>();
+        var currentGroup = new List<(string, RuleOperator, string)>();
+        groups.Add(currentGroup);
+
+        int maxUnions = Math.Min(Wpf.MainWindow.unions?.Length ?? 0, conditionCount - 1);
+        for (int i = 0; i < conditionCount; i++)
+        {
+            currentGroup.Add((paramNames[i], operators[i], values[i]));
+
+            if (i < maxUnions && string.Equals(Wpf.MainWindow.unions[i]?.Trim(), "ИЛИ", StringComparison.OrdinalIgnoreCase))
+            {
+                currentGroup = new List<(string, RuleOperator, string)>();
+                groups.Add(currentGroup);
+            }
+        }
+
+        // Сбор элементов из выбранных категорий
+        Document doc = uidoc.Document;
+        var selectedCategories = Wpf.MainWindow.exitSelect;
+
+        if (selectedCategories != null && selectedCategories.Count > 0)
+        {
+            foreach (string categoryName in selectedCategories)
+            {
+                if (string.IsNullOrWhiteSpace(categoryName)) continue;
+                if (FindBuiltInCategoryByName(doc, categoryName) is BuiltInCategory bic)
+                {
+                    var elements = new FilteredElementCollector(doc)
+                        .OfCategory(bic)
+                        .WhereElementIsNotElementType()
+                        .ToList();
+                    allElementsInCategories.AddRange(elements);
+                }
+            }
+        }
+        else
+        {
+            allElementsInCategories = new FilteredElementCollector(doc)
+                .WhereElementIsNotElementType()
+                .Where(e => e?.Category != null)
+                .ToList();
+        }
+
+        // Фильтрация
+        var resultIds = new HashSet<ElementId>();
+        foreach (var group in groups)
+        {
+            var matched = allElementsInCategories.Where(el =>
+            {
+                foreach (var (paramName, op, value) in group)
+                {
+                    if (!MatchesRule(el, paramName, op, value, doc))
+                        return false;
+                }
+                return true;
+            });
+
+            foreach (var el in matched)
+                resultIds.Add(el.Id);
+        }
+
+        return resultIds;
+    }
     private static bool MatchesRule(Element element, string paramName, RuleOperator op, string userValue, Document doc)
     {
         Parameter param = element.LookupParameter(paramName);
@@ -355,10 +459,22 @@ public static class RevitRuleFilter
                obj is float || obj is double || obj is decimal;
     }
 }
-public static class RevitNot  
+public static class RevitNot
 {
-public static void GOG()
+    public static void GOG(UIDocument uidoc)
     {
+        if (uidoc == null) return;
 
+        // Получаем все элементы в выбранных категориях + те, что прошли фильтр
+        var passedIds = RevitRuleFilter.GetFilteredElementIds(uidoc, out List<Element> allElementsInCategories);
+
+        // Находим ID тех, кто НЕ прошёл
+        var notPassedIds = allElementsInCategories
+            .Where(e => !passedIds.Contains(e.Id))
+            .Select(e => e.Id)
+            .ToList();
+
+        // Выделяем их
+        uidoc.Selection.SetElementIds(notPassedIds);
     }
 }
