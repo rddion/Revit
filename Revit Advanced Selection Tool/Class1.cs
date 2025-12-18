@@ -51,7 +51,7 @@ namespace Troyan
         }
         public void NotRevit(object sender, EventArgs e) 
         {
-            RevitNot.GOG();
+            RevitNot.GOG(_docs);
         }
     }
 
