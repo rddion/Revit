@@ -21,17 +21,12 @@ public static class RevitRuleFilter
         if (string.IsNullOrWhiteSpace(categoryName) || doc == null)
             return null;
 
-        // Проходим по всем категориям документа
         foreach (Category cat in doc.Settings.Categories)
         {
-            if (cat != null &&
-                cat.Name.Equals(categoryName, StringComparison.OrdinalIgnoreCase))
+            if (cat != null && cat.Name.Equals(categoryName, StringComparison.OrdinalIgnoreCase))
             {
-                // BuiltInCategory имеют отрицательные IntegerValue
-                if (cat.Id.IntegerValue < 0)
-                {
+                if (cat.Id.IntegerValue < 0) // Built-in category
                     return (BuiltInCategory)cat.Id.IntegerValue;
-                }
             }
         }
         return null;
@@ -113,31 +108,44 @@ public static class RevitRuleFilter
         }
 
         // Собираем все элементы
-        string categoryName = Wpf.MainWindow.exitSelect?.FirstOrDefault();
-
         Document doc = uidoc.Document;
-        List<Element> allElements;
+        List<Element> allElements = new List<Element>();
 
-        if (!string.IsNullOrEmpty(categoryName))
+        var selectedCategories = Wpf.MainWindow.exitSelect;
+
+        // Если список категорий задан и не пуст
+        if (selectedCategories != null && selectedCategories.Count > 0)
         {
-            var bic = FindBuiltInCategoryByName(doc, categoryName);
-            if (bic.HasValue)
+            bool foundAtLeastOne = false;
+
+            foreach (string categoryName in selectedCategories)
             {
-                allElements = new FilteredElementCollector(doc)
-                    .OfCategory(bic.Value)
-                    .WhereElementIsNotElementType()
-                    .ToList();
+                if (string.IsNullOrWhiteSpace(categoryName)) continue;
+
+                var bic = FindBuiltInCategoryByName(doc, categoryName);
+                if (bic.HasValue)
+                {
+                    foundAtLeastOne = true;
+                    var elementsInCategory = new FilteredElementCollector(doc)
+                        .OfCategory(bic.Value)
+                        .WhereElementIsNotElementType()
+                        .ToList();
+
+                    allElements.AddRange(elementsInCategory);
+                }
+                // Игнорируем категории, которые не найдены (или выводим предупреждение)
             }
-            else
+
+            if (!foundAtLeastOne)
             {
-                TaskDialog.Show("Ошибка", $"Категория '{categoryName}' не найдена в проекте.");
+                TaskDialog.Show("Ошибка", "Ни одна из выбранных категорий не найдена в проекте.");
                 uidoc.Selection.SetElementIds(new List<ElementId>());
                 return;
             }
         }
         else
         {
-            // Если список пуст или null — фильтруем все элементы
+            // Если категории не выбраны — берём все (как раньше)
             allElements = new FilteredElementCollector(doc)
                 .WhereElementIsNotElementType()
                 .Where(e => e?.Category != null)
@@ -182,12 +190,7 @@ public static class RevitRuleFilter
         // Определить количество знаков после запятой в expected, если это число
         int decimalPlaces = CountDecimalPlaces(expected);
 
-        // Если actual — число и decimalPlaces >= 0, округлить actual
-        if (decimalPlaces >= 0 && IsNumeric(actual))
-        {
-            double actualAsDouble = Convert.ToDouble(actual);
-            actual = Math.Round(actualAsDouble, decimalPlaces);
-        }
+
 
         return Compare(actual, expected, op, doc);
     }
