@@ -376,7 +376,6 @@ namespace Wpf
 
             private void Click_Search(object sender, RoutedEventArgs e)
             {
-                button_invert.IsEnabled = true;
                 TextBox currentText = new TextBox();
                 ComboBox currentParametr = new ComboBox();
                 bool breaking = false;
@@ -548,6 +547,7 @@ namespace Wpf
                     }
                     if (!breaking)
                     {
+                        button_invert.IsEnabled = true;
                         SearchingEvent.Invoke(sender, e);
                     }
 
