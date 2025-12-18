@@ -29,7 +29,7 @@
         </Grid>
         <Button Name="addRule" Content="Добавить правило" HorizontalAlignment="Left" Margin="594,450,0,0" VerticalAlignment="Top" Height="31" Width="151" Click="Button_Click_5" FontFamily="ISOCPEUR" FontSize="16"/>
         <Button Content="Найти и выбрать" HorizontalAlignment="Left" Margin="237,450,0,0" VerticalAlignment="Top" Width="155" Height="31" Click="Click_Search" FontFamily="ISOCPEUR" FontSize="16"/>
-        <Button Content="Инвертировать выбор" HorizontalAlignment="Left" Margin="415,450,0,0" VerticalAlignment="Top" Width="155" Height="31" Click="Button_Click_6" FontFamily="ISOCPEUR" FontSize="16"/>
+        <Button Name="button_invert" Content="Инвертировать выбор" HorizontalAlignment="Left" Margin="415,450,0,0" VerticalAlignment="Top" Width="155" Height="31" Click="Button_Click_6" FontFamily="ISOCPEUR" FontSize="16"/>
         <Label Content="Категории" Margin="60,35,600,440" FontWeight="Medium" FontSize="16" FontStyle="Italic" FontFamily="ISOCPEUR"/>
         <Label Name="selCat" Content="" HorizontalAlignment="Left" Margin="0,319,0,0" VerticalAlignment="Top" Width="200"/>
 
