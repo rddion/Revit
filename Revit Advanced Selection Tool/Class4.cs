@@ -355,3 +355,10 @@ public static class RevitRuleFilter
                obj is float || obj is double || obj is decimal;
     }
 }
+public static class RevitNot  
+{
+public static void GOG()
+    {
+
+    }
+}
