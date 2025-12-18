@@ -37,6 +37,9 @@ namespace Wpf
             public static List<string> exitSelect= new List<string>(); // итоговая выходная коллекция выбранных категорий для RevitAPI
             public ObservableCollection<string> exitParameters = new ObservableCollection<string>(); // выходные параметры для RevitAPI
             public ObservableCollection<string> storageTypesOfParameters = new ObservableCollection<string>(); // типы параметров
+            public event EventHandler @event=null; // событие для RevitApi при нажатии «Применить» для выбора категорий
+            public event EventHandler SearchingEvent = null; // событие для RevitAPI при нажатии «Найти и выбрать» для нахождения элементов Revit, подходящим по правилам
+            public event EventHandler invertEvent = null; // событие для RevitAPI при нажатии «Инвертировать» для инвертирования выбора
 
             public MainWindow(List<string> categories)
             {
@@ -70,8 +73,7 @@ namespace Wpf
                 imageBad.Visibility = Visibility.Hidden;
             }
 
-            public event EventHandler @event=null;
-            public event EventHandler SearchingEvent = null;
+            
             private void Button_Click(object sender, RoutedEventArgs e)
             {
                 if(search.Text.Length > 0)
@@ -298,7 +300,7 @@ namespace Wpf
 
             private void Button_Click_6(object sender, RoutedEventArgs e)
             {
-                invert = true;
+                invertEvent.Invoke(sender, e);
             }
 
             private void Text_changed(object sender, RoutedEventArgs e)
@@ -540,7 +542,7 @@ namespace Wpf
                     
                 }
 
-                 //SearchingEvent.Invoke(sender, e);
+                 SearchingEvent.Invoke(sender, e);
 
             }
 
