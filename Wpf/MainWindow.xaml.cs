@@ -38,11 +38,13 @@ namespace Wpf
             public ObservableCollection<string> exitParameters = new ObservableCollection<string>(); // выходные параметры для RevitAPI
             public ObservableCollection<string> storageTypesOfParameters = new ObservableCollection<string>(); // типы параметров
 
-        public MainWindow(List<string> categories)
+            public MainWindow(List<string> categories)
             {
                 
                 InitializeComponent();
                 this.Topmost = true;
+                this.MaxHeight = 570;
+                this.MaxWidth = 800;
                 list = categories;
                 parameters.Clear();
                 baseCollection.Clear();
@@ -84,7 +86,6 @@ namespace Wpf
                 }                                       
                 lView.ItemsSource=selectCategories;
                 parameters.Clear();
-                //proverka = true;
                 exitParameters.CollectionChanged += ExitParameters_Changed;
                 @event.Invoke(sender,e);
             }
@@ -107,13 +108,7 @@ namespace Wpf
             {
                     ThreadStart thread = new ThreadStart(ThreadMethod);
                     Dispatcher.BeginInvoke(thread,null);
-                    
 
-            //parameters.Clear();
-            //foreach (string parametr in exitParameters)
-            //{
-            //    parameters.Add(parametr);
-            //}
             }
 
             private void Button_Click_1(object sender, RoutedEventArgs e)
@@ -504,7 +499,8 @@ namespace Wpf
                         if (storageTypesOfParameters[actualIndex] == "Integer" && (storageType=="Double" || storageType=="String"))
                         {
                             BrushValueSerializer brushValueSerializer = new BrushValueSerializer();
-                            currentText.Background = (Brush)brushValueSerializer.ConvertFromString("#FFFF6C6C", null);
+                            currentText.Background = (Brush)brushValueSerializer.ConvertFromString("#FFF18B8B", null);
+                            currentText.Background.Opacity = 70;
                             currentText.Text = String.Format("Введите целое число");
                             break;
                         }
@@ -512,7 +508,8 @@ namespace Wpf
                         if (storageTypesOfParameters[actualIndex] == "Double" && storageType=="String")
                         {
                             BrushValueSerializer brushValueSerializer = new BrushValueSerializer();
-                            currentText.Background = (Brush)brushValueSerializer.ConvertFromString("#FFFF6C6C", null);
+                            currentText.Background = (Brush)brushValueSerializer.ConvertFromString("#FFF18B8B", null);
+                            currentText.Background.Opacity = 70;
                             currentText.Text = String.Format("Введите число");
                             break;
                         }
@@ -525,7 +522,7 @@ namespace Wpf
                     
                 }
 
-                 SearchingEvent.Invoke(sender, e);
+                 //SearchingEvent.Invoke(sender, e);
 
             }
 
