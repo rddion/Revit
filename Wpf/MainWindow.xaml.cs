@@ -136,94 +136,102 @@ namespace Wpf
 
             private void Button_Click_5(object sender, RoutedEventArgs e)
             {
-                ComboBox parametr = new ComboBox();
-                parametr.Height = 20;
-                parametr.Width = 200;
-                parametr.HorizontalAlignment = HorizontalAlignment.Left;
-                parametr.VerticalAlignment = VerticalAlignment.Top;
-                parametr.Name = "parametr";
-                parametr.Margin = new Thickness(20, marginVerticalConditions, 0, 0);
-                parametr.ItemsSource = parameters;
-                conditionElements.Add(indexOfCondition++, parametr);
-                grid.Children.Add(parametr);
-                controls.Add(parametr);
-
-                List<string> conditions = new List<string>();
-                conditions.Add("Равно");
-                conditions.Add("Не равно");
-                conditions.Add("Содержит");
-                conditions.Add("Начинается с");
-                conditions.Add("Больше");
-                conditions.Add("Меньше");
-                ComboBox condition1 = new ComboBox();
-                condition1.Height = 20;
-                condition1.Width = 100;
-                condition1.HorizontalAlignment = HorizontalAlignment.Left;
-                condition1.VerticalAlignment = VerticalAlignment.Top;
-                condition1.Name = "condition1";
-                condition1.Margin = new Thickness(240, marginVerticalConditions, 0, 0);
-                condition1.ItemsSource = conditions;
-                condition1.SelectedIndex = 0;
-                conditionElements.Add(indexOfCondition++, condition1);
-                grid.Children.Add(condition1);
-                controls.Add(condition1);
-
-                TextBox value = new TextBox();
-                value.Height = 20;
-                value.Width = 150;
-                value.HorizontalAlignment = HorizontalAlignment.Left;
-                value.VerticalAlignment = VerticalAlignment.Top;
-                value.Name = "Value";
-                value.Margin = new Thickness(360, marginVerticalConditions, 0, 0);
-                conditionElements.Add(indexOfCondition++, value);
-                grid.Children.Add(value);
-                controls.Add(value);
-
-                Button close = new Button();
-                close.Height = 20;
-                close.Width = 30;
-                close.HorizontalAlignment = HorizontalAlignment.Left;
-                close.VerticalAlignment = VerticalAlignment.Top;
-                close.Background = Brushes.AliceBlue;
-                close.Content = "X";
-                close.Name = "close";
-                close.Foreground = Brushes.Gray;
-                close.Margin = new Thickness(515, marginVerticalConditions, 0, 0);
-                close.Click += Close_Click;
-                conditionElements.Add(indexOfCondition++, close);
-                grid.Children.Add(close);
-                controls.Add(close);
-
-                if (marginVerticalConditions > 20)
+                if (controls.Count < 34)
                 {
-                    ComboBox souz = new ComboBox();
-                    souz.Height = 20;
-                    souz.Width = 60;
-                    souz.HorizontalAlignment = HorizontalAlignment.Left;
-                    souz.VerticalAlignment = VerticalAlignment.Top;
-                    souz.Background = Brushes.AliceBlue;
-                    souz.Name = "souz";
-                    souz.ItemsSource = new string[] { "И", "ИЛИ" };
-                    souz.Margin = new Thickness(20, marginVerticalConditions - 25, 0, 0);
-                    conditionElements.Add(indexOfCondition++, souz);
-                    grid.Children.Add(souz);
-                    controls.Add(souz);
-                    indexOfCondition--;
-                }
+                    ComboBox parametr = new ComboBox();
+                    parametr.Height = 20;
+                    parametr.Width = 200;
+                    parametr.HorizontalAlignment = HorizontalAlignment.Left;
+                    parametr.VerticalAlignment = VerticalAlignment.Top;
+                    parametr.Name = "parametr";
+                    parametr.Margin = new Thickness(20, marginVerticalConditions, 0, 0);
+                    parametr.ItemsSource = parameters;
+                    conditionElements.Add(indexOfCondition++, parametr);
+                    grid.Children.Add(parametr);
+                    controls.Add(parametr);
 
-                if (controls.Count > 19)
-                {
-                    imageGood.Visibility = Visibility.Hidden;
-                    imageBad.Visibility = Visibility.Visible;
-                }
-                else
-                {
-                    imageGood.Visibility = Visibility.Visible;
-                    imageBad.Visibility = Visibility.Hidden;
-                }
+                    List<string> conditions = new List<string>();
+                    conditions.Add("Равно");
+                    conditions.Add("Не равно");
+                    conditions.Add("Содержит");
+                    conditions.Add("Начинается с");
+                    conditions.Add("Больше");
+                    conditions.Add("Меньше");
+                    ComboBox condition1 = new ComboBox();
+                    condition1.Height = 20;
+                    condition1.Width = 100;
+                    condition1.HorizontalAlignment = HorizontalAlignment.Left;
+                    condition1.VerticalAlignment = VerticalAlignment.Top;
+                    condition1.Name = "condition1";
+                    condition1.Margin = new Thickness(240, marginVerticalConditions, 0, 0);
+                    condition1.ItemsSource = conditions;
+                    condition1.SelectedIndex = 0;
+                    conditionElements.Add(indexOfCondition++, condition1);
+                    grid.Children.Add(condition1);
+                    controls.Add(condition1);
 
-                indexOfCondition += 6;
-                marginVerticalConditions += 50;
+                    TextBox value = new TextBox();
+                    value.Height = 20;
+                    value.Width = 150;
+                    value.HorizontalAlignment = HorizontalAlignment.Left;
+                    value.VerticalAlignment = VerticalAlignment.Top;
+                    value.Name = "Value";
+                    value.Margin = new Thickness(360, marginVerticalConditions, 0, 0);
+                    conditionElements.Add(indexOfCondition++, value);
+                    grid.Children.Add(value);
+                    controls.Add(value);
+
+                    Button close = new Button();
+                    close.Height = 20;
+                    close.Width = 30;
+                    close.HorizontalAlignment = HorizontalAlignment.Left;
+                    close.VerticalAlignment = VerticalAlignment.Top;
+                    close.Background = Brushes.AliceBlue;
+                    close.Content = "X";
+                    close.Name = "close";
+                    close.Foreground = Brushes.Gray;
+                    close.Margin = new Thickness(515, marginVerticalConditions, 0, 0);
+                    close.Click += Close_Click;
+                    conditionElements.Add(indexOfCondition++, close);
+                    grid.Children.Add(close);
+                    controls.Add(close);
+
+                    if (marginVerticalConditions > 20)
+                    {
+                        ComboBox souz = new ComboBox();
+                        souz.Height = 20;
+                        souz.Width = 60;
+                        souz.HorizontalAlignment = HorizontalAlignment.Left;
+                        souz.VerticalAlignment = VerticalAlignment.Top;
+                        souz.Background = Brushes.AliceBlue;
+                        souz.Name = "souz";
+                        souz.ItemsSource = new string[] { "И", "ИЛИ" };
+                        souz.Margin = new Thickness(20, marginVerticalConditions - 25, 0, 0);
+                        conditionElements.Add(indexOfCondition++, souz);
+                        grid.Children.Add(souz);
+                        controls.Add(souz);
+                        indexOfCondition--;
+                    }
+
+                    if (controls.Count > 19)
+                    {
+                        imageGood.Visibility = Visibility.Hidden;
+                        imageBad.Visibility = Visibility.Visible;
+                    }
+                    else
+                    {
+                        imageGood.Visibility = Visibility.Visible;
+                        imageBad.Visibility = Visibility.Hidden;
+                    }
+
+                    indexOfCondition += 6;
+                    marginVerticalConditions += 50;
+                }
+                
+                if(controls.Count >= 34)
+                {
+                    addRule.IsEnabled = false;
+                }
             }
 
 
@@ -232,6 +240,7 @@ namespace Wpf
             {
                 int key = -1;
                 double topMargin = 1000;
+                addRule.IsEnabled = true;
 
                 foreach (var condition in conditionElements)
                 {
@@ -393,6 +402,9 @@ namespace Wpf
                                 window.Title = "Ошибка";
                                 window.Width = 400;
                                 window.Height = 150;
+                                window.HorizontalAlignment = HorizontalAlignment.Center;
+                                window.VerticalAlignment = VerticalAlignment.Center;
+                                window.Margin = new Thickness(0,0,0,0);
                                 window.Content = "Ошибка: Не заполнены поля условий в конструкторе правил";
                                 window.Activate();
                                 window.Topmost = true;
@@ -414,6 +426,9 @@ namespace Wpf
                                 window.Title = "Ошибка";
                                 window.Width = 400;
                                 window.Height = 150;
+                                window.HorizontalAlignment = HorizontalAlignment.Center;
+                                window.VerticalAlignment = VerticalAlignment.Center;
+                                window.Margin = new Thickness(0,0,0,0);
                                 window.Content = "Ошибка: Не заполнены поля условий в конструкторе правил";
                                 window.Activate();
                                 window.Topmost = true;
@@ -443,6 +458,9 @@ namespace Wpf
                             window.Title = "Ошибка";
                             window.Width = 400;
                             window.Height = 150;
+                            window.HorizontalAlignment = HorizontalAlignment.Center;
+                            window.VerticalAlignment = VerticalAlignment.Center;
+                            window.Margin = new Thickness(0,0,0,0);
                             window.Content = "Ошибка: Не заполнены поля условий в конструкторе правил";
                             window.Activate();
                             window.Topmost = true;
