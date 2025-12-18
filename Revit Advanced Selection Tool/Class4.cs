@@ -468,13 +468,11 @@ public static class RevitNot
         // Получаем все элементы в выбранных категориях + те, что прошли фильтр
         var passedIds = RevitRuleFilter.GetFilteredElementIds(uidoc, out List<Element> allElementsInCategories);
 
-        // Находим ID тех, кто НЕ прошёл
         var notPassedIds = allElementsInCategories
             .Where(e => !passedIds.Contains(e.Id))
             .Select(e => e.Id)
             .ToList();
 
-        // Выделяем их
         uidoc.Selection.SetElementIds(notPassedIds);
     }
 }
