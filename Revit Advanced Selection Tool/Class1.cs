@@ -32,17 +32,6 @@ namespace Troyan
         }
         public void lol(object sender, EventArgs e)
         {
-            //lock (_locker)
-            //{
-            //    //while (true)
-            //{
-            //if (Troyanka.Test)
-            //{
-                //while (!Wpf.MainWindow.proverka)
-                //{
-                //    Thread.Sleep(100);
-                //}
-
                 var commonParams = ParameterIntersectionHelper.GetCommonParameters(_doc);
 
                 _mainWindow.exitParameters.Clear();
@@ -55,20 +44,14 @@ namespace Troyan
                         _mainWindow.storageTypesOfParameters.Add(p.StorageType.ToString());
                     }
                 }
-
-
-                //Wpf.MainWindow.proverka = false;
-            
-            //        }
-            //        else break;
-            //    }
-            //    Wpf.MainWindow.proverka = false;
-            //    Thread.CurrentThread.Abort();
-            //}
         }
         public void slol(object sender, EventArgs e) 
         {
             RevitRuleFilter.ApplyFilterAndSelect(_docs);
+        }
+        public void NotRevit(object sender, EventArgs e) 
+        {
+            RevitNot.GOG();
         }
     }
 
@@ -92,8 +75,6 @@ namespace Troyan
         public List<CategoryInfo> Categories { get; set; }
     }
    
-
-
 
 
     [Transaction(TransactionMode.ReadOnly)]
@@ -121,35 +102,8 @@ namespace Troyan
             ll ll = new ll(doc, mainWindow, uiDoc);
             mainWindow.@event += ll.lol;
             mainWindow.SearchingEvent += ll.slol;
-            
+            mainWindow.invertEvent += ll.NotRevit;
             mainWindow.Show();
-            // ThreadStart threadStart = new ThreadStart(ll.lol);
-            //Thread threadStop = new Thread(ll.lol);
-            //threadStop.IsBackground = false;
-            //threadStop.Start();
-            //mainWindow.Closing += MainWindow_Closing;
-
-            // var commonParams = ParameterIntersectionHelper.GetCommonParameters(doc);
-            //  2. ТОЛЬКО ТЕПЕРЬ проверяем флаг
-            //if (Wpf.MainWindow.proverka == true)
-            //{
-            //    //  3. Запускаем анализ
-
-            //    //  4. Показываем результат
-            //    if (commonParams.Any())
-            //    {
-            //        string text = string.Join("\n",
-            //            commonParams.Select(p => $"{p.Name} → {p.StorageType}"));
-            //        TaskDialog.Show("Общие параметры",
-            //            $"Найдено: {commonParams.Count}\n\n{text}");
-
-            //    }
-            //    else
-            //    {
-            //        TaskDialog.Show("Результат", "Общих параметров не найдено.");
-            //    }
-            //}
-
             return Result.Succeeded;
             
         }
@@ -196,19 +150,10 @@ namespace Troyan
 
         private void SendToWpfApp(List<CategoryInfo> categories, List<string> categoryNames)
         {
-            // categories — полные данные
-            // categoryNames — только имена: ["Стены", "Окна", "Воздуховоды",]
-
-            // Пример: вывести первые 5 имён
-            // var preview = string.Join(", ", categoryNames.Take(5));
-            // TaskDialog.Show("Имена", preview);
 
             SaveToJsonFile(categories);
 
-            // Опционально: сохранить только имена в отдельный файл
-            // SaveNamesToFile(categoryNames);
         }
-
         private void SaveToJsonFile(List<CategoryInfo> categories)
         {
             var message = new RevitDataMessage { Categories = categories };
