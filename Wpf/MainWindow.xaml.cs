@@ -126,6 +126,7 @@ namespace Wpf
 
             private void Button_Click_3(object sender, RoutedEventArgs e)
             {
+                button_invert.IsEnabled = false;
                 strings.Clear();
                 selectCategories.Clear();
                 exitSelect.Clear();
@@ -138,7 +139,8 @@ namespace Wpf
             }
 
             private void Button_Click_5(object sender, RoutedEventArgs e)
-            {
+            {   
+                button_invert.IsEnabled = false;
                 if (controls.Count < 34)
                 {
                     ComboBox parametr = new ComboBox();
@@ -413,6 +415,7 @@ namespace Wpf
                                         window.Activate();
                                         window.Topmost = true;
                                         window.ShowDialog();
+                                        breaking = true;
                                         break;
                                     }
 
@@ -437,6 +440,7 @@ namespace Wpf
                                         window.Activate();
                                         window.Topmost = true;
                                         window.ShowDialog();
+                                        breaking = true;
                                         break;
                                     }
                                     controls[i].Background = Brushes.White;
@@ -469,6 +473,7 @@ namespace Wpf
                                     window.Activate();
                                     window.Topmost = true;
                                     window.ShowDialog();
+                                    breaking = true;
                                     break;
                                 }
                                 unions[x] = ((Selector)controls[i]).SelectedValue.ToString();
