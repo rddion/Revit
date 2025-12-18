@@ -2,9 +2,8 @@
 using Autodesk.Revit.UI;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
+using System.Globalization;
 using System.Linq;
-using Wpf;
 
 public static class RevitRuleFilter
 {
@@ -17,131 +16,273 @@ public static class RevitRuleFilter
         GreaterThan,
         LessThan
     }
-
-    public static void ApplyFilterAndSelect(
-        UIDocument uidoc,
-        string[] parameterNames,
-        RuleOperator[] operators,
-        string[] values,
-        bool useAnd)
+    private static BuiltInCategory? FindBuiltInCategoryByName(Document doc, string categoryName)
     {
+        if (string.IsNullOrWhiteSpace(categoryName) || doc == null)
+            return null;
+
+        // Проходим по всем категориям документа
+        foreach (Category cat in doc.Settings.Categories)
+        {
+            if (cat != null &&
+                cat.Name.Equals(categoryName, StringComparison.OrdinalIgnoreCase))
+            {
+                // BuiltInCategory имеют отрицательные IntegerValue
+                if (cat.Id.IntegerValue < 0)
+                {
+                    return (BuiltInCategory)cat.Id.IntegerValue;
+                }
+            }
+        }
+        return null;
+    }
+    public static void ApplyFilterAndSelect(UIDocument uidoc)
+    {
+        for (int i = 0; i < Wpf.MainWindow.uslovia.GetLength(0); i++)
+        {
+            for (int r = 0; r < Wpf.MainWindow.uslovia.GetLength(1); r++)
+            {
+                switch (Wpf.MainWindow.uslovia[i, r])
+                {
+                    case "Равно":
+                        Wpf.MainWindow.uslovia[i, r] = "Equals";
+                        break;
+                    case "Не равно":
+                        Wpf.MainWindow.uslovia[i, r] = "NotEquals";
+                        break;
+                    case "Содержит":
+                        Wpf.MainWindow.uslovia[i, r] = "Contains";
+                        break;
+                    case "Начинается с":
+                        Wpf.MainWindow.uslovia[i, r] = "StartsWith";
+                        break;
+                    case "Больше":
+                        Wpf.MainWindow.uslovia[i, r] = "GreaterThan";
+                        break;
+                    case "Меньше":
+                        Wpf.MainWindow.uslovia[i, r] = "LessThan";
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
         if (uidoc == null) throw new ArgumentNullException(nameof(uidoc));
-        if (parameterNames == null || operators == null || values == null)
-            throw new ArgumentNullException();
 
-        if (!(parameterNames.Length == operators.Length && operators.Length == values.Length))
-            throw new ArgumentException("Длины массивов не совпадают.");
-
-        if (parameterNames.Length == 0)
+        int conditionCount = Wpf.MainWindow.uslovia.GetLength(0);
+        if (conditionCount == 0)
         {
             uidoc.Selection.SetElementIds(new List<ElementId>());
             return;
         }
 
-        Document doc = uidoc.Document;
-        var collector = new FilteredElementCollector(doc).WhereElementIsNotElementType();
-        var allElements = new List<Element>();
+        // Извлекаем данные из uslovia
+        string[] paramNames = new string[conditionCount];
+        RuleOperator[] operators = new RuleOperator[conditionCount];
+        string[] values = new string[conditionCount];
 
-        foreach (Element e in collector)
+        for (int i = 0; i < conditionCount; i++)
         {
-            if (e?.Category != null)
+            paramNames[i] = Wpf.MainWindow.uslovia[i, 0]?.Trim() ?? "";
+            string opStr = Wpf.MainWindow.uslovia[i, 1]?.Trim() ?? "Equals";
+            values[i] = Wpf.MainWindow.uslovia[i, 2] ?? "";
+
+            if (!Enum.TryParse(opStr, true, out RuleOperator op))
             {
-                allElements.Add(e);
+                op = RuleOperator.Equals;
+            }
+            operators[i] = op;
+        }
+
+        // Разбиваем условия на группы по связке "ИЛИ"
+        var groups = new List<List<(string paramName, RuleOperator op, string value)>>();
+
+        var currentGroup = new List<(string, RuleOperator, string)>();
+        groups.Add(currentGroup);
+
+        int maxUnions = Math.Min(Wpf.MainWindow.unions?.Length ?? 0, conditionCount - 1);
+        for (int i = 0; i < conditionCount; i++)
+        {
+            currentGroup.Add((paramNames[i], operators[i], values[i]));
+
+            if (i < maxUnions && string.Equals(Wpf.MainWindow.unions[i]?.Trim(), "ИЛИ", StringComparison.OrdinalIgnoreCase))
+            {
+                currentGroup = new List<(string, RuleOperator, string)>();
+                groups.Add(currentGroup);
             }
         }
 
-        List<Element> matchingElements;
+        // Собираем все элементы
+        string categoryName = Wpf.MainWindow.exitSelect?.FirstOrDefault();
 
-        if (useAnd)
+        Document doc = uidoc.Document;
+        List<Element> allElements;
+
+        if (!string.IsNullOrEmpty(categoryName))
         {
-            matchingElements = allElements
-                .Where(e => RuleMatchesAll(e, parameterNames, operators, values))
-                .ToList();
+            var bic = FindBuiltInCategoryByName(doc, categoryName);
+            if (bic.HasValue)
+            {
+                allElements = new FilteredElementCollector(doc)
+                    .OfCategory(bic.Value)
+                    .WhereElementIsNotElementType()
+                    .ToList();
+            }
+            else
+            {
+                TaskDialog.Show("Ошибка", $"Категория '{categoryName}' не найдена в проекте.");
+                uidoc.Selection.SetElementIds(new List<ElementId>());
+                return;
+            }
         }
         else
         {
-            matchingElements = allElements
-                .Where(e => RuleMatchesAny(e, parameterNames, operators, values))
+            // Если список пуст или null — фильтруем все элементы
+            allElements = new FilteredElementCollector(doc)
+                .WhereElementIsNotElementType()
+                .Where(e => e?.Category != null)
                 .ToList();
         }
 
-        uidoc.Selection.SetElementIds(matchingElements.Select(e => e.Id).ToList());
-    }
+        // Фильтруем по группам: (группа1) OR (группа2) ...
+        var resultElements = new HashSet<ElementId>();
 
-    // === ВСЕ ВСПОМОГАТЕЛЬНЫЕ МЕТОДЫ ДОЛЖНЫ БЫТЬ ЗДЕСЬ ===
-
-    private static bool RuleMatchesAll(
-        Element element,
-        string[] paramNames,
-        RuleOperator[] ops,
-        string[] vals)
-    {
-        for (int i = 0; i < paramNames.Length; i++)
+        foreach (var group in groups)
         {
-            if (!MatchesRule(element, paramNames[i], ops[i], vals[i]))
-                return false;
+            var matchedInGroup = allElements.Where(el =>
+            {
+                foreach (var (paramName, op, value) in group)
+                {
+                    if (!MatchesRule(el, paramName, op, value, doc))
+                        return false; // Не прошёл хотя бы одно условие в группе
+                }
+                return true; // Прошёл все условия в группе
+            });
+
+            foreach (var el in matchedInGroup)
+            {
+                resultElements.Add(el.Id);
+            }
         }
-        return true;
+
+        // Выделяем результат
+        uidoc.Selection.SetElementIds(resultElements.ToList());
     }
 
-    private static bool RuleMatchesAny(
-        Element element,
-        string[] paramNames,
-        RuleOperator[] ops,
-        string[] vals)
-    {
-        for (int i = 0; i < paramNames.Length; i++)
-        {
-            if (MatchesRule(element, paramNames[i], ops[i], vals[i]))
-                return true;
-        }
-        return false;
-    }
-
-    private static bool MatchesRule(Element element, string paramName, RuleOperator op, string userValue)
+    private static bool MatchesRule(Element element, string paramName, RuleOperator op, string userValue, Document doc)
     {
         Parameter param = element.LookupParameter(paramName);
         if (param == null) return false;
 
-        object actual = GetParameterValue(param);
-        object expected = ParseToType(actual, userValue);
+        object actual = GetParameterValue(param, doc); // без округления
+        object expected = ParseToType(actual, userValue, param, doc);
 
         if (expected == null) expected = userValue;
 
-        return Compare(actual, expected, op);
-    }
+        // Определить количество знаков после запятой в expected, если это число
+        int decimalPlaces = CountDecimalPlaces(expected);
 
-    private static object GetParameterValue(Parameter param)
+        // Если actual — число и decimalPlaces >= 0, округлить actual
+        if (decimalPlaces >= 0 && IsNumeric(actual))
+        {
+            double actualAsDouble = Convert.ToDouble(actual);
+            actual = Math.Round(actualAsDouble, decimalPlaces);
+        }
+
+        return Compare(actual, expected, op, doc);
+    }
+    private static int CountDecimalPlaces(object value)
+    {
+        if (value is string str)
+        {
+            // Заменяем запятую на точку, чтобы парсить как число
+            str = str.Replace(',', '.');
+            if (double.TryParse(str, NumberStyles.Float, CultureInfo.InvariantCulture, out _))
+            {
+                int index = str.IndexOf('.');
+                if (index >= 0)
+                {
+                    return str.Length - index - 1;
+                }
+            }
+            return -1; // не число или нет дробной части
+        }
+
+        if (IsNumeric(value))
+        {
+            string stra = Convert.ToDouble(value).ToString(CultureInfo.InvariantCulture);
+            int index = stra.IndexOf('.');
+            if (index >= 0)
+            {
+                return stra.Length - index - 1;
+            }
+        }
+
+        return -1; // не число
+    }
+    private static object GetParameterValue(Parameter param, Document doc)
     {
         switch (param.StorageType)
         {
-            case StorageType.String: return param.AsString();
-            case StorageType.Integer: return param.AsInteger();
-            case StorageType.Double: return param.AsDouble();
-            case StorageType.ElementId: return param.AsElementId();
-            default: return param.AsValueString();
+            case StorageType.String:
+                return param.AsString();
+            case StorageType.Integer:
+                return param.AsInteger();
+            case StorageType.Double:
+                var value = param.AsDouble();
+                var displayUnit = param.GetUnitTypeId();
+                // Преобразуем значение из внутренних единиц (футы) в отображаемые
+                var convertedValue = UnitUtils.ConvertFromInternalUnits(value, displayUnit);
+                // Округляем до 3 знаков после запятой, если это число
+                if (convertedValue % 1 != 0) // проверка, что не целое число
+                {
+                    return Math.Round(convertedValue, 3);
+                }
+                return convertedValue;
+            case StorageType.ElementId:
+                return param.AsElementId();
+            default:
+                return param.AsValueString();
         }
     }
 
-    private static object ParseToType(object sampleValue, string input)
+    private static object ParseToType(object sampleValue, string input, Parameter param, Document doc)
     {
+        if (sampleValue == null || input == null) return input;
+
         if (sampleValue is string) return input;
+
+        // Заменяем запятую на точку
+        input = input.Replace(',', '.');
 
         if (sampleValue is int || sampleValue is long)
         {
-            if (int.TryParse(input, out int i)) return i;
+            if (long.TryParse(input, out long l)) return l;
         }
 
         if (sampleValue is double || sampleValue is float)
         {
-            if (double.TryParse(input, out double d)) return d;
+            if (double.TryParse(input, NumberStyles.Float, CultureInfo.InvariantCulture, out double d))
+            {
+                // Если параметр — длина, то d — уже в тех единицах, в которых показывается пользователю
+                // Т.е. если Revit показывает мм, а юзер ввёл 2710.111, то всё ок
+                return d;
+            }
         }
 
-        return null;
+        if (sampleValue is ElementId)
+        {
+            return input;
+        }
+
+        return input; // fallback: строка
     }
 
-    private static bool Compare(object actual, object expected, RuleOperator op)
+    private static bool Compare(object actual, object expected, RuleOperator op, Document doc)
     {
+        if (actual == null || expected == null) return false;
+
+        // === Сравнение строк ===
         if (actual is string aStr && expected is string eStr)
         {
             switch (op)
@@ -154,6 +295,7 @@ public static class RevitRuleFilter
             }
         }
 
+        // === Сравнение чисел ===
         if (IsNumeric(actual) && IsNumeric(expected))
         {
             double a = Convert.ToDouble(actual);
@@ -170,10 +312,39 @@ public static class RevitRuleFilter
             }
         }
 
+        // === Сравнение ElementId с именем элемента (строкой) ===
+        if (actual is ElementId actualId && expected is string expectedStr)
+        {
+            if (actualId == ElementId.InvalidElementId) return false;
+
+            Element referencedElement = doc.GetElement(actualId);
+            string elementName = referencedElement?.Name ?? "";
+
+            switch (op)
+            {
+                case RuleOperator.Equals: return elementName.Equals(expectedStr, StringComparison.OrdinalIgnoreCase);
+                case RuleOperator.NotEquals: return !elementName.Equals(expectedStr, StringComparison.OrdinalIgnoreCase);
+                case RuleOperator.Contains: return elementName.IndexOf(expectedStr, StringComparison.OrdinalIgnoreCase) >= 0;
+                case RuleOperator.StartsWith: return elementName.StartsWith(expectedStr, StringComparison.OrdinalIgnoreCase);
+                default: return false;
+            }
+        }
+
+        // === Сравнение Integer как специальных значений (Yes/No) ===
+        if (actual is int actualInt && expected is string expectedStr2)
+        {
+            if (expectedStr2.Equals("Да", StringComparison.OrdinalIgnoreCase) || expectedStr2.Equals("Yes", StringComparison.OrdinalIgnoreCase))
+            {
+                return actualInt == 1;
+            }
+            else if (expectedStr2.Equals("Нет", StringComparison.OrdinalIgnoreCase) || expectedStr2.Equals("No", StringComparison.OrdinalIgnoreCase))
+            {
+                return actualInt == 0;
+            }
+        }
+
         return false;
     }
-
-    // 🔸 Вот он — метод IsNumeric! Он ОБЯЗАН быть в классе
     private static bool IsNumeric(object obj)
     {
         return obj is sbyte || obj is byte || obj is short || obj is ushort ||

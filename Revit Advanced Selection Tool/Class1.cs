@@ -19,11 +19,13 @@ namespace Troyan
    public class ll
     {
         public Document _doc;
+        public UIDocument _docs;
         private readonly SynchronizationContext _uiContext;
         private readonly Wpf.MainWindow _mainWindow;
         private static object _locker = new object();
-        public ll(Document doc, Wpf.MainWindow mainWindow)
+        public ll(Document doc, Wpf.MainWindow mainWindow, UIDocument docs)
         {
+            _docs = docs;
             _doc = doc;
             _uiContext = SynchronizationContext.Current;
             _mainWindow = mainWindow;
@@ -49,10 +51,11 @@ namespace Troyan
                 {
                     foreach (var p in commonParams)
                     {
-                        _mainWindow.exitParameters.Add($"{p.Name} → {p.StorageType}");
+                        _mainWindow.exitParameters.Add($"{p.Name}");
                         _mainWindow.storageTypesOfParameters.Add(p.StorageType.ToString());
                     }
                 }
+
 
                 //Wpf.MainWindow.proverka = false;
             
@@ -62,6 +65,10 @@ namespace Troyan
             //    Wpf.MainWindow.proverka = false;
             //    Thread.CurrentThread.Abort();
             //}
+        }
+        public void slol(object sender, EventArgs e) 
+        {
+            RevitRuleFilter.ApplyFilterAndSelect(_docs);
         }
     }
 
@@ -100,6 +107,7 @@ namespace Troyan
             ElementSet elements)
         {
             var doc = commandData.Application.ActiveUIDocument.Document;
+            var uiDoc = commandData.Application.ActiveUIDocument;
             // Получаем отфильтрованные категории
             var categories = GetCategories(doc);
             test = true;
@@ -110,8 +118,10 @@ namespace Troyan
             SendToWpfApp(categories, categoryNames);
             Wpf.MainWindow mainWindow = new Wpf.MainWindow(categoryNames);
    
-            ll ll = new ll(doc, mainWindow);
+            ll ll = new ll(doc, mainWindow, uiDoc);
             mainWindow.@event += ll.lol;
+            mainWindow.SearchingEvent += ll.slol;
+            
             mainWindow.Show();
             // ThreadStart threadStart = new ThreadStart(ll.lol);
             //Thread threadStop = new Thread(ll.lol);

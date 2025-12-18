@@ -17,10 +17,10 @@ namespace Troyan
         {
             string assemblyLocation = Assembly.GetExecutingAssembly().Location,
                 icons = Path.GetDirectoryName(assemblyLocation) + @"\icons\",
-                tabName = "Тайна Revit api";
+                tabName = "Плагин P.P.";
             application.CreateRibbonTab(tabName);
-            RibbonPanel panell = application.CreateRibbonPanel(tabName, "КВН");
-            PushButtonData buttomData = new PushButtonData(nameof(Troyanka), "Галустян", assemblyLocation, typeof(Troyanka).FullName)
+            RibbonPanel panell = application.CreateRibbonPanel(tabName, "Список");
+            PushButtonData buttomData = new PushButtonData(nameof(Troyanka), "Запуск", assemblyLocation, typeof(Troyanka).FullName)
             {
                 LargeImage = new BitmapImage(new Uri(icons + "Revit.png"))
             };
