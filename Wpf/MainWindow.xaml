@@ -23,8 +23,8 @@
         <Label Content="Конструктор правил" HorizontalAlignment="Left" Margin="432,14,0,0" VerticalAlignment="Top" FontSize="18" FontWeight="Medium" FontStyle="Oblique" FontFamily="ISOCPEUR"/>
         <Grid Name="grid" Margin="225,45,10,89" Background="AliceBlue" Height="370">
             <Image Source="\images\image.jpg" Visibility="Hidden"/>
-            <Image Name="imageGood" Source="\images\good.jpg" Visibility="Visible"/>
-            <Image Name="imageBad" Source="\images\bad.jpg" Visibility="Visible"/>
+            <Image Name="imageGood" Source="images/good.jpg" Visibility="Visible"/>
+            <Image Name="imageBad" Source="images/bad.jpg" Visibility="Visible"/>
 
         </Grid>
         <Button Name="addRule" Content="Добавить правило" HorizontalAlignment="Left" Margin="594,450,0,0" VerticalAlignment="Top" Height="31" Width="151" Click="Button_Click_5" FontFamily="ISOCPEUR" FontSize="16"/>
