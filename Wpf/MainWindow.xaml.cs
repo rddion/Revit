@@ -48,6 +48,8 @@ namespace Wpf
                 this.Topmost = true;
                 this.MaxHeight = 570;
                 this.MaxWidth = 800;
+                this.MinHeight = 570;
+                this.MinWidth = 800;
                 button_invert.IsEnabled = false;
                 list = categories;
                 parameters.Clear();
