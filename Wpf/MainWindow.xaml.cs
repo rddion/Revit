@@ -79,6 +79,7 @@ namespace Wpf
             
             private void Button_Click(object sender, RoutedEventArgs e)
             {
+                storageTypesOfParameters.Clear();
                 if(search.Text.Length > 0)
                 {
                     search.Text = "";
@@ -557,6 +558,7 @@ namespace Wpf
                         button_invert.IsEnabled = true;
                         SearchingEvent.Invoke(sender, e);
                     }
+                    
 
             }
 
