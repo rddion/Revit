@@ -11,6 +11,7 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Media;
 using System.Windows.Media.Converters;
 using System.Text.RegularExpressions;
+using Wpf.ViewModel;
 
 namespace Wpf
 {
@@ -40,38 +41,36 @@ namespace Wpf
             public event EventHandler @event=null; // событие для RevitApi при нажатии «Применить» для выбора категорий
             public event EventHandler SearchingEvent = null; // событие для RevitAPI при нажатии «Найти и выбрать» для нахождения элементов Revit, подходящим по правилам
             public event EventHandler invertEvent = null; // событие для RevitAPI при нажатии «Инвертировать» для инвертирования выбора
-
-            public MainWindow(List<string> categories)
+            
+            public MainWindow()
             {
                 
                 InitializeComponent();
+                ViewModel.ViewModel viewModel = new ViewModel.ViewModel();
+                DataContext = viewModel;
                 this.Topmost = true;
-                this.MaxHeight = 570;
-                this.MaxWidth = 800;
-                this.MinHeight = 570;
-                this.MinWidth = 800;
                 button_invert.IsEnabled = false;
-                list = categories;
-                parameters.Clear();
-                baseCollection.Clear();
-                strings.Clear();
-                selectCategories.Clear();
-                controls.Clear();
-                exitParameters.Clear();
-                marginVerticalConditions = 20;
-                foreach (string category in list)
-                {
+                //list = categories;
+                //parameters.Clear();
+                //baseCollection.Clear();
+                //strings.Clear();
+                //selectCategories.Clear();
+                //controls.Clear();
+                //exitParameters.Clear();
+                //marginVerticalConditions = 20;
+                //foreach (string category in list)
+                //{
                 
-                baseCollection.Add(category);
+                //baseCollection.Add(category);
                    
-                }
+                //}
 
-                foreach (string s in list)
-                {
-                    strings.Add(s);
-                }
+                //foreach (string s in list)
+                //{
+                //    strings.Add(s);
+                //}
                 
-                lView.ItemsSource = strings;
+               // lView.ItemsSource = strings;
                 imageGood.Visibility = Visibility.Visible;
                 imageBad.Visibility = Visibility.Hidden;
             }
