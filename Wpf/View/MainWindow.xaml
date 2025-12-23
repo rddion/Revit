@@ -5,17 +5,17 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Wpf"
         mc:Ignorable="d"
-           Title="Revit Advanced Selection Tool" Height="570" Width="800"  HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,0">
+           Title="Revit Advanced Selection Tool" Height="570" Width="800"  HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,0" ResizeMode="NoResize">
     
     <Grid>
-        <ListView  Name="lView" Height="280" Width="200" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,40,0,0" FontSize="16" Background="AliceBlue" SelectionChanged="lView_SelectionChanged" FontFamily="ISOCPEUR">
+        <ListView ItemsSource="{Binding strings}" Name="lView" Height="280" Width="200" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,40,0,0" FontSize="16" Background="AliceBlue" SelectionChanged="lView_SelectionChanged" FontFamily="ISOCPEUR">
             <ListView.View>
                 <GridView>
                     <GridViewColumn Width="500"/>
                 </GridView>
             </ListView.View>
         </ListView>
-        <Button Name="apply" ToolTip="Начать поиск по выбранным категориям" Content="Применить" HorizontalAlignment="Left" Margin="35,350,0,0" VerticalAlignment="Top" Height="30" Width="130" Click="Button_Click" FontSize="16" Background="AliceBlue" FontFamily="ISOCPEUR"/>
+        <Button Name="apply" Command="{Binding command}" ToolTip="Начать поиск по выбранным категориям" Content="Применить" HorizontalAlignment="Left" Margin="35,350,0,0" VerticalAlignment="Top" Height="30" Width="130" Click="Button_Click" FontSize="16" Background="AliceBlue" FontFamily="ISOCPEUR"/>
         <Button Content="Выбрать все" HorizontalAlignment="Left" Margin="35,385,0,0" VerticalAlignment="Top" Height="30" Width="130" FontSize="16" Background="AliceBlue" Click="Button_Click_1" FontFamily="ISOCPEUR"/>
         <Button Content="Снять выбор" HorizontalAlignment="Left" Margin="35,420,0,0" VerticalAlignment="Top" Height="30" Width="130" FontSize="16" Background="AliceBlue" Click="Button_Click_2" FontFamily="ISOCPEUR"/>
         <Button ToolTip="Очистить список выбранных категорий и показать первоначальный список" Content="Обновить список" HorizontalAlignment="Left" Margin="35,455,0,0" VerticalAlignment="Top" Height="30" Width="130" FontSize="16" Background="AliceBlue" Click="Button_Click_3" FontFamily="ISOCPEUR"/>
@@ -32,7 +32,7 @@
         <Button Name="button_invert" Content="Инвертировать выбор" HorizontalAlignment="Left" Margin="415,450,0,0" VerticalAlignment="Top" Width="155" Height="31" Click="Button_Click_6" FontFamily="ISOCPEUR" FontSize="16"/>
         <Label Content="Категории" Margin="60,35,600,440" FontWeight="Medium" FontSize="16" FontStyle="Italic" FontFamily="ISOCPEUR"/>
         <Label Name="selCat" Content="" HorizontalAlignment="Left" Margin="0,319,0,0" VerticalAlignment="Top" Width="200"/>
-
+        
 
 
     </Grid>
