@@ -11,6 +11,7 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Media;
 using System.Windows.Media.Converters;
 using System.Text.RegularExpressions;
+using Troyan;
 
 namespace Wpf
 {
@@ -28,18 +29,10 @@ namespace Wpf
             static int indexOfCondition = 0, marginVerticalConditions; //Индекс условия для Dictionary и переменная вертикального Margin 
             static List<Control> controls = new List<Control>(); // Коллекция элементов условий типа Conrol для возможности изменять параметры элемента, например Margin
             public static bool proverka = false; // поле для запуска класса по определению параметров
-            public static string[,] uslovia =new string[0,3]; // массив условий для параметров
-            public static string[] unions = new string[0]; // массив И/ИЛИ между условиями
             public bool invert = false; // переменная для проверки нужно ли инвертировать выделение
             public static IList selectCategories = new List<string>(); //выбранные категории
             bool test = false; // проверка для возможности снятия выбора категории вручную
             IList preSelected = new List<string>(); // коллекция выбранных категорий до использования строки поиска
-            public static List<string> exitSelect= new List<string>(); // итоговая выходная коллекция выбранных категорий для RevitAPI
-            public ObservableCollection<string> exitParameters = new ObservableCollection<string>(); // выходные параметры для RevitAPI
-            public ObservableCollection<string> storageTypesOfParameters = new ObservableCollection<string>(); // типы параметров
-            public event EventHandler @event=null; // событие для RevitApi при нажатии «Применить» для выбора категорий
-            public event EventHandler SearchingEvent = null; // событие для RevitAPI при нажатии «Найти и выбрать» для нахождения элементов Revit, подходящим по правилам
-            public event EventHandler invertEvent = null; // событие для RevitAPI при нажатии «Инвертировать» для инвертирования выбора
 
             public MainWindow(List<string> categories)
             {
@@ -57,7 +50,7 @@ namespace Wpf
                 strings.Clear();
                 selectCategories.Clear();
                 controls.Clear();
-                exitParameters.Clear();
+                SharedData.exitParameters.Clear();
                 marginVerticalConditions = 20;
                 foreach (string category in list)
                 {
@@ -79,29 +72,29 @@ namespace Wpf
             
             private void Button_Click(object sender, RoutedEventArgs e)
             {
-                storageTypesOfParameters.Clear();
+                SharedData.storageTypesOfParameters.Clear();
                 if(search.Text.Length > 0)
                 {
                     search.Text = "";
                 }
            
-                exitSelect.Clear();
+                SharedData.exitSelect.Clear();
                 foreach(string category in selectCategories)
                 {
-                    exitSelect.Add(category);
+                    SharedData.exitSelect.Add(category);
                 }                                       
                 lView.ItemsSource=selectCategories;
                 parameters.Clear();
-                exitParameters.CollectionChanged += ExitParameters_Changed;
-                @event.Invoke(sender,e);
+                SharedData.exitParameters.CollectionChanged += ExitParameters_Changed;
+                SharedData.GetParamsEvent.Raise();
             }
 
         public void ThreadMethod()
         {
-            if (exitParameters.Count > 0)
+            if (SharedData.exitParameters.Count > 0)
             {
                 parameters.Clear();
-                foreach (string parametr in exitParameters)
+                foreach (string parametr in SharedData.exitParameters)
                 {
                     parameters.Add(parametr);
                 }
@@ -132,7 +125,7 @@ namespace Wpf
                 button_invert.IsEnabled = false;
                 strings.Clear();
                 selectCategories.Clear();
-                exitSelect.Clear();
+                SharedData.exitSelect.Clear();
                 parameters.Clear();
                 foreach (string s in baseCollection)
                 {
@@ -306,7 +299,7 @@ namespace Wpf
 
             private void Button_Click_6(object sender, RoutedEventArgs e)
             {
-                invertEvent.Invoke(sender, e);
+                SharedData.InvertEvent.Raise();
             }
 
             private void Text_changed(object sender, RoutedEventArgs e)
@@ -384,8 +377,8 @@ namespace Wpf
                 TextBox currentText = new TextBox();
                 ComboBox currentParametr = new ComboBox();
                 bool breaking = false;
-                uslovia = new string[0, 3];
-                unions = new string[0];
+                SharedData.uslovia = new string[0, 3];
+                SharedData.unions = new string[0];
                 int j = 0, k = 0, x = 0;
                     for (int i = 0; i < controls.Count; i++)
                     {
@@ -393,13 +386,13 @@ namespace Wpf
 
                         if (controls[i].Name != "close" && controls[i].Name != "souz")
                         {
-                            string[,] vremUsl = uslovia;
-                            uslovia = new string[k + 1, 3];
+                            string[,] vremUsl = SharedData.uslovia;
+                            SharedData.uslovia = new string[k + 1, 3];
                             for (int q = 0; q < vremUsl.GetLength(0); q++)
                             {
                                 for (int r = 0; r < 3; r++)
                                 {
-                                    uslovia[q, r] = vremUsl[q, r];
+                                    SharedData.uslovia[q, r] = vremUsl[q, r];
                                 }
                             }
 
@@ -426,7 +419,7 @@ namespace Wpf
                                     {
                                         currentParametr = (ComboBox)controls[i];    
                                     }
-                                    uslovia[k, j] = ((Selector)controls[i]).SelectedValue.ToString();
+                                    SharedData.uslovia[k, j] = ((Selector)controls[i]).SelectedValue.ToString();
                                 }
                                 if (controls[i].Name == "Value")
                                 {
@@ -448,7 +441,7 @@ namespace Wpf
                                     }
                                     controls[i].Background = Brushes.White;
                                     currentText = ((TextBox)controls[i]);
-                                    uslovia[k, j] = ((TextBox)controls[i]).Text;
+                                    SharedData.uslovia[k, j] = ((TextBox)controls[i]).Text;
                                 }
                                 j++;
                         }
@@ -457,11 +450,11 @@ namespace Wpf
 
                             if (controls[i].Name == "souz")
                             {
-                                string[] vremUnion = unions;
-                                unions = new string[x + 1];
+                                string[] vremUnion = SharedData.unions;
+                                SharedData.unions = new string[x + 1];
                                 for (int q = 0; q < vremUnion.Length; q++)
                                 {
-                                    unions[q] = vremUnion[q];
+                                    SharedData.unions[q] = vremUnion[q];
                                 }
                                 if (((Selector)controls[i]).SelectedItem == null)
                                 {
@@ -479,7 +472,7 @@ namespace Wpf
                                     breaking = true;
                                     break;
                                 }
-                                unions[x] = ((Selector)controls[i]).SelectedValue.ToString();
+                                SharedData.unions[x] = ((Selector)controls[i]).SelectedValue.ToString();
                                 x++;
                             }
 
@@ -499,9 +492,9 @@ namespace Wpf
                                     catch { }
                                 }
 
-                                for (int y = 0; y < exitParameters.Count; y++)
+                                for (int y = 0; y < SharedData.exitParameters.Count; y++)
                                 {
-                                    if (exitParameters[y] == currentParametr.SelectedValue.ToString())
+                                    if (SharedData.exitParameters[y] == currentParametr.SelectedValue.ToString())
                                     {
                                         actualIndex = y;
                                         continue;
@@ -526,7 +519,7 @@ namespace Wpf
                                 }
 
 
-                                if (storageTypesOfParameters[actualIndex] == "Integer" && (storageType=="Double" || storageType=="String"))
+                                if (SharedData.storageTypesOfParameters[actualIndex] == "Integer" && (storageType=="Double" || storageType=="String"))
                                 {
                                     BrushValueSerializer brushValueSerializer = new BrushValueSerializer();
                                     currentText.Background = (Brush)brushValueSerializer.ConvertFromString("#FFF18B8B", null);
@@ -536,7 +529,7 @@ namespace Wpf
                                     break;
                                 }
 
-                                if (storageTypesOfParameters[actualIndex] == "Double" && storageType=="String")
+                                if (SharedData.storageTypesOfParameters[actualIndex] == "Double" && storageType=="String")
                                 {
                                     BrushValueSerializer brushValueSerializer = new BrushValueSerializer();
                                     currentText.Background = (Brush)brushValueSerializer.ConvertFromString("#FFF18B8B", null);
@@ -556,7 +549,7 @@ namespace Wpf
                     if (!breaking)
                     {
                         button_invert.IsEnabled = true;
-                        SearchingEvent.Invoke(sender, e);
+                        SharedData.ApplyFilterEvent.Raise();
                     }
                     
 

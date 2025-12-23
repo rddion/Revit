@@ -1,4 +1,4 @@
-п»їusing Autodesk.Revit.Attributes;
+using Autodesk.Revit.Attributes;
 using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
 using System;
@@ -6,11 +6,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
-
+using Troyan;
 
 namespace YourRevitPluginNamespace
 {
-    // Р’СЃРїРѕРјРѕРіР°С‚РµР»СЊРЅС‹Р№ РєР»Р°СЃСЃ РґР»СЏ С…СЂР°РЅРµРЅРёСЏ РїР°СЂР°РјРµС‚СЂР° (РёРјСЏ + С‚РёРї)
+    // Вспомогательный класс для хранения параметра (имя + тип)
     public class ParameterInfo : IEquatable<ParameterInfo>
     {
         public string Name { get; set; }
@@ -33,21 +33,21 @@ namespace YourRevitPluginNamespace
         }
     }
 
-    // РљР»Р°СЃСЃ СЃ РІС‹Р±СЂР°РЅРЅС‹РјРё РёРјРµРЅР°РјРё РєР°С‚РµРіРѕСЂРёР№ (РІРЅРµС€РЅРёР№)
+    // Класс с выбранными именами категорий (внешний)
     public static class MainWindow
     {
-        // РџСЂРёРјРµСЂ (РЅР° РїСЂР°РєС‚РёРєРµ Р·Р°РїРѕР»РЅСЏРµС‚СЃСЏ РёР· UI)
+        // Пример (на практике заполняется из UI)
         public static List<string> strings = new List<string>();
     }
 
-    // РћСЃРЅРѕРІРЅРѕР№ РєР»Р°СЃСЃ РєРѕРјР°РЅРґС‹ РёР»Рё СѓС‚РёР»РёС‚С‹
+    // Основной класс команды или утилиты
     public class ParameterIntersectionHelper
     {
         /// <summary>
-        /// РќР°С…РѕРґРёС‚ РѕР±С‰РёРµ РїР°СЂР°РјРµС‚СЂС‹ Сѓ СЌР»РµРјРµРЅС‚РѕРІ РёР· РІС‹Р±СЂР°РЅРЅС‹С… РєР°С‚РµРіРѕСЂРёР№ (Troyan.categoryNames).
+        /// Находит общие параметры у элементов из выбранных категорий (Troyan.categoryNames).
         /// </summary>
-        /// <param name="doc">РўРµРєСѓС‰РёР№ РґРѕРєСѓРјРµРЅС‚ Revit</param>
-        /// <returns>РЎРїРёСЃРѕРє РѕР±С‰РёС… РїР°СЂР°РјРµС‚СЂРѕРІ</returns>
+        /// <param name="doc">Текущий документ Revit</param>
+        /// <returns>Список общих параметров</returns>
         /// 
         //static object obj = new object();
 
@@ -57,12 +57,12 @@ namespace YourRevitPluginNamespace
             //{
                 if (doc == null)
                     throw new ArgumentNullException(nameof(doc));
-                var result = Wpf.MainWindow.exitSelect;
+                var result = SharedData.exitSelect;
                 var selectedCategoryNames = new List<string>(result);
                 if (selectedCategoryNames == null || selectedCategoryNames.Count == 0)
                     return new List<ParameterInfo>();
 
-                // 1. РџРѕР»СѓС‡Р°РµРј РІСЃРµ РєР°С‚РµРіРѕСЂРёРё РґРѕРєСѓРјРµРЅС‚Р°
+                // 1. Получаем все категории документа
                 var allDocCategories = new List<CategoryInfo>();
                 foreach (Category cat in doc.Settings.Categories)
                 {
@@ -76,12 +76,12 @@ namespace YourRevitPluginNamespace
                     }
 
                 }
-                // 2. РЎРѕР·РґР°С‘Рј СЃР»РѕРІР°СЂСЊ РёРјСЏ -> ElementId
+                // 2. Создаём словарь имя -> ElementId
                 var nameToId = allDocCategories
-                    .GroupBy(c => c.Name) // РЅР° СЃР»СѓС‡Р°Р№ РґСѓР±Р»РёРєР°С‚РѕРІ
+                    .GroupBy(c => c.Name) // на случай дубликатов
                     .ToDictionary(g => g.Key, g => g.First().Id);
 
-                // 3. РџРѕР»СѓС‡Р°РµРј ElementId РґР»СЏ РІС‹Р±СЂР°РЅРЅС‹С… РёРјС‘РЅ
+                // 3. Получаем ElementId для выбранных имён
                 var selectedIds = new List<ElementId>();
                 foreach (var name in selectedCategoryNames)
                 {
@@ -94,7 +94,7 @@ namespace YourRevitPluginNamespace
                 if (selectedIds.Count == 0)
                     return new List<ParameterInfo>();
 
-                // 4. Р‘РµСЂС‘Рј РїРѕ РѕРґРЅРѕРјСѓ СЌР»РµРјРµРЅС‚Сѓ РёР· РєР°Р¶РґРѕР№ РєР°С‚РµРіРѕСЂРёРё
+                // 4. Берём по одному элементу из каждой категории
                 var sampleElements = new List<Element>();
                 foreach (ElementId id in selectedIds)
                 {
@@ -112,7 +112,7 @@ namespace YourRevitPluginNamespace
                 if (sampleElements.Count == 0)
                     return new List<ParameterInfo>();
 
-                // 5. РЎРѕР±РёСЂР°РµРј РїР°СЂР°РјРµС‚СЂС‹ РєР°Р¶РґРѕРіРѕ СЌР»РµРјРµРЅС‚Р°
+                // 5. Собираем параметры каждого элемента
                 var paramLists = new List<List<ParameterInfo>>();
                 foreach (Element elem in sampleElements)
                 {
@@ -131,7 +131,7 @@ namespace YourRevitPluginNamespace
                     paramLists.Add(elemParams);
                 }
 
-                // 6. РќР°С…РѕРґРёРј РїРµСЂРµСЃРµС‡РµРЅРёРµ РІСЃРµС… СЃРїРёСЃРєРѕРІ
+                // 6. Находим пересечение всех списков
                 var commonParams = new HashSet<ParameterInfo>(paramLists[0]);
                 for (int i = 1; i < paramLists.Count; i++)
                 {
@@ -144,13 +144,13 @@ namespace YourRevitPluginNamespace
         
     }
 
-    // Р’СЃРїРѕРјРѕРіР°С‚РµР»СЊРЅС‹Р№ РєР»Р°СЃСЃ РґР»СЏ С…СЂР°РЅРµРЅРёСЏ РєР°С‚РµРіРѕСЂРёРё
+    // Вспомогательный класс для хранения категории
     public class CategoryInfo
     {
         public string Name { get; set; }
         public ElementId Id { get; set; }
     }
-    // Р”Р»СЏ РєРЅРѕРїРєРё (РјРѕР¶РЅРѕ СѓРґР°Р»РёС‚СЊ)
+    // Для кнопки (можно удалить)
     [Transaction(TransactionMode.ReadOnly)]
     public class CmdFindCommonParameters : IExternalCommand
     {
@@ -165,22 +165,22 @@ namespace YourRevitPluginNamespace
                 UIDocument uidoc = uiapp.ActiveUIDocument;
                 Document doc = uidoc.Document;
 
-                // рџ”Ґ Р—Р°РїСѓСЃРєР°РµРј РІР°С€Сѓ Р»РѕРіРёРєСѓ
+                // ?? Запускаем вашу логику
                 var commonParams = ParameterIntersectionHelper.GetCommonParameters(doc);
 
-                // рџ“¤ Р’С‹РІРѕРґ СЂРµР·СѓР»СЊС‚Р°С‚Р°
+                // ?? Вывод результата
                 if (commonParams.Any())
                 {
                     string resultText = string.Join("\n",
-                        commonParams.Select(p => $"{p.Name} в†’ {p.StorageType}"));
+                        commonParams.Select(p => $"{p.Name} > {p.StorageType}"));
 
-                    TaskDialog.Show("РћР±С‰РёРµ РїР°СЂР°РјРµС‚СЂС‹",
-                        $"РќР°Р№РґРµРЅРѕ РѕР±С‰РёС… РїР°СЂР°РјРµС‚СЂРѕРІ: {commonParams.Count}\n\n{resultText}");
+                    TaskDialog.Show("Общие параметры",
+                        $"Найдено общих параметров: {commonParams.Count}\n\n{resultText}");
                 }
                 else
                 {
-                    TaskDialog.Show("РћР±С‰РёРµ РїР°СЂР°РјРµС‚СЂС‹",
-                        "РћР±С‰РёС… РїР°СЂР°РјРµС‚СЂРѕРІ Сѓ РІС‹Р±СЂР°РЅРЅС‹С… РєР°С‚РµРіРѕСЂРёР№ РЅРµ РЅР°Р№РґРµРЅРѕ.");
+                    TaskDialog.Show("Общие параметры",
+                        "Общих параметров у выбранных категорий не найдено.");
                 }
 
                 return Result.Succeeded;
@@ -188,7 +188,7 @@ namespace YourRevitPluginNamespace
             catch (Exception ex)
             {
                 message = ex.Message;
-                TaskDialog.Show("РћС€РёР±РєР°", ex.ToString());
+                TaskDialog.Show("Ошибка", ex.ToString());
                 return Result.Failed;
             }
         }

@@ -1,9 +1,10 @@
-п»їusing Autodesk.Revit.DB;
+using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using Troyan;
 
 public static class RevitRuleFilter
 {
@@ -33,29 +34,29 @@ public static class RevitRuleFilter
     }
     public static void ApplyFilterAndSelect(UIDocument uidoc)
     {
-        for (int i = 0; i < Wpf.MainWindow.uslovia.GetLength(0); i++)
+        for (int i = 0; i < SharedData.uslovia.GetLength(0); i++)
         {
-            for (int r = 0; r < Wpf.MainWindow.uslovia.GetLength(1); r++)
+            for (int r = 0; r < SharedData.uslovia.GetLength(1); r++)
             {
-                switch (Wpf.MainWindow.uslovia[i, r])
+                switch (SharedData.uslovia[i, r])
                 {
-                    case "Р Р°РІРЅРѕ":
-                        Wpf.MainWindow.uslovia[i, r] = "Equals";
+                    case "Равно":
+                        SharedData.uslovia[i, r] = "Equals";
                         break;
-                    case "РќРµ СЂР°РІРЅРѕ":
-                        Wpf.MainWindow.uslovia[i, r] = "NotEquals";
+                    case "Не равно":
+                        SharedData.uslovia[i, r] = "NotEquals";
                         break;
-                    case "РЎРѕРґРµСЂР¶РёС‚":
-                        Wpf.MainWindow.uslovia[i, r] = "Contains";
+                    case "Содержит":
+                        SharedData.uslovia[i, r] = "Contains";
                         break;
-                    case "РќР°С‡РёРЅР°РµС‚СЃСЏ СЃ":
-                        Wpf.MainWindow.uslovia[i, r] = "StartsWith";
+                    case "Начинается с":
+                        SharedData.uslovia[i, r] = "StartsWith";
                         break;
-                    case "Р‘РѕР»СЊС€Рµ":
-                        Wpf.MainWindow.uslovia[i, r] = "GreaterThan";
+                    case "Больше":
+                        SharedData.uslovia[i, r] = "GreaterThan";
                         break;
-                    case "РњРµРЅСЊС€Рµ":
-                        Wpf.MainWindow.uslovia[i, r] = "LessThan";
+                    case "Меньше":
+                        SharedData.uslovia[i, r] = "LessThan";
                         break;
                     default:
                         break;
@@ -64,23 +65,23 @@ public static class RevitRuleFilter
         }
         if (uidoc == null) throw new ArgumentNullException(nameof(uidoc));
 
-        int conditionCount = Wpf.MainWindow.uslovia.GetLength(0);
+        int conditionCount = SharedData.uslovia.GetLength(0);
         if (conditionCount == 0)
         {
             uidoc.Selection.SetElementIds(new List<ElementId>());
             return;
         }
 
-        // РР·РІР»РµРєР°РµРј РґР°РЅРЅС‹Рµ РёР· uslovia
+        // Извлекаем данные из uslovia
         string[] paramNames = new string[conditionCount];
         RuleOperator[] operators = new RuleOperator[conditionCount];
         string[] values = new string[conditionCount];
 
         for (int i = 0; i < conditionCount; i++)
         {
-            paramNames[i] = Wpf.MainWindow.uslovia[i, 0]?.Trim() ?? "";
-            string opStr = Wpf.MainWindow.uslovia[i, 1]?.Trim() ?? "Equals";
-            values[i] = Wpf.MainWindow.uslovia[i, 2] ?? "";
+            paramNames[i] = SharedData.uslovia[i, 0]?.Trim() ?? "";
+            string opStr = SharedData.uslovia[i, 1]?.Trim() ?? "Equals";
+            values[i] = SharedData.uslovia[i, 2] ?? "";
 
             if (!Enum.TryParse(opStr, true, out RuleOperator op))
             {
@@ -89,31 +90,31 @@ public static class RevitRuleFilter
             operators[i] = op;
         }
 
-        // Р Р°Р·Р±РёРІР°РµРј СѓСЃР»РѕРІРёСЏ РЅР° РіСЂСѓРїРїС‹ РїРѕ СЃРІСЏР·РєРµ "РР›Р"
+        // Разбиваем условия на группы по связке "ИЛИ"
         var groups = new List<List<(string paramName, RuleOperator op, string value)>>();
 
         var currentGroup = new List<(string, RuleOperator, string)>();
         groups.Add(currentGroup);
 
-        int maxUnions = Math.Min(Wpf.MainWindow.unions?.Length ?? 0, conditionCount - 1);
+        int maxUnions = Math.Min(SharedData.unions?.Length ?? 0, conditionCount - 1);
         for (int i = 0; i < conditionCount; i++)
         {
             currentGroup.Add((paramNames[i], operators[i], values[i]));
 
-            if (i < maxUnions && string.Equals(Wpf.MainWindow.unions[i]?.Trim(), "РР›Р", StringComparison.OrdinalIgnoreCase))
+            if (i < maxUnions && string.Equals(SharedData.unions[i]?.Trim(), "ИЛИ", StringComparison.OrdinalIgnoreCase))
             {
                 currentGroup = new List<(string, RuleOperator, string)>();
                 groups.Add(currentGroup);
             }
         }
 
-        // РЎРѕР±РёСЂР°РµРј РІСЃРµ СЌР»РµРјРµРЅС‚С‹
+        // Собираем все элементы
         Document doc = uidoc.Document;
         List<Element> allElements = new List<Element>();
 
-        var selectedCategories = Wpf.MainWindow.exitSelect;
+        var selectedCategories = SharedData.exitSelect;
 
-        // Р•СЃР»Рё СЃРїРёСЃРѕРє РєР°С‚РµРіРѕСЂРёР№ Р·Р°РґР°РЅ Рё РЅРµ РїСѓСЃС‚
+        // Если список категорий задан и не пуст
         if (selectedCategories != null && selectedCategories.Count > 0)
         {
             bool foundAtLeastOne = false;
@@ -133,26 +134,26 @@ public static class RevitRuleFilter
 
                     allElements.AddRange(elementsInCategory);
                 }
-                // РРіРЅРѕСЂРёСЂСѓРµРј РєР°С‚РµРіРѕСЂРёРё, РєРѕС‚РѕСЂС‹Рµ РЅРµ РЅР°Р№РґРµРЅС‹ (РёР»Рё РІС‹РІРѕРґРёРј РїСЂРµРґСѓРїСЂРµР¶РґРµРЅРёРµ)
+                // Игнорируем категории, которые не найдены (или выводим предупреждение)
             }
 
             if (!foundAtLeastOne)
             {
-                TaskDialog.Show("РћС€РёР±РєР°", "РќРё РѕРґРЅР° РёР· РІС‹Р±СЂР°РЅРЅС‹С… РєР°С‚РµРіРѕСЂРёР№ РЅРµ РЅР°Р№РґРµРЅР° РІ РїСЂРѕРµРєС‚Рµ.");
+                TaskDialog.Show("Ошибка", "Ни одна из выбранных категорий не найдена в проекте.");
                 uidoc.Selection.SetElementIds(new List<ElementId>());
                 return;
             }
         }
         else
         {
-            // Р•СЃР»Рё РєР°С‚РµРіРѕСЂРёРё РЅРµ РІС‹Р±СЂР°РЅС‹ вЂ” Р±РµСЂС‘Рј РІСЃРµ (РєР°Рє СЂР°РЅСЊС€Рµ)
+            // Если категории не выбраны — берём все (как раньше)
             allElements = new FilteredElementCollector(doc)
                 .WhereElementIsNotElementType()
                 .Where(e => e?.Category != null)
                 .ToList();
         }
 
-        // Р¤РёР»СЊС‚СЂСѓРµРј РїРѕ РіСЂСѓРїРїР°Рј: (РіСЂСѓРїРїР°1) OR (РіСЂСѓРїРїР°2) ...
+        // Фильтруем по группам: (группа1) OR (группа2) ...
         var resultElements = new HashSet<ElementId>();
 
         foreach (var group in groups)
@@ -162,9 +163,9 @@ public static class RevitRuleFilter
                 foreach (var (paramName, op, value) in group)
                 {
                     if (!MatchesRule(el, paramName, op, value, doc))
-                        return false; // РќРµ РїСЂРѕС€С‘Р» С…РѕС‚СЏ Р±С‹ РѕРґРЅРѕ СѓСЃР»РѕРІРёРµ РІ РіСЂСѓРїРїРµ
+                        return false; // Не прошёл хотя бы одно условие в группе
                 }
-                return true; // РџСЂРѕС€С‘Р» РІСЃРµ СѓСЃР»РѕРІРёСЏ РІ РіСЂСѓРїРїРµ
+                return true; // Прошёл все условия в группе
             });
 
             foreach (var el in matchedInGroup)
@@ -173,7 +174,7 @@ public static class RevitRuleFilter
             }
         }
 
-        // Р’С‹РґРµР»СЏРµРј СЂРµР·СѓР»СЊС‚Р°С‚
+        // Выделяем результат
         var filteredIds = GetFilteredElementIds(uidoc, out _);
         uidoc.Selection.SetElementIds(resultElements.ToList());
     }
@@ -183,60 +184,60 @@ public static class RevitRuleFilter
 
         if (uidoc == null) throw new ArgumentNullException(nameof(uidoc));
 
-        // РџСЂРµРѕР±СЂР°Р·СѓРµРј РѕРїРµСЂР°С‚РѕСЂС‹ (РєР°Рє СЂР°РЅСЊС€Рµ)
-        for (int i = 0; i < Wpf.MainWindow.uslovia.GetLength(0); i++)
+        // Преобразуем операторы (как раньше)
+        for (int i = 0; i < SharedData.uslovia.GetLength(0); i++)
         {
-            switch (Wpf.MainWindow.uslovia[i, 1]) // С‚РѕР»СЊРєРѕ РѕРїРµСЂР°С‚РѕСЂ (СЃС‚РѕР»Р±РµС† 1)
+            switch (SharedData.uslovia[i, 1]) // только оператор (столбец 1)
             {
-                case "Р Р°РІРЅРѕ": Wpf.MainWindow.uslovia[i, 1] = "Equals"; break;
-                case "РќРµ СЂР°РІРЅРѕ": Wpf.MainWindow.uslovia[i, 1] = "NotEquals"; break;
-                case "РЎРѕРґРµСЂР¶РёС‚": Wpf.MainWindow.uslovia[i, 1] = "Contains"; break;
-                case "РќР°С‡РёРЅР°РµС‚СЃСЏ СЃ": Wpf.MainWindow.uslovia[i, 1] = "StartsWith"; break;
-                case "Р‘РѕР»СЊС€Рµ": Wpf.MainWindow.uslovia[i, 1] = "GreaterThan"; break;
-                case "РњРµРЅСЊС€Рµ": Wpf.MainWindow.uslovia[i, 1] = "LessThan"; break;
+                case "Равно": SharedData.uslovia[i, 1] = "Equals"; break;
+                case "Не равно": SharedData.uslovia[i, 1] = "NotEquals"; break;
+                case "Содержит": SharedData.uslovia[i, 1] = "Contains"; break;
+                case "Начинается с": SharedData.uslovia[i, 1] = "StartsWith"; break;
+                case "Больше": SharedData.uslovia[i, 1] = "GreaterThan"; break;
+                case "Меньше": SharedData.uslovia[i, 1] = "LessThan"; break;
             }
         }
 
-        int conditionCount = Wpf.MainWindow.uslovia.GetLength(0);
+        int conditionCount = SharedData.uslovia.GetLength(0);
         if (conditionCount == 0)
         {
-            return new HashSet<ElementId>(); // РїСѓСЃС‚РѕР№ СЂРµР·СѓР»СЊС‚Р°С‚
+            return new HashSet<ElementId>(); // пустой результат
         }
 
-        // РР·РІР»РµРєР°РµРј СѓСЃР»РѕРІРёСЏ
+        // Извлекаем условия
         string[] paramNames = new string[conditionCount];
         RuleOperator[] operators = new RuleOperator[conditionCount];
         string[] values = new string[conditionCount];
 
         for (int i = 0; i < conditionCount; i++)
         {
-            paramNames[i] = Wpf.MainWindow.uslovia[i, 0]?.Trim() ?? "";
-            string opStr = Wpf.MainWindow.uslovia[i, 1]?.Trim() ?? "Equals";
-            values[i] = Wpf.MainWindow.uslovia[i, 2] ?? "";
+            paramNames[i] = SharedData.uslovia[i, 0]?.Trim() ?? "";
+            string opStr = SharedData.uslovia[i, 1]?.Trim() ?? "Equals";
+            values[i] = SharedData.uslovia[i, 2] ?? "";
 
             operators[i] = Enum.TryParse(opStr, true, out RuleOperator op) ? op : RuleOperator.Equals;
         }
 
-        // Р“СЂСѓРїРїРёСЂРѕРІРєР° РїРѕ "РР›Р"
+        // Группировка по "ИЛИ"
         var groups = new List<List<(string, RuleOperator, string)>>();
         var currentGroup = new List<(string, RuleOperator, string)>();
         groups.Add(currentGroup);
 
-        int maxUnions = Math.Min(Wpf.MainWindow.unions?.Length ?? 0, conditionCount - 1);
+        int maxUnions = Math.Min(SharedData.unions?.Length ?? 0, conditionCount - 1);
         for (int i = 0; i < conditionCount; i++)
         {
             currentGroup.Add((paramNames[i], operators[i], values[i]));
 
-            if (i < maxUnions && string.Equals(Wpf.MainWindow.unions[i]?.Trim(), "РР›Р", StringComparison.OrdinalIgnoreCase))
+            if (i < maxUnions && string.Equals(SharedData.unions[i]?.Trim(), "ИЛИ", StringComparison.OrdinalIgnoreCase))
             {
                 currentGroup = new List<(string, RuleOperator, string)>();
                 groups.Add(currentGroup);
             }
         }
 
-        // РЎР±РѕСЂ СЌР»РµРјРµРЅС‚РѕРІ РёР· РІС‹Р±СЂР°РЅРЅС‹С… РєР°С‚РµРіРѕСЂРёР№
+        // Сбор элементов из выбранных категорий
         Document doc = uidoc.Document;
-        var selectedCategories = Wpf.MainWindow.exitSelect;
+        var selectedCategories = SharedData.exitSelect;
 
         if (selectedCategories != null && selectedCategories.Count > 0)
         {
@@ -261,7 +262,7 @@ public static class RevitRuleFilter
                 .ToList();
         }
 
-        // Р¤РёР»СЊС‚СЂР°С†РёСЏ
+        // Фильтрация
         var resultIds = new HashSet<ElementId>();
         foreach (var group in groups)
         {
@@ -286,12 +287,12 @@ public static class RevitRuleFilter
         Parameter param = element.LookupParameter(paramName);
         if (param == null) return false;
 
-        object actual = GetParameterValue(param, doc); // Р±РµР· РѕРєСЂСѓРіР»РµРЅРёСЏ
+        object actual = GetParameterValue(param, doc); // без округления
         object expected = ParseToType(actual, userValue, param, doc);
 
         if (expected == null) expected = userValue;
 
-        // РћРїСЂРµРґРµР»РёС‚СЊ РєРѕР»РёС‡РµСЃС‚РІРѕ Р·РЅР°РєРѕРІ РїРѕСЃР»Рµ Р·Р°РїСЏС‚РѕР№ РІ expected, РµСЃР»Рё СЌС‚Рѕ С‡РёСЃР»Рѕ
+        // Определить количество знаков после запятой в expected, если это число
         int decimalPlaces = CountDecimalPlaces(expected);
 
 
@@ -302,7 +303,7 @@ public static class RevitRuleFilter
     {
         if (value is string str)
         {
-            // Р—Р°РјРµРЅСЏРµРј Р·Р°РїСЏС‚СѓСЋ РЅР° С‚РѕС‡РєСѓ, С‡С‚РѕР±С‹ РїР°СЂСЃРёС‚СЊ РєР°Рє С‡РёСЃР»Рѕ
+            // Заменяем запятую на точку, чтобы парсить как число
             str = str.Replace(',', '.');
             if (double.TryParse(str, NumberStyles.Float, CultureInfo.InvariantCulture, out _))
             {
@@ -312,7 +313,7 @@ public static class RevitRuleFilter
                     return str.Length - index - 1;
                 }
             }
-            return -1; // РЅРµ С‡РёСЃР»Рѕ РёР»Рё РЅРµС‚ РґСЂРѕР±РЅРѕР№ С‡Р°СЃС‚Рё
+            return -1; // не число или нет дробной части
         }
 
         if (IsNumeric(value))
@@ -325,7 +326,7 @@ public static class RevitRuleFilter
             }
         }
 
-        return -1; // РЅРµ С‡РёСЃР»Рѕ
+        return -1; // не число
     }
     private static object GetParameterValue(Parameter param, Document doc)
     {
@@ -338,10 +339,10 @@ public static class RevitRuleFilter
             case StorageType.Double:
                 var value = param.AsDouble();
                 var displayUnit = param.GetUnitTypeId();
-                // РџСЂРµРѕР±СЂР°Р·СѓРµРј Р·РЅР°С‡РµРЅРёРµ РёР· РІРЅСѓС‚СЂРµРЅРЅРёС… РµРґРёРЅРёС† (С„СѓС‚С‹) РІ РѕС‚РѕР±СЂР°Р¶Р°РµРјС‹Рµ
+                // Преобразуем значение из внутренних единиц (футы) в отображаемые
                 var convertedValue = UnitUtils.ConvertFromInternalUnits(value, displayUnit);
-                // РћРєСЂСѓРіР»СЏРµРј РґРѕ 3 Р·РЅР°РєРѕРІ РїРѕСЃР»Рµ Р·Р°РїСЏС‚РѕР№, РµСЃР»Рё СЌС‚Рѕ С‡РёСЃР»Рѕ
-                if (convertedValue % 1 != 0) // РїСЂРѕРІРµСЂРєР°, С‡С‚Рѕ РЅРµ С†РµР»РѕРµ С‡РёСЃР»Рѕ
+                // Округляем до 3 знаков после запятой, если это число
+                if (convertedValue % 1 != 0) // проверка, что не целое число
                 {
                     return Math.Round(convertedValue, 3);
                 }
@@ -359,7 +360,7 @@ public static class RevitRuleFilter
 
         if (sampleValue is string) return input;
 
-        // Р—Р°РјРµРЅСЏРµРј Р·Р°РїСЏС‚СѓСЋ РЅР° С‚РѕС‡РєСѓ
+        // Заменяем запятую на точку
         input = input.Replace(',', '.');
 
         if (sampleValue is int || sampleValue is long)
@@ -371,8 +372,8 @@ public static class RevitRuleFilter
         {
             if (double.TryParse(input, NumberStyles.Float, CultureInfo.InvariantCulture, out double d))
             {
-                // Р•СЃР»Рё РїР°СЂР°РјРµС‚СЂ вЂ” РґР»РёРЅР°, С‚Рѕ d вЂ” СѓР¶Рµ РІ С‚РµС… РµРґРёРЅРёС†Р°С…, РІ РєРѕС‚РѕСЂС‹С… РїРѕРєР°Р·С‹РІР°РµС‚СЃСЏ РїРѕР»СЊР·РѕРІР°С‚РµР»СЋ
-                // Рў.Рµ. РµСЃР»Рё Revit РїРѕРєР°Р·С‹РІР°РµС‚ РјРј, Р° СЋР·РµСЂ РІРІС‘Р» 2710.111, С‚Рѕ РІСЃС‘ РѕРє
+                // Если параметр — длина, то d — уже в тех единицах, в которых показывается пользователю
+                // Т.е. если Revit показывает мм, а юзер ввёл 2710.111, то всё ок
                 return d;
             }
         }
@@ -382,14 +383,14 @@ public static class RevitRuleFilter
             return input;
         }
 
-        return input; // fallback: СЃС‚СЂРѕРєР°
+        return input; // fallback: строка
     }
 
     private static bool Compare(object actual, object expected, RuleOperator op, Document doc)
     {
         if (actual == null || expected == null) return false;
 
-        // === РЎСЂР°РІРЅРµРЅРёРµ СЃС‚СЂРѕРє ===
+        // === Сравнение строк ===
         if (actual is string aStr && expected is string eStr)
         {
             switch (op)
@@ -402,7 +403,7 @@ public static class RevitRuleFilter
             }
         }
 
-        // === РЎСЂР°РІРЅРµРЅРёРµ С‡РёСЃРµР» ===
+        // === Сравнение чисел ===
         if (IsNumeric(actual) && IsNumeric(expected))
         {
             double a = Convert.ToDouble(actual);
@@ -419,7 +420,7 @@ public static class RevitRuleFilter
             }
         }
 
-        // === РЎСЂР°РІРЅРµРЅРёРµ ElementId СЃ РёРјРµРЅРµРј СЌР»РµРјРµРЅС‚Р° (СЃС‚СЂРѕРєРѕР№) ===
+        // === Сравнение ElementId с именем элемента (строкой) ===
         if (actual is ElementId actualId && expected is string expectedStr)
         {
             if (actualId == ElementId.InvalidElementId) return false;
@@ -437,14 +438,14 @@ public static class RevitRuleFilter
             }
         }
 
-        // === РЎСЂР°РІРЅРµРЅРёРµ Integer РєР°Рє СЃРїРµС†РёР°Р»СЊРЅС‹С… Р·РЅР°С‡РµРЅРёР№ (Yes/No) ===
+        // === Сравнение Integer как специальных значений (Yes/No) ===
         if (actual is int actualInt && expected is string expectedStr2)
         {
-            if (expectedStr2.Equals("Р”Р°", StringComparison.OrdinalIgnoreCase) || expectedStr2.Equals("Yes", StringComparison.OrdinalIgnoreCase))
+            if (expectedStr2.Equals("Да", StringComparison.OrdinalIgnoreCase) || expectedStr2.Equals("Yes", StringComparison.OrdinalIgnoreCase))
             {
                 return actualInt == 1;
             }
-            else if (expectedStr2.Equals("РќРµС‚", StringComparison.OrdinalIgnoreCase) || expectedStr2.Equals("No", StringComparison.OrdinalIgnoreCase))
+            else if (expectedStr2.Equals("Нет", StringComparison.OrdinalIgnoreCase) || expectedStr2.Equals("No", StringComparison.OrdinalIgnoreCase))
             {
                 return actualInt == 0;
             }
@@ -465,7 +466,7 @@ public static class RevitNot
     {
         if (uidoc == null) return;
 
-        // РџРѕР»СѓС‡Р°РµРј РІСЃРµ СЌР»РµРјРµРЅС‚С‹ РІ РІС‹Р±СЂР°РЅРЅС‹С… РєР°С‚РµРіРѕСЂРёСЏС… + С‚Рµ, С‡С‚Рѕ РїСЂРѕС€Р»Рё С„РёР»СЊС‚СЂ
+        // Получаем все элементы в выбранных категориях + те, что прошли фильтр
         var passedIds = RevitRuleFilter.GetFilteredElementIds(uidoc, out List<Element> allElementsInCategories);
 
         var notPassedIds = allElementsInCategories
