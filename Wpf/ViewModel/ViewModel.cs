@@ -35,7 +35,7 @@ namespace Wpf.ViewModel
         public event EventHandler SearchingEvent = null; // событие для RevitAPI при нажатии «Найти и выбрать» для нахождения элементов Revit, подходящим по правилам
         public event EventHandler invertEvent = null; // событие для RevitAPI при нажатии «Инвертировать» для инвертирования выбора
 
-        
+        public ICommand command;
 
         public ViewModel()
         {
@@ -53,7 +53,7 @@ namespace Wpf.ViewModel
                 baseCollection.Add(category);
 
             }
-
+            
             foreach (string s in list)
             {
                 strings.Add(s);
