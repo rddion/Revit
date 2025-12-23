@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.14.36327.8
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Revit Advanced Selection Tool", "Revit Advanced Selection Tool\Revit Advanced Selection Tool.csproj", "{3A930381-ED4C-444C-9CA0-251284FB88A5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Model", "Revit Advanced Selection Tool\Model.csproj", "{3A930381-ED4C-444C-9CA0-251284FB88A5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wpf", "Wpf\Wpf.csproj", "{8AF96486-4017-47FF-BC4E-CB496E654D43}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "View&ViewModel", "Wpf\View&ViewModel.csproj", "{8AF96486-4017-47FF-BC4E-CB496E654D43}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

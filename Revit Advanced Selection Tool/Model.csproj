@@ -58,12 +58,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Wpf\Wpf.csproj">
-      <Project>{8af96486-4017-47ff-bc4e-cb496e654d43}</Project>
-      <Name>Wpf</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="icons\Revit.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
