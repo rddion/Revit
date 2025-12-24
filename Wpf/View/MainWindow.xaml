@@ -15,10 +15,10 @@
                 </GridView>
             </ListView.View>
         </ListView>
-        <Button Name="apply" Command="{Binding command}" ToolTip="Начать поиск по выбранным категориям" Content="Применить" HorizontalAlignment="Left" Margin="35,350,0,0" VerticalAlignment="Top" Height="30" Width="130" Click="Button_Click" FontSize="16" Background="AliceBlue" FontFamily="ISOCPEUR"/>
-        <Button Content="Выбрать все" HorizontalAlignment="Left" Margin="35,385,0,0" VerticalAlignment="Top" Height="30" Width="130" FontSize="16" Background="AliceBlue" Click="Button_Click_1" FontFamily="ISOCPEUR"/>
-        <Button Content="Снять выбор" HorizontalAlignment="Left" Margin="35,420,0,0" VerticalAlignment="Top" Height="30" Width="130" FontSize="16" Background="AliceBlue" Click="Button_Click_2" FontFamily="ISOCPEUR"/>
-        <Button ToolTip="Очистить список выбранных категорий и показать первоначальный список" Content="Обновить список" HorizontalAlignment="Left" Margin="35,455,0,0" VerticalAlignment="Top" Height="30" Width="130" FontSize="16" Background="AliceBlue" Click="Button_Click_3" FontFamily="ISOCPEUR"/>
+        <Button Name="apply" Command="{Binding ApplyCommand}" ToolTip="Начать поиск по выбранным категориям" Content="Применить" HorizontalAlignment="Left" Margin="35,350,0,0" VerticalAlignment="Top" Height="30" Width="130" FontSize="16" Background="AliceBlue" FontFamily="ISOCPEUR"/>
+        <Button Content="Выбрать все" Command="{Binding SelectAllCommand}" HorizontalAlignment="Left" Margin="35,385,0,0" VerticalAlignment="Top" Height="30" Width="130" FontSize="16" Background="AliceBlue" FontFamily="ISOCPEUR"/>
+        <Button Content="Снять выбор" Command="{Binding ClearSelectCommand}" HorizontalAlignment="Left" Margin="35,420,0,0" VerticalAlignment="Top" Height="30" Width="130" FontSize="16" Background="AliceBlue" FontFamily="ISOCPEUR"/>
+        <Button ToolTip="Очистить список выбранных категорий и показать первоначальный список" Command="{Binding UpdateCategoryCommand}" Content="Обновить список" HorizontalAlignment="Left" Margin="35,455,0,0" VerticalAlignment="Top" Height="30" Width="130" FontSize="16" Background="AliceBlue" FontFamily="ISOCPEUR"/>
         <TextBox Name="search" HorizontalAlignment="Left" Margin="1,5,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="199" Height="30" FontSize="12" ToolTip="Поиск по категориям" TextChanged="Text_changed"/>
         <Label Content="Конструктор правил" HorizontalAlignment="Left" Margin="432,14,0,0" VerticalAlignment="Top" FontSize="18" FontWeight="Medium" FontStyle="Oblique" FontFamily="ISOCPEUR"/>
         <Grid Name="grid" Margin="225,45,10,89" Background="AliceBlue" Height="370">
