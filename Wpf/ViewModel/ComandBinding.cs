@@ -26,7 +26,7 @@ namespace Wpf.ViewModel
 
         void ICommand.Execute(object parameter)
         {
-            Method.Invoke();
+            Method?.Invoke();
         }
 
         public ComandBinding(Action action)
