@@ -40,22 +40,22 @@ public static class RevitRuleFilter
             {
                 switch (SharedData.uslovia[i, r])
                 {
-                    case "Равно":
+                    case "пїЅпїЅпїЅпїЅпїЅ":
                         SharedData.uslovia[i, r] = "Equals";
                         break;
-                    case "Не равно":
+                    case "пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ":
                         SharedData.uslovia[i, r] = "NotEquals";
                         break;
-                    case "Содержит":
+                    case "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ":
                         SharedData.uslovia[i, r] = "Contains";
                         break;
-                    case "Начинается с":
+                    case "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ":
                         SharedData.uslovia[i, r] = "StartsWith";
                         break;
-                    case "Больше":
+                    case "пїЅпїЅпїЅпїЅпїЅпїЅ":
                         SharedData.uslovia[i, r] = "GreaterThan";
                         break;
-                    case "Меньше":
+                    case "пїЅпїЅпїЅпїЅпїЅпїЅ":
                         SharedData.uslovia[i, r] = "LessThan";
                         break;
                     default:
@@ -72,7 +72,7 @@ public static class RevitRuleFilter
             return;
         }
 
-        // Извлекаем данные из uslovia
+        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ uslovia
         string[] paramNames = new string[conditionCount];
         RuleOperator[] operators = new RuleOperator[conditionCount];
         string[] values = new string[conditionCount];
@@ -90,7 +90,7 @@ public static class RevitRuleFilter
             operators[i] = op;
         }
 
-        // Разбиваем условия на группы по связке "ИЛИ"
+        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ "пїЅпїЅпїЅ"
         var groups = new List<List<(string paramName, RuleOperator op, string value)>>();
 
         var currentGroup = new List<(string, RuleOperator, string)>();
@@ -101,20 +101,20 @@ public static class RevitRuleFilter
         {
             currentGroup.Add((paramNames[i], operators[i], values[i]));
 
-            if (i < maxUnions && string.Equals(SharedData.unions[i]?.Trim(), "ИЛИ", StringComparison.OrdinalIgnoreCase))
+            if (i < maxUnions && string.Equals(SharedData.unions[i]?.Trim(), "пїЅпїЅпїЅ", StringComparison.OrdinalIgnoreCase))
             {
                 currentGroup = new List<(string, RuleOperator, string)>();
                 groups.Add(currentGroup);
             }
         }
 
-        // Собираем все элементы
+        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
         Document doc = uidoc.Document;
         List<Element> allElements = new List<Element>();
 
         var selectedCategories = SharedData.exitSelect;
 
-        // Если список категорий задан и не пуст
+        // пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅ пїЅпїЅпїЅпїЅ
         if (selectedCategories != null && selectedCategories.Count > 0)
         {
             bool foundAtLeastOne = false;
@@ -134,26 +134,26 @@ public static class RevitRuleFilter
 
                     allElements.AddRange(elementsInCategory);
                 }
-                // Игнорируем категории, которые не найдены (или выводим предупреждение)
+                // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ (пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ)
             }
 
             if (!foundAtLeastOne)
             {
-                TaskDialog.Show("Ошибка", "Ни одна из выбранных категорий не найдена в проекте.");
+                TaskDialog.Show("пїЅпїЅпїЅпїЅпїЅпїЅ", "пїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ.");
                 uidoc.Selection.SetElementIds(new List<ElementId>());
                 return;
             }
         }
         else
         {
-            // Если категории не выбраны — берём все (как раньше)
+            // пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅ (пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ)
             allElements = new FilteredElementCollector(doc)
                 .WhereElementIsNotElementType()
                 .Where(e => e?.Category != null)
                 .ToList();
         }
 
-        // Фильтруем по группам: (группа1) OR (группа2) ...
+        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ: (пїЅпїЅпїЅпїЅпїЅпїЅ1) OR (пїЅпїЅпїЅпїЅпїЅпїЅ2) ...
         var resultElements = new HashSet<ElementId>();
 
         foreach (var group in groups)
@@ -163,9 +163,9 @@ public static class RevitRuleFilter
                 foreach (var (paramName, op, value) in group)
                 {
                     if (!MatchesRule(el, paramName, op, value, doc))
-                        return false; // Не прошёл хотя бы одно условие в группе
+                        return false; // пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
                 }
-                return true; // Прошёл все условия в группе
+                return true; // пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
             });
 
             foreach (var el in matchedInGroup)
@@ -174,7 +174,7 @@ public static class RevitRuleFilter
             }
         }
 
-        // Выделяем результат
+        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
         var filteredIds = GetFilteredElementIds(uidoc, out _);
         uidoc.Selection.SetElementIds(resultElements.ToList());
     }
@@ -184,27 +184,27 @@ public static class RevitRuleFilter
 
         if (uidoc == null) throw new ArgumentNullException(nameof(uidoc));
 
-        // Преобразуем операторы (как раньше)
+        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ (пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ)
         for (int i = 0; i < SharedData.uslovia.GetLength(0); i++)
         {
-            switch (SharedData.uslovia[i, 1]) // только оператор (столбец 1)
+            switch (SharedData.uslovia[i, 1]) // пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ (пїЅпїЅпїЅпїЅпїЅпїЅпїЅ 1)
             {
-                case "Равно": SharedData.uslovia[i, 1] = "Equals"; break;
-                case "Не равно": SharedData.uslovia[i, 1] = "NotEquals"; break;
-                case "Содержит": SharedData.uslovia[i, 1] = "Contains"; break;
-                case "Начинается с": SharedData.uslovia[i, 1] = "StartsWith"; break;
-                case "Больше": SharedData.uslovia[i, 1] = "GreaterThan"; break;
-                case "Меньше": SharedData.uslovia[i, 1] = "LessThan"; break;
+                case "пїЅпїЅпїЅпїЅпїЅ": SharedData.uslovia[i, 1] = "Equals"; break;
+                case "пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ": SharedData.uslovia[i, 1] = "NotEquals"; break;
+                case "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ": SharedData.uslovia[i, 1] = "Contains"; break;
+                case "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ": SharedData.uslovia[i, 1] = "StartsWith"; break;
+                case "пїЅпїЅпїЅпїЅпїЅпїЅ": SharedData.uslovia[i, 1] = "GreaterThan"; break;
+                case "пїЅпїЅпїЅпїЅпїЅпїЅ": SharedData.uslovia[i, 1] = "LessThan"; break;
             }
         }
 
         int conditionCount = SharedData.uslovia.GetLength(0);
         if (conditionCount == 0)
         {
-            return new HashSet<ElementId>(); // пустой результат
+            return new HashSet<ElementId>(); // пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
         }
 
-        // Извлекаем условия
+        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
         string[] paramNames = new string[conditionCount];
         RuleOperator[] operators = new RuleOperator[conditionCount];
         string[] values = new string[conditionCount];
@@ -218,7 +218,7 @@ public static class RevitRuleFilter
             operators[i] = Enum.TryParse(opStr, true, out RuleOperator op) ? op : RuleOperator.Equals;
         }
 
-        // Группировка по "ИЛИ"
+        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ "пїЅпїЅпїЅ"
         var groups = new List<List<(string, RuleOperator, string)>>();
         var currentGroup = new List<(string, RuleOperator, string)>();
         groups.Add(currentGroup);
@@ -228,14 +228,14 @@ public static class RevitRuleFilter
         {
             currentGroup.Add((paramNames[i], operators[i], values[i]));
 
-            if (i < maxUnions && string.Equals(SharedData.unions[i]?.Trim(), "ИЛИ", StringComparison.OrdinalIgnoreCase))
+            if (i < maxUnions && string.Equals(SharedData.unions[i]?.Trim(), "пїЅпїЅпїЅ", StringComparison.OrdinalIgnoreCase))
             {
                 currentGroup = new List<(string, RuleOperator, string)>();
                 groups.Add(currentGroup);
             }
         }
 
-        // Сбор элементов из выбранных категорий
+        // пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
         Document doc = uidoc.Document;
         var selectedCategories = SharedData.exitSelect;
 
@@ -262,7 +262,7 @@ public static class RevitRuleFilter
                 .ToList();
         }
 
-        // Фильтрация
+        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
         var resultIds = new HashSet<ElementId>();
         foreach (var group in groups)
         {
@@ -287,12 +287,12 @@ public static class RevitRuleFilter
         Parameter param = element.LookupParameter(paramName);
         if (param == null) return false;
 
-        object actual = GetParameterValue(param, doc); // без округления
+        object actual = GetParameterValue(param, doc); // пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
         object expected = ParseToType(actual, userValue, param, doc);
 
         if (expected == null) expected = userValue;
 
-        // Определить количество знаков после запятой в expected, если это число
+        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ expected, пїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
         int decimalPlaces = CountDecimalPlaces(expected);
 
 
@@ -303,7 +303,7 @@ public static class RevitRuleFilter
     {
         if (value is string str)
         {
-            // Заменяем запятую на точку, чтобы парсить как число
+            // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
             str = str.Replace(',', '.');
             if (double.TryParse(str, NumberStyles.Float, CultureInfo.InvariantCulture, out _))
             {
@@ -313,7 +313,7 @@ public static class RevitRuleFilter
                     return str.Length - index - 1;
                 }
             }
-            return -1; // не число или нет дробной части
+            return -1; // пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
         }
 
         if (IsNumeric(value))
@@ -326,7 +326,7 @@ public static class RevitRuleFilter
             }
         }
 
-        return -1; // не число
+        return -1; // пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
     }
     private static object GetParameterValue(Parameter param, Document doc)
     {
@@ -339,10 +339,10 @@ public static class RevitRuleFilter
             case StorageType.Double:
                 var value = param.AsDouble();
                 var displayUnit = param.GetUnitTypeId();
-                // Преобразуем значение из внутренних единиц (футы) в отображаемые
+                // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ (пїЅпїЅпїЅпїЅ) пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
                 var convertedValue = UnitUtils.ConvertFromInternalUnits(value, displayUnit);
-                // Округляем до 3 знаков после запятой, если это число
-                if (convertedValue % 1 != 0) // проверка, что не целое число
+                // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ 3 пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
+                if (convertedValue % 1 != 0) // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
                 {
                     return Math.Round(convertedValue, 3);
                 }
@@ -360,7 +360,7 @@ public static class RevitRuleFilter
 
         if (sampleValue is string) return input;
 
-        // Заменяем запятую на точку
+        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
         input = input.Replace(',', '.');
 
         if (sampleValue is int || sampleValue is long)
@@ -372,8 +372,8 @@ public static class RevitRuleFilter
         {
             if (double.TryParse(input, NumberStyles.Float, CultureInfo.InvariantCulture, out double d))
             {
-                // Если параметр — длина, то d — уже в тех единицах, в которых показывается пользователю
-                // Т.е. если Revit показывает мм, а юзер ввёл 2710.111, то всё ок
+                // пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅ, пїЅпїЅ d пїЅ пїЅпїЅпїЅ пїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+                // пїЅ.пїЅ. пїЅпїЅпїЅпїЅ Revit пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ, пїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅ 2710.111, пїЅпїЅ пїЅпїЅ пїЅпїЅ
                 return d;
             }
         }
@@ -383,14 +383,14 @@ public static class RevitRuleFilter
             return input;
         }
 
-        return input; // fallback: строка
+        return input; // fallback: пїЅпїЅпїЅпїЅпїЅпїЅ
     }
 
     private static bool Compare(object actual, object expected, RuleOperator op, Document doc)
     {
         if (actual == null || expected == null) return false;
 
-        // === Сравнение строк ===
+        // === пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ ===
         if (actual is string aStr && expected is string eStr)
         {
             switch (op)
@@ -403,7 +403,7 @@ public static class RevitRuleFilter
             }
         }
 
-        // === Сравнение чисел ===
+        // === пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ ===
         if (IsNumeric(actual) && IsNumeric(expected))
         {
             double a = Convert.ToDouble(actual);
@@ -420,7 +420,7 @@ public static class RevitRuleFilter
             }
         }
 
-        // === Сравнение ElementId с именем элемента (строкой) ===
+        // === пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ ElementId пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ (пїЅпїЅпїЅпїЅпїЅпїЅпїЅ) ===
         if (actual is ElementId actualId && expected is string expectedStr)
         {
             if (actualId == ElementId.InvalidElementId) return false;
@@ -438,14 +438,14 @@ public static class RevitRuleFilter
             }
         }
 
-        // === Сравнение Integer как специальных значений (Yes/No) ===
+        // === пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ Integer пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ (Yes/No) ===
         if (actual is int actualInt && expected is string expectedStr2)
         {
-            if (expectedStr2.Equals("Да", StringComparison.OrdinalIgnoreCase) || expectedStr2.Equals("Yes", StringComparison.OrdinalIgnoreCase))
+            if (expectedStr2.Equals("пїЅпїЅ", StringComparison.OrdinalIgnoreCase) || expectedStr2.Equals("Yes", StringComparison.OrdinalIgnoreCase))
             {
                 return actualInt == 1;
             }
-            else if (expectedStr2.Equals("Нет", StringComparison.OrdinalIgnoreCase) || expectedStr2.Equals("No", StringComparison.OrdinalIgnoreCase))
+            else if (expectedStr2.Equals("пїЅпїЅпїЅ", StringComparison.OrdinalIgnoreCase) || expectedStr2.Equals("No", StringComparison.OrdinalIgnoreCase))
             {
                 return actualInt == 0;
             }
@@ -466,7 +466,7 @@ public static class RevitNot
     {
         if (uidoc == null) return;
 
-        // Получаем все элементы в выбранных категориях + те, что прошли фильтр
+        // пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ + пїЅпїЅ, пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
         var passedIds = RevitRuleFilter.GetFilteredElementIds(uidoc, out List<Element> allElementsInCategories);
 
         var notPassedIds = allElementsInCategories
