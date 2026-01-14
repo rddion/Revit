@@ -1,7 +1,8 @@
-п»їusing Autodesk.Revit.Attributes;
+using Autodesk.Revit.Attributes;
 using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Visual;
 using Autodesk.Revit.UI;
+using Autodesk.Revit.UI.Events;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -11,48 +12,61 @@ using System.Runtime.Serialization.Json;
 using System.Text;
 using System.Threading;
 using System.Windows.Documents;
-using Wpf;
+using System.Reflection;
 using YourRevitPluginNamespace;
 
 namespace Troyan
 {
-   public class ll
+    public static class SharedData
     {
-        public Document _doc;
-        public UIDocument _docs;
-        private readonly SynchronizationContext _uiContext;
-        private readonly Wpf.MainWindow _mainWindow;
-        private static object _locker = new object();
-        public ll(Document doc, Wpf.MainWindow mainWindow, UIDocument docs)
-        {
-            _docs = docs;
-            _doc = doc;
-            _uiContext = SynchronizationContext.Current;
-            _mainWindow = mainWindow;
-        }
-        public void lol(object sender, EventArgs e)
-        {
-                var commonParams = ParameterIntersectionHelper.GetCommonParameters(_doc);
+        public static System.Collections.ObjectModel.ObservableCollection<string> exitParameters = new System.Collections.ObjectModel.ObservableCollection<string>();
+        public static System.Collections.ObjectModel.ObservableCollection<string> storageTypesOfParameters = new System.Collections.ObjectModel.ObservableCollection<string>();
+        public static List<string> exitSelect = new List<string>();
+        public static string[,] uslovia = new string[0,3];
+        public static string[] unions = new string[0];
+        public static ExternalEvent GetParamsEvent;
+        public static ExternalEvent ApplyFilterEvent;
+        public static ExternalEvent InvertEvent;
+    }
 
-                _mainWindow.exitParameters.Clear();
-                //  4. РџРѕРєР°Р·С‹РІР°РµРј СЂРµР·СѓР»СЊС‚Р°С‚
-                if (commonParams.Any())
+    public class GetParametersHandler : IExternalEventHandler
+    {
+        public void Execute(UIApplication app)
+        {
+            var doc = app.ActiveUIDocument.Document;
+            var commonParams = ParameterIntersectionHelper.GetCommonParameters(doc);
+            SharedData.exitParameters.Clear();
+            SharedData.storageTypesOfParameters.Clear();
+            if (commonParams.Any())
+            {
+                foreach (var p in commonParams)
                 {
-                    foreach (var p in commonParams)
-                    {
-                        _mainWindow.exitParameters.Add($"{p.Name}");
-                        _mainWindow.storageTypesOfParameters.Add(p.StorageType.ToString());
-                    }
+                    SharedData.exitParameters.Add($"{p.Name}");
+                    SharedData.storageTypesOfParameters.Add(p.StorageType.ToString());
                 }
+            }
         }
-        public void slol(object sender, EventArgs e) 
+        public string GetName() => "GetParameters";
+    }
+
+    public class ApplyFilterHandler : IExternalEventHandler
+    {
+        public void Execute(UIApplication app)
         {
-            RevitRuleFilter.ApplyFilterAndSelect(_docs);
+            var uiDoc = app.ActiveUIDocument;
+            RevitRuleFilter.ApplyFilterAndSelect(uiDoc);
         }
-        public void NotRevit(object sender, EventArgs e) 
+        public string GetName() => "ApplyFilter";
+    }
+
+    public class InvertSelectionHandler : IExternalEventHandler
+    {
+        public void Execute(UIApplication app)
         {
-            RevitNot.GOG(_docs);
+            var uiDoc = app.ActiveUIDocument;
+            RevitNot.GOG(uiDoc);
         }
+        public string GetName() => "InvertSelection";
     }
 
     [DataContract]
@@ -74,8 +88,6 @@ namespace Troyan
         [DataMember]
         public List<CategoryInfo> Categories { get; set; }
     }
-   
-
 
     [Transaction(TransactionMode.ReadOnly)]
     public class Troyanka : IExternalCommand
@@ -89,21 +101,29 @@ namespace Troyan
         {
             var doc = commandData.Application.ActiveUIDocument.Document;
             var uiDoc = commandData.Application.ActiveUIDocument;
-            // РџРѕР»СѓС‡Р°РµРј РѕС‚С„РёР»СЊС‚СЂРѕРІР°РЅРЅС‹Рµ РєР°С‚РµРіРѕСЂРёРё
             var categories = GetCategories(doc);
             test = true;
-            // РЎРѕР·РґР°С‘Рј РјР°СЃСЃРёРІ РўРћР›Р¬РљРћ РёР· РёРјС‘РЅ
             var categoryNames = categories.Select(c => c.Name).ToList();
 
-            // РџРµСЂРµРґР°С‘Рј РґР°РЅРЅС‹Рµ РґР°Р»СЊС€Рµ 
             SendToWpfApp(categories, categoryNames);
-            Wpf.MainWindow mainWindow = new Wpf.MainWindow(categoryNames);
-   
-            ll ll = new ll(doc, mainWindow, uiDoc);
-            mainWindow.@event += ll.lol;
-            mainWindow.SearchingEvent += ll.slol;
-            mainWindow.invertEvent += ll.NotRevit;
-            mainWindow.Show();
+            // Создать events
+            SharedData.GetParamsEvent = ExternalEvent.Create(new GetParametersHandler());
+            SharedData.ApplyFilterEvent = ExternalEvent.Create(new ApplyFilterHandler());
+            SharedData.InvertEvent = ExternalEvent.Create(new InvertSelectionHandler());
+
+            // Загрузить WPF
+            string revitBinDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location); // D:\lk\Revit Advanced Selection Tool\bin\Debug
+            string binDir = Path.GetDirectoryName(revitBinDir); // D:\lk\Revit Advanced Selection Tool\bin
+            string projectDir = Path.GetDirectoryName(binDir); // D:\lk\Revit Advanced Selection Tool
+            string solutionDir = Path.GetDirectoryName(projectDir); // D:\lk
+            string wpfDllPath = Path.Combine(solutionDir, "Wpf", "bin", "Debug", "Wpf.dll"); // D:\lk\Wpf\bin\Debug\Wpf.dll
+            Assembly wpfAssembly = Assembly.LoadFrom(wpfDllPath);
+            Type mainWindowType = wpfAssembly.GetType("Wpf.MainWindow");
+            object mainWindow = Activator.CreateInstance(mainWindowType, categoryNames);
+
+            // Показать
+            var showMethod = mainWindowType.GetMethod("Show");
+            showMethod.Invoke(mainWindow, null);
             return Result.Succeeded;
             
         }
@@ -123,18 +143,18 @@ namespace Troyan
                 if (cat == null || string.IsNullOrWhiteSpace(cat.Name))
                     continue;
 
-                // 1. РСЃРєР»СЋС‡Р°РµРј РІСЃРµ Р°РЅРЅРѕС‚Р°С†РёРё
+                // 1. Исключаем все аннотации
                 if (cat.CategoryType == CategoryType.Annotation)
                     continue;
                 if (cat.CategoryType != CategoryType.Model)
                     continue;
 
-                // 2. РСЃРєР»СЋС‡Р°РµРј "Р›РёРЅРёРё"
+                // 2. Исключаем "Линии"
                 if (cat.Id.IntegerValue == (int)BuiltInCategory.OST_Lines)
                     continue;
 
-                // 3. РСЃРєР»СЋС‡Р°РµРј РІСЃС‘, С‡С‚Рѕ СЃРѕРґРµСЂР¶РёС‚ "РњР°С‚РµСЂРёР°Р»"
-                if (cat.Name.Contains("РњР°С‚РµСЂРёР°Р»"))
+                // 3. Исключаем всё, что содержит "Материал"
+                if (cat.Name.Contains("Материал"))
                     continue;
 
                 categories.Add(new CategoryInfo
@@ -159,7 +179,7 @@ namespace Troyan
             var message = new RevitDataMessage { Categories = categories };
             var serializer = new DataContractJsonSerializer(typeof(RevitDataMessage));
 
-            string folderPath = @"U:\02_Projects\0359-(50-23)\00.РњРѕРґРµР»РёСЂРѕРІР°РЅРёРµ\РўРҐ\РќРџРћ_РџР°СЃСЃР°С‚ СЃРёСЃС‚РµРјС‹\00_РџСЂРѕРµРєС‚\РљР»РµРјР°РЅС‚РѕРІРёС‡\РџР»Р°РіРёРЅ";
+            string folderPath = @"U:\02_Projects\0359-(50-23)\00.Моделирование\ТХ\НПО_Пассат системы\00_Проект\Клемантович\Плагин";
             Directory.CreateDirectory(folderPath);
             string filePath = Path.Combine(folderPath, "RevitCategories.json");
 
@@ -168,7 +188,7 @@ namespace Troyan
                 serializer.WriteObject(stream, message);
             }
 
-            TaskDialog.Show("Revit", $"РљР°С‚РµРіРѕСЂРёРё СЃРѕС…СЂР°РЅРµРЅС‹!\nР’СЃРµРіРѕ: {categories.Count}");
+            TaskDialog.Show("Revit", $"Категории сохранены!\nВсего: {categories.Count}");
         }
     }
 }
