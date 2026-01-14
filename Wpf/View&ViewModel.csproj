@@ -69,11 +69,15 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Constants\ControlTrigger.cs" />
+    <Compile Include="Constants\StorageType.cs" />
+    <Compile Include="View\ViewServices\RuleManager.cs" />
     <Page Include="View\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Compile Include="ViewModel\ComandBinding.cs" />
+    <Compile Include="ViewModel\Condition.cs" />
+    <Compile Include="ViewModel\Contracts\CommandBinding.cs" />
     <Compile Include="ViewModel\ViewModel.cs" />
     <Compile Include="View\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>

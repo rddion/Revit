@@ -1,9 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Input;
 
-namespace Wpf.ViewModel
+namespace Wpf.ViewModel.Contracts
 {
-    class ComandBinding : ICommand
+    internal class CommandBinding : ICommand
     {
         Action Method { get; set; }
         bool ICommand.CanExecute(object parameter)
@@ -29,11 +33,9 @@ namespace Wpf.ViewModel
             Method?.Invoke();
         }
 
-        public ComandBinding(Action action)
+        public CommandBinding(Action action)
         {
             Method = action;
         }
-
-
     }
 }
