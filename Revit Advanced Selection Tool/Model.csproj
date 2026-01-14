@@ -51,10 +51,34 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Class1.cs" />
-    <Compile Include="Class2.cs" />
-    <Compile Include="Class3.cs" />
-    <Compile Include="Class4.cs" />
+    <!-- Models -->
+    <Compile Include="Models\Category.cs" />
+    <Compile Include="Models\FilterRule.cs" />
+    <Compile Include="Models\ParameterInfo.cs" />
+    <Compile Include="Models\SearchResult.cs" />
+    <Compile Include="Models\RevitElement.cs" />
+
+    <!-- Interfaces -->
+    <Compile Include="Interfaces\INotifyPropertyChanged.cs" />
+    <Compile Include="Interfaces\IDataErrorInfo.cs" />
+
+    <!-- Services -->
+    <Compile Include="Services\IRevitService.cs" />
+    <Compile Include="Services\RevitService.cs" />
+    <Compile Include="Services\ICategoryService.cs" />
+    <Compile Include="Services\CategoryService.cs" />
+    <Compile Include="Services\IFilterService.cs" />
+    <Compile Include="Services\FilterService.cs" />
+
+    <!-- Commands -->
+    <Compile Include="Commands\TroyankaCommand.cs" />
+    <Compile Include="Commands\ButtonApplication.cs" />
+    <Compile Include="Commands\CmdFindCommonParameters.cs" />
+
+    <!-- Core -->
+    <Compile Include="Core\RevitRuleFilter.cs" />
+
+    <!-- Properties -->
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
