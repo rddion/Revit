@@ -1,17 +1,9 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
-using System.Windows.Media;
-using System.Windows.Media.Converters;
-using Wpf.View.ViewServices;
+using RevitAdvancedSelectionTool.Services;
+using RevitAdvancedSelectionTool.Models;
 using Wpf.ViewModel;
 
 namespace Wpf
@@ -19,30 +11,31 @@ namespace Wpf
     /// <summary>
     /// Логика взаимодействия для MainWindow.xaml
     /// </summary>
-
     public partial class MainWindow : Window
     {
-        internal ViewModel.ViewModel ViewModel { get; set; }
+        private MainWindowViewModel ViewModel { get; set; }
 
-        RuleManager ruleManager;
         public MainWindow()
         {
             InitializeComponent();
-            ViewModel.ViewModel viewModel = new ViewModel.ViewModel();
-            ViewModel = viewModel;
-            DataContext = viewModel;
-            ruleManager = new RuleManager(this);
-            ViewModel.PreviouslySelectedCategories.CollectionChanged += PreviouslySelectedCategories;
-        }
 
-        private void Add_Rule(object sender, RoutedEventArgs e)
-        {
-            ruleManager.AddRule();
+            // В реальной реализации здесь будет dependency injection
+            // Пока создаем сервисы напрямую
+            var revitService = new RevitService();
+            var categoryService = new CategoryService();
+            var filterService = new FilterService();
+
+            ViewModel = new MainWindowViewModel(revitService, categoryService, filterService);
+            DataContext = ViewModel;
         }
 
         private void Categories_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            ViewModel.SelectionCategoriesChanged(lView.SelectedItems);
+            if (sender is ListView listView)
+            {
+                var selectedCategories = listView.SelectedItems.Cast<Category>().ToList();
+                ViewModel.SelectionCategoriesChanged(selectedCategories);
+            }
         }
 
         private void SelectAllCategories(object sender, RoutedEventArgs e)
@@ -55,17 +48,17 @@ namespace Wpf
             lView.SelectedItems.Clear();
         }
 
-        private void PreviouslySelectedCategories(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        private void Add_Rule(object sender, RoutedEventArgs e)
         {
-            try
+            // В MVVM это должно быть через команду, но для демонстрации оставим
+            // В реальной реализации нужно создать RuleBuilderViewModel
+            var rule = new FilterRule
             {
-                for (int i = 0; i < ViewModel.PreviouslySelectedCategories.Count; i++)
-                {
-                    lView.SelectedItems.Add(ViewModel.PreviouslySelectedCategories[i]);
-                }
-            }
-            catch { }
+                ParameterName = "Имя параметра",
+                Operator = RuleOperator.Equals,
+                Value = "Значение"
+            };
+            ViewModel.AddRule(rule);
         }
     }
-
 }

@@ -1,12 +1,11 @@
-using System.Collections.Generic;
+using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using System.Runtime.Serialization;
+using System.Threading.Tasks;
 
-namespace RevitAdvancedSelectionTool.Models
+namespace Wpf.ViewModel
 {
-    [DataContract]
-    public class Category : INotifyPropertyChanged
+    public abstract class BaseViewModel : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -25,27 +24,18 @@ namespace RevitAdvancedSelectionTool.Models
             return true;
         }
 
-        [DataMember]
-        public int Id { get; set; }
-
-        private string _name;
-        [DataMember]
-        public string Name
+        protected async Task ExecuteAsync(Func<Task> action, string errorMessage = "Произошла ошибка")
         {
-            get => _name;
-            set => SetProperty(ref _name, value);
+            try
+            {
+                await action();
+            }
+            catch (Exception ex)
+            {
+                // В реальном приложении использовать логгер
+                Console.WriteLine($"{errorMessage}: {ex.Message}");
+                // Показать сообщение пользователю
+            }
         }
-
-        [DataMember]
-        public string Type { get; set; }
-
-        private bool _isSelected;
-        public bool IsSelected
-        {
-            get => _isSelected;
-            set => SetProperty(ref _isSelected, value);
-        }
-
-        public override string ToString() => Name;
     }
 }

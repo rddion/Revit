@@ -1,4 +1,7 @@
 using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 
 namespace RevitAdvancedSelectionTool.Models
 {
@@ -18,12 +21,52 @@ namespace RevitAdvancedSelectionTool.Models
         Or
     }
 
-    public class FilterRule
+    public class FilterRule : INotifyPropertyChanged
     {
-        public string ParameterName { get; set; }
-        public RuleOperator Operator { get; set; }
-        public string Value { get; set; }
-        public LogicalOperator LogicalOperator { get; set; }
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        protected bool SetProperty<T>(ref T backingStore, T value, [CallerMemberName] string propertyName = "")
+        {
+            if (EqualityComparer<T>.Default.Equals(backingStore, value))
+                return false;
+
+            backingStore = value;
+            OnPropertyChanged(propertyName);
+            return true;
+        }
+
+        private string _parameterName;
+        public string ParameterName
+        {
+            get => _parameterName;
+            set => SetProperty(ref _parameterName, value);
+        }
+
+        private RuleOperator _operator;
+        public RuleOperator Operator
+        {
+            get => _operator;
+            set => SetProperty(ref _operator, value);
+        }
+
+        private string _value;
+        public string Value
+        {
+            get => _value;
+            set => SetProperty(ref _value, value);
+        }
+
+        private LogicalOperator _logicalOperator;
+        public LogicalOperator LogicalOperator
+        {
+            get => _logicalOperator;
+            set => SetProperty(ref _logicalOperator, value);
+        }
 
         public string DisplayText => $"{ParameterName} {GetOperatorDisplay()} {Value}";
 
