@@ -1,4 +1,5 @@
-﻿using System;
+﻿using RevitAdvancedSelectionTool.Services;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -20,7 +21,7 @@ namespace Wpf.ViewModel
 {
     internal class ViewModel : INotifyPropertyChanged
     {
-        private Data data; // экземпляр revitApi
+        private CategoryService categoryService = new CategoryService(); // экземпляр revitApi
 
         private ObservableCollection<string> constantListOfCategories = new ObservableCollection<string>();
         private ObservableCollection<string> categories_ChangeableCollection;
@@ -99,7 +100,7 @@ namespace Wpf.ViewModel
         public ViewModel()
         {
             //data = new Data();
-            Categories = data.Categories(); //метод по первому заполнению всеми категориями listview
+            Categories = categoryService.GetCategoryNamesObservableAsync().Result; //метод по первому заполнению всеми категориями listview
             ApplyCategoryCommand = new Contracts.CommandBinding(ApplyCategory);
             UpdateCategoriesCommand = new Contracts.CommandBinding(UpdateCollectionOfCategory);
             FamilySearchCommand = new Contracts.CommandBinding(FamilySearch);
@@ -115,8 +116,8 @@ namespace Wpf.ViewModel
         private void ApplyCategory()
         {
             Categories = selectedCategories;
-            Parameters = data.GetParameters(Categories); //метод по заполнению параметров
-            storagetTypesOfParameters = data.GetStorageTypes(Categories);// метод по заполнению типов параметров
+            //Parameters = data.GetParameters(Categories); //метод по заполнению параметров
+            //storagetTypesOfParameters = data.GetStorageTypes(Categories);// метод по заполнению типов параметров
         }
 
         private void UpdateCollectionOfCategory()
@@ -316,7 +317,7 @@ namespace Wpf.ViewModel
             }
             if (!breaking)
             {
-                data.Search();
+               // data.Search();
             }
 
         }
