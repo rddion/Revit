@@ -82,11 +82,11 @@ namespace RevitAdvancedSelectionTool.Core
             return rules;
         }
 
-        private static List<Element> GetElementsForCategories(Document doc, List<string> selectedCategories)
+        private static List<Element> GetElementsForCategories(Document doc, System.Collections.Generic.IEnumerable<string> selectedCategories)
         {
             var allElements = new List<Element>();
 
-            if (selectedCategories != null && selectedCategories.Count > 0)
+            if (selectedCategories != null && selectedCategories.Any())
             {
                 foreach (string categoryName in selectedCategories)
                 {
