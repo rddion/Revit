@@ -304,7 +304,7 @@ namespace Troyan
 
            
             // Показать
-            var showMethod = mainWindowType.GetMethod("ShowDialog");
+            var showMethod = mainWindowType.GetMethod("Show");
             showMethod.Invoke(mainWindow, null);
             return Result.Succeeded;
 

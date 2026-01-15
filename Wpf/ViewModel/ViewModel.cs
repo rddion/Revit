@@ -15,6 +15,7 @@ using System.Windows.Input;
 using System.Windows.Markup;
 using System.Windows.Media;
 using System.Windows.Media.Converters;
+using Troyan;
 using Wpf.Constants;
 
 namespace Wpf.ViewModel
@@ -115,8 +116,8 @@ namespace Wpf.ViewModel
         private void ApplyCategory()
         {
             Categories = selectedCategories;
-            //Parameters = data.GetParameters(Categories); //метод по заполнению параметров
-            //storagetTypesOfParameters = data.GetStorageTypes(Categories);// метод по заполнению типов параметров
+            Parameters = TroyankaCommand.GetParameterNamesForCategories(Categories); //метод по заполнению параметров
+            storagetTypesOfParameters = TroyankaCommand.GetParameterStorageTypesForCategories(Categories);// метод по заполнению типов параметров
         }
 
         private void UpdateCollectionOfCategory()
