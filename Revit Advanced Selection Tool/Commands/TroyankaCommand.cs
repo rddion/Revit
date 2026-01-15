@@ -28,6 +28,7 @@ namespace Troyan
         public static string[,] uslovia;
         public static string[] unions;
         public static List<CategoryInfo> categories;
+        public static Autodesk.Revit.DB.Document doc;
         public static ExternalEvent GetParamsEvent;
         public static ExternalEvent ApplyFilterEvent;
         public static ExternalEvent InvertEvent;
@@ -277,6 +278,7 @@ namespace Troyan
             _filterService = new FilterService();
 
             var doc = commandData.Application.ActiveUIDocument.Document;
+            SharedData.doc = doc;
             var uiDoc = commandData.Application.ActiveUIDocument;
             var categories = GetCategories(doc);
             SharedData.categories = categories;
@@ -369,6 +371,13 @@ namespace Troyan
             }
 
             TaskDialog.Show("Revit", $"Категории сохранены!\nВсего: {categories.Count}");
+        }
+
+        public static (System.Collections.ObjectModel.ObservableCollection<string> names, System.Collections.ObjectModel.ObservableCollection<string> types) GetParametersForCategories(System.Collections.ObjectModel.ObservableCollection<string> categories)
+        {
+            var names = GetCommonParameterNames(categories, SharedData.doc);
+            var types = GetCommonParameterStorageTypes(categories, SharedData.doc);
+            return (names, types);
         }
     }
 }
