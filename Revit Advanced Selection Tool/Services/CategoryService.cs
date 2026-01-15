@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using RevitAdvancedSelectionTool.Models;
@@ -27,6 +28,12 @@ namespace RevitAdvancedSelectionTool.Services
         {
             // Сохранить выбранные категории в SharedData для совместимости
             // SharedData.exitSelect = selectedCategories.Select(c => c.Name).ToList();
+        }
+
+        public async Task<ObservableCollection<Category>> GetCategoriesObservableAsync()
+        {
+            var categories = await LoadCategoriesAsync();
+            return new ObservableCollection<Category>(categories);
         }
     }
 }
