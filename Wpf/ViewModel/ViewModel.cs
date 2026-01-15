@@ -115,6 +115,7 @@ namespace Wpf.ViewModel
 
         private void ApplyCategory()
         {
+            TextOfSearchPanel = "";
             Categories = selectedCategories;
             Parameters = TroyankaCommand.GetParameterNamesForCategories(Categories); //метод по заполнению параметров
             storagetTypesOfParameters = TroyankaCommand.GetParameterStorageTypesForCategories(Categories);// метод по заполнению типов параметров
@@ -128,18 +129,19 @@ namespace Wpf.ViewModel
                 Categories.Add(category);
             }
             TextOfSearchPanel = null;
+            Parameters.Clear();
         }
 
         private void SearchPanelChanged()
         {
 
-            if (SelectedCategories.Count > 0)
-            {
+            //if (SelectedCategories.Count > 0)
+            //{
                 foreach (var selectedCategory in selectedCategories)
                 {
                     temporaryPreviouslySelected.Add(selectedCategory);
                 }
-            }
+            //}
             temporaryPreviouslySelected = temporaryPreviouslySelected.Where(it => !(Categories.Contains(it)) || SelectedCategories.Contains(it)).ToHashSet();
 
             if (TextOfSearchPanel != null)
@@ -278,7 +280,7 @@ namespace Wpf.ViewModel
             }
             if (!breaking)
             {
-               // data.Search();
+               // data.Search(uslovia,unions);
             }
 
         }
