@@ -375,19 +375,19 @@ namespace Troyan
 
         public static (System.Collections.ObjectModel.ObservableCollection<string> names, System.Collections.ObjectModel.ObservableCollection<string> types) GetParametersForCategories(System.Collections.ObjectModel.ObservableCollection<string> categories)
         {
-            var names = GetCommonParameterNames(categories, SharedData.doc);
-            var types = GetCommonParameterStorageTypes(categories, SharedData.doc);
+            var names = GetParametersHandler.GetCommonParameterNames(categories, SharedData.doc);
+            var types = GetParametersHandler.GetCommonParameterStorageTypes(categories, SharedData.doc);
             return (names, types);
         }
 
         public static System.Collections.ObjectModel.ObservableCollection<string> GetParameterNamesForCategories(System.Collections.ObjectModel.ObservableCollection<string> categories)
         {
-            return GetCommonParameterNames(categories, SharedData.doc);
+            return GetParametersHandler.GetCommonParameterNames(categories, SharedData.doc);
         }
 
         public static System.Collections.ObjectModel.ObservableCollection<string> GetParameterStorageTypesForCategories(System.Collections.ObjectModel.ObservableCollection<string> categories)
         {
-            return GetCommonParameterStorageTypes(categories, SharedData.doc);
+            return GetParametersHandler.GetCommonParameterStorageTypes(categories, SharedData.doc);
         }
     }
 }
