@@ -297,12 +297,7 @@ namespace Troyan
             Type mainWindowType = wpfAssembly.GetType("Wpf.MainWindow");
             object mainWindow = Activator.CreateInstance(mainWindowType);
 
-            // Установка категорий в ViewModel
-            var viewModelProperty = mainWindowType.GetProperty("ViewModel", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-            var viewModel = viewModelProperty.GetValue(mainWindow);
-            var categoriesProperty = viewModel.GetType().GetProperty("Categories", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
-            categoriesProperty.SetValue(viewModel, new System.Collections.ObjectModel.ObservableCollection<string>(categoryNames));
-
+           
             // Показать
             var showMethod = mainWindowType.GetMethod("ShowDialog");
             showMethod.Invoke(mainWindow, null);
