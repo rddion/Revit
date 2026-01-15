@@ -188,8 +188,6 @@ namespace Wpf.ViewModel
             int j = 0, k = 0, x = 0;
             for (int i = 0; i < Conditions.Count; i++)
             {
-
-
                 if (Conditions[i].Name != "close" && Conditions[i].Name != "souz")
                 {
                     string[,] vremUsl = uslovia;
@@ -256,45 +254,8 @@ namespace Wpf.ViewModel
                 {
                     StorageType storageType = StorageType.String;
                     int actualIndex = 0;
-                    Regex regex = new Regex(@"^\d*\.\d*$");
-
-
-                    if (regex.IsMatch(currentText.Text))
-                    {
-                        try
-                        {
-                            Convert.ToInt32(Regex.Replace(currentText.Text, @"\.", ""));
-                            currentText.Text = Regex.Replace(currentText.Text, @"\.", ",");
-                        }
-                        catch { }
-                    }
-
-                    for (int y = 0; y < Parameters.Count; y++)
-                    {
-                        if (Parameters[y] == currentParametr.SelectedValue.ToString())
-                        {
-                            actualIndex = y;
-                            continue;
-                        }
-                    }
-
-                    try
-                    {
-                        Convert.ToInt32(currentText.Text);
-                        storageType = StorageType.Integer;
-                    }
-                    catch { }
-
-                    if (storageType != StorageType.Integer)
-                    {
-                        try
-                        {
-                            Convert.ToDouble(currentText.Text);
-                            storageType = StorageType.Double;
-                        }
-                        catch { }
-                    }
-
+                    
+                    StorageTypeDefinition(currentText,currentParametr,ref actualIndex, ref storageType);
 
                     if (storagetTypesOfParameters[actualIndex] == "Integer" && (storageType == StorageType.Double || storageType == StorageType.String))
                     {
@@ -317,6 +278,48 @@ namespace Wpf.ViewModel
             if (!breaking)
             {
                // data.Search();
+            }
+
+        }
+
+        private void StorageTypeDefinition(Condition currentText, Condition currentParametr, ref int actualIndex, ref StorageType storageType)
+        {
+            Regex regex = new Regex(@"^\d*\.\d*$");
+
+            if (regex.IsMatch(currentText.Text))
+            {
+                try
+                {
+                    Convert.ToInt32(Regex.Replace(currentText.Text, @"\.", ""));
+                    currentText.Text = Regex.Replace(currentText.Text, @"\.", ",");
+                }
+                catch { }
+            }
+
+            for (int y = 0; y < Parameters.Count; y++)
+            {
+                if (Parameters[y] == currentParametr.SelectedValue.ToString())
+                {
+                    actualIndex = y;
+                    continue;
+                }
+            }
+
+            try
+            {
+                Convert.ToInt32(currentText.Text);
+                storageType = StorageType.Integer;
+            }
+            catch { }
+
+            if (storageType != StorageType.Integer)
+            {
+                try
+                {
+                    Convert.ToDouble(currentText.Text);
+                    storageType = StorageType.Double;
+                }
+                catch { }
             }
 
         }
