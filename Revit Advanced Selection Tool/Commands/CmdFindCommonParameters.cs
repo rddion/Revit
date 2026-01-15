@@ -30,7 +30,7 @@ namespace Troyan
                 Document doc = uidoc.Document;
 
                 // Получить общие параметры
-                var commonParams = _filterService.GetAvailableParametersAsync(SharedData.exitSelect).Result;
+                var commonParams = _filterService.GetAvailableParametersAsync(new List<string>(SharedData.exitSelect)).Result;
 
                 // Показать результат
                 if (commonParams.Any())

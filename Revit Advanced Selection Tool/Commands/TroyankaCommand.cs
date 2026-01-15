@@ -24,7 +24,7 @@ namespace Troyan
     {
         public static System.Collections.ObjectModel.ObservableCollection<string> exitParameters;
         public static System.Collections.ObjectModel.ObservableCollection<string> storageTypesOfParameters;
-        public static List<string> exitSelect;
+        public static System.Collections.ObjectModel.ObservableCollection<string> exitSelect;
         public static string[,] uslovia;
         public static string[] unions;
         public static List<CategoryInfo> categories;
@@ -36,7 +36,7 @@ namespace Troyan
         {
             exitParameters = new System.Collections.ObjectModel.ObservableCollection<string>();
             storageTypesOfParameters = new System.Collections.ObjectModel.ObservableCollection<string>();
-            exitSelect = new List<string>();
+            exitSelect = new System.Collections.ObjectModel.ObservableCollection<string>();
             uslovia = new string[0, 3];
             unions = new string[0];
             categories = new List<CategoryInfo>();
@@ -58,25 +58,28 @@ namespace Troyan
         {
             var doc = app.ActiveUIDocument.Document;
             // Реализация получения общих параметров
-            var commonParams = GetCommonParameters(doc);
-            SharedData.exitParameters.Clear();
-            SharedData.storageTypesOfParameters.Clear();
-            if (commonParams.Any())
-            {
-                foreach (var p in commonParams)
-                {
-                    SharedData.exitParameters.Add($"{p.Name}");
-                    SharedData.storageTypesOfParameters.Add(p.StorageType.ToString());
-                }
-            }
+            var parameterNames = GetCommonParameterNames(SharedData.exitSelect, doc);
+            var storageTypes = GetCommonParameterStorageTypes(SharedData.exitSelect, doc);
+            SharedData.exitParameters = parameterNames;
+            SharedData.storageTypesOfParameters = storageTypes;
         }
 
-        private List<ParameterInfo> GetCommonParameters(Document doc)
+        public static System.Collections.ObjectModel.ObservableCollection<string> GetCommonParameterNames(System.Collections.ObjectModel.ObservableCollection<string> selectedCategoryNames, Document doc)
+        {
+            var commonParams = GetCommonParameters(selectedCategoryNames, doc);
+            return new System.Collections.ObjectModel.ObservableCollection<string>(commonParams.Select(p => p.Name));
+        }
+
+        public static System.Collections.ObjectModel.ObservableCollection<string> GetCommonParameterStorageTypes(System.Collections.ObjectModel.ObservableCollection<string> selectedCategoryNames, Document doc)
+        {
+            var commonParams = GetCommonParameters(selectedCategoryNames, doc);
+            return new System.Collections.ObjectModel.ObservableCollection<string>(commonParams.Select(p => p.StorageType.ToString()));
+        }
+
+        private static List<ParameterInfo> GetCommonParameters(System.Collections.ObjectModel.ObservableCollection<string> selectedCategoryNames, Document doc)
         {
             if (doc == null)
                 throw new ArgumentNullException(nameof(doc));
-            var result = SharedData.exitSelect;
-            var selectedCategoryNames = new List<string>(result);
             if (selectedCategoryNames == null || selectedCategoryNames.Count == 0)
                 return new List<ParameterInfo>();
 
@@ -277,7 +280,7 @@ namespace Troyan
             var uiDoc = commandData.Application.ActiveUIDocument;
             var categories = GetCategories(doc);
             SharedData.categories = categories;
-            SharedData.exitSelect = categories.Select(c => c.Name).ToList();
+            SharedData.exitSelect = new System.Collections.ObjectModel.ObservableCollection<string>(categories.Select(c => c.Name));
             test = true;
             var categoryNames = categories.Select(c => c.Name).ToList();
 
