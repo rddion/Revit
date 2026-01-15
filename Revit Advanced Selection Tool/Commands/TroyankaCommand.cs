@@ -379,5 +379,15 @@ namespace Troyan
             var types = GetCommonParameterStorageTypes(categories, SharedData.doc);
             return (names, types);
         }
+
+        public static System.Collections.ObjectModel.ObservableCollection<string> GetParameterNamesForCategories(System.Collections.ObjectModel.ObservableCollection<string> categories)
+        {
+            return GetCommonParameterNames(categories, SharedData.doc);
+        }
+
+        public static System.Collections.ObjectModel.ObservableCollection<string> GetParameterStorageTypesForCategories(System.Collections.ObjectModel.ObservableCollection<string> categories)
+        {
+            return GetCommonParameterStorageTypes(categories, SharedData.doc);
+        }
     }
 }
