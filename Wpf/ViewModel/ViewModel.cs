@@ -99,8 +99,7 @@ namespace Wpf.ViewModel
 
         public ViewModel()
         {
-            //data = new Data();
-            Categories = categoryService.GetCategoryNamesObservableAsync().Result; //метод по первому заполнению всеми категориями listview
+            Categories = categoryService.GetCategoryNamesObservableAsync().Result; 
             ApplyCategoryCommand = new Contracts.CommandBinding(ApplyCategory);
             UpdateCategoriesCommand = new Contracts.CommandBinding(UpdateCollectionOfCategory);
             FamilySearchCommand = new Contracts.CommandBinding(FamilySearch);
