@@ -284,6 +284,11 @@ namespace Troyan
             SharedData.InvertEvent = ExternalEvent.Create(new InvertSelectionHandler(_revitService));
 
             // Запуск WPF
+            if (System.Windows.Application.Current == null)
+            {
+                new System.Windows.Application();
+            }
+
             string revitBinDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location); // D:\lk\Revit Advanced Selection Tool\bin\Debug
             string binDir = Path.GetDirectoryName(revitBinDir); // D:\lk\Revit Advanced Selection Tool\bin
             string projectDir = Path.GetDirectoryName(binDir); // D:\lk\Revit Advanced Selection Tool
@@ -291,7 +296,13 @@ namespace Troyan
             string wpfDllPath = Path.Combine(solutionDir, "Wpf", "bin", "Debug", "Wpf.dll"); // D:\lk\Wpf\bin\Debug\Wpf.dll
             Assembly wpfAssembly = Assembly.LoadFrom(wpfDllPath);
             Type mainWindowType = wpfAssembly.GetType("Wpf.MainWindow");
-            object mainWindow = Activator.CreateInstance(mainWindowType, categoryNames);
+            object mainWindow = Activator.CreateInstance(mainWindowType);
+
+            // Установка категорий в ViewModel
+            var viewModelProperty = mainWindowType.GetProperty("ViewModel", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            var viewModel = viewModelProperty.GetValue(mainWindow);
+            var categoriesProperty = viewModel.GetType().GetProperty("Categories", System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
+            categoriesProperty.SetValue(viewModel, new System.Collections.ObjectModel.ObservableCollection<string>(categoryNames));
 
             // Показать
             var showMethod = mainWindowType.GetMethod("Show");
