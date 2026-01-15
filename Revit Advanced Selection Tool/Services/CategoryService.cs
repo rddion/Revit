@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using RevitAdvancedSelectionTool.Models;
+using Troyan;
 
 namespace RevitAdvancedSelectionTool.Services
 {
@@ -11,8 +12,8 @@ namespace RevitAdvancedSelectionTool.Services
     {
         public async Task<List<Category>> LoadCategoriesAsync()
         {
-            // Реализация загрузки категорий
-            return new List<Category>();
+            // Загрузка категорий из SharedData
+            return SharedData.categories?.Select(ci => new Category { Id = ci.Id, Name = ci.Name, Type = ci.Type }).ToList() ?? new List<Category>();
         }
 
         public async Task<List<Category>> FilterCategoriesAsync(string searchText)

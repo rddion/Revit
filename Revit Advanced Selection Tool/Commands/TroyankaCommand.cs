@@ -27,6 +27,7 @@ namespace Troyan
         public static List<string> exitSelect;
         public static string[,] uslovia;
         public static string[] unions;
+        public static List<CategoryInfo> categories;
         public static ExternalEvent GetParamsEvent;
         public static ExternalEvent ApplyFilterEvent;
         public static ExternalEvent InvertEvent;
@@ -38,6 +39,7 @@ namespace Troyan
             exitSelect = new List<string>();
             uslovia = new string[0, 3];
             unions = new string[0];
+            categories = new List<CategoryInfo>();
         }
     }
 
@@ -274,6 +276,8 @@ namespace Troyan
             var doc = commandData.Application.ActiveUIDocument.Document;
             var uiDoc = commandData.Application.ActiveUIDocument;
             var categories = GetCategories(doc);
+            SharedData.categories = categories;
+            SharedData.exitSelect = categories.Select(c => c.Name).ToList();
             test = true;
             var categoryNames = categories.Select(c => c.Name).ToList();
 
@@ -284,11 +288,6 @@ namespace Troyan
             SharedData.InvertEvent = ExternalEvent.Create(new InvertSelectionHandler(_revitService));
 
             // Запуск WPF
-            if (System.Windows.Application.Current == null)
-            {
-                new System.Windows.Application();
-            }
-
             string revitBinDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location); // D:\lk\Revit Advanced Selection Tool\bin\Debug
             string binDir = Path.GetDirectoryName(revitBinDir); // D:\lk\Revit Advanced Selection Tool\bin
             string projectDir = Path.GetDirectoryName(binDir); // D:\lk\Revit Advanced Selection Tool
@@ -305,7 +304,7 @@ namespace Troyan
             categoriesProperty.SetValue(viewModel, new System.Collections.ObjectModel.ObservableCollection<string>(categoryNames));
 
             // Показать
-            var showMethod = mainWindowType.GetMethod("Show");
+            var showMethod = mainWindowType.GetMethod("ShowDialog");
             showMethod.Invoke(mainWindow, null);
             return Result.Succeeded;
 
