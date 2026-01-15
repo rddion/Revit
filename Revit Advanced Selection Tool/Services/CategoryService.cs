@@ -35,5 +35,12 @@ namespace RevitAdvancedSelectionTool.Services
             var categories = await LoadCategoriesAsync();
             return new ObservableCollection<Category>(categories);
         }
+
+        public async Task<ObservableCollection<string>> GetCategoryNamesObservableAsync()
+        {
+            var categories = await LoadCategoriesAsync();
+            var names = categories.Select(c => c.Name).ToList();
+            return new ObservableCollection<string>(names);
+        }
     }
 }
