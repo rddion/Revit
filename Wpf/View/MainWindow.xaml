@@ -23,7 +23,7 @@
         <Label Content="Конструктор правил" HorizontalAlignment="Left" Margin="432,14,0,0" VerticalAlignment="Top" FontSize="18" FontWeight="Medium" FontStyle="Oblique" FontFamily="ISOCPEUR"/>
         <Grid Name="grid" Margin="225,45,10,89" Background="AliceBlue" Height="370">
 
-            <Image Name="imageGood" Source="images/good.jpg" Visibility="Visible"/>
+            <Image Name="imageGood" Source="/Wpf;component/images/good.jpg" Visibility="Visible"/>
             <Image Name="imageBad" Source="/Wpf;component/images/bad.jpg" Visibility="Hidden"/>
 
         </Grid>
