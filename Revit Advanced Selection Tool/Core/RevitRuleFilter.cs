@@ -126,10 +126,10 @@ namespace RevitAdvancedSelectionTool.Core
             return allElements;
         }
 
-        private static HashSet<ElementId> ApplyRulesToElements(List<Element> elements, List<FilterRule> rules, Document doc)
+        private static HashSet<ElementId> ApplyRulesToElements(List<Element> elements, List<FilterRule> rules, Document doc, string[] unions)
         {
             // Группировка правил по ИЛИ
-            var ruleGroups = GroupRulesByOr(rules);
+            var ruleGroups = GroupRulesByOr(rules, unions);
 
             var resultElements = new HashSet<ElementId>();
 
@@ -154,7 +154,7 @@ namespace RevitAdvancedSelectionTool.Core
             return resultElements;
         }
 
-        private static List<List<FilterRule>> GroupRulesByOr(List<FilterRule> rules)
+        private static List<List<FilterRule>> GroupRulesByOr(List<FilterRule> rules, string[] unions)
         {
             var groups = new List<List<FilterRule>>();
             var currentGroup = new List<FilterRule>();
@@ -165,7 +165,7 @@ namespace RevitAdvancedSelectionTool.Core
                 currentGroup.Add(rules[i]);
 
                 // Если есть ИЛИ на следующей позиции, начать новую группу
-                if (i < SharedData.unions?.Length && string.Equals(SharedData.unions[i]?.Trim(), "ИЛИ", StringComparison.OrdinalIgnoreCase))
+                if (i < unions?.Length && string.Equals(unions[i]?.Trim(), "ИЛИ", StringComparison.OrdinalIgnoreCase))
                 {
                     currentGroup = new List<FilterRule>();
                     groups.Add(currentGroup);
@@ -325,14 +325,14 @@ namespace RevitAdvancedSelectionTool.Core
             }
 
             // Конвертация условий
-            var rules = ConvertUsloviaToRules(conditionCount);
+            var rules = ConvertUsloviaToRules(SharedData.uslovia, conditionCount);
 
             // Получение элементов
             Document doc = uidoc.Document;
             allElementsInCategories = GetElementsForCategories(doc, SharedData.exitSelect);
 
             // Применение фильтра
-            return ApplyRulesToElements(allElementsInCategories, rules, doc);
+            return ApplyRulesToElements(allElementsInCategories, rules, doc, SharedData.unions);
         }
     }
 
