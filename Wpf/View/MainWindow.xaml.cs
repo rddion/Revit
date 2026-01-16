@@ -66,6 +66,11 @@ namespace Wpf
             }
             catch { }
         }
+
+        private void ClearRules(object sender, RoutedEventArgs e)
+        {
+            ruleManager.ClearAllRules();
+        }
     }
 
 }
