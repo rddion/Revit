@@ -296,7 +296,7 @@ namespace Wpf.ViewModel
             }
             if (!breaking)
             {
-                //RevitRuleFilter.ApplyFilterAndSelect(uslovia,unions);
+                RevitRuleFilter.ApplyFilterAndSelect(uslovia,unions);
                 InvertButtonIsEnabled = true;
             }
 
