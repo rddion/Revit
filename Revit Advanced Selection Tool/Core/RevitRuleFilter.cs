@@ -72,7 +72,7 @@ namespace RevitAdvancedSelectionTool.Core
             ApplyFilterAndSelect(SharedData.uidoc, uslovia, unions, SharedData.exitSelect);
         }
 
-        private static List<FilterRule> ConvertUsloviaToRules(string[,] uslovia, int conditionCount)
+        internal static List<FilterRule> ConvertUsloviaToRules(string[,] uslovia, int conditionCount)
         {
             var rules = new List<FilterRule>();
 
@@ -103,7 +103,7 @@ namespace RevitAdvancedSelectionTool.Core
             return rules;
         }
 
-        private static List<Element> GetElementsForCategories(Document doc, System.Collections.Generic.IEnumerable<string> selectedCategories)
+        internal static List<Element> GetElementsForCategories(Document doc, System.Collections.Generic.IEnumerable<string> selectedCategories)
         {
             var allElements = new List<Element>();
 
@@ -137,7 +137,7 @@ namespace RevitAdvancedSelectionTool.Core
             return allElements;
         }
 
-        private static HashSet<ElementId> ApplyRulesToElements(List<Element> elements, List<FilterRule> rules, Document doc, string[] unions)
+        internal static HashSet<ElementId> ApplyRulesToElements(List<Element> elements, List<FilterRule> rules, Document doc, string[] unions)
         {
             // Группировка правил по ИЛИ
             var ruleGroups = GroupRulesByOr(rules, unions);
@@ -344,7 +344,7 @@ namespace RevitAdvancedSelectionTool.Core
 
             if (rules.Count == 0)
             {
-                return new HashSet<ElementId>(allElementsInCategories.Select(e => e.Id));
+                return new HashSet<ElementId>();
             }
 
             // Применение фильтра
@@ -373,6 +373,51 @@ namespace RevitAdvancedSelectionTool.Core
         {
             if (SharedData.uidoc == null) return;
             GOG(SharedData.uidoc);
+        }
+
+        public static void GOG(string[,] uslovia, string[] unions)
+        {
+            if (SharedData.uidoc == null) return;
+            GOG(SharedData.uidoc, uslovia, unions, SharedData.exitSelect);
+        }
+
+        public static void GOG(UIDocument uidoc, string[,] uslovia, string[] unions, IEnumerable<string> selectedCategories)
+        {
+            if (uidoc == null) return;
+
+            int conditionCount = uslovia.GetLength(0);
+            if (conditionCount == 0)
+            {
+                // Если нет условий, выделить все элементы в категориях
+                Document doc = uidoc.Document;
+                List<Element> allElements = RevitRuleFilter.GetElementsForCategories(doc, selectedCategories);
+                uidoc.Selection.SetElementIds(allElements.Select(e => e.Id).ToList());
+                return;
+            }
+
+            // Конвертация условий
+            var rules = RevitRuleFilter.ConvertUsloviaToRules(uslovia, conditionCount);
+
+            // Получение элементов
+            Document doc2 = uidoc.Document;
+            List<Element> allElementsInCategories = RevitRuleFilter.GetElementsForCategories(doc2, selectedCategories);
+
+            if (rules.Count == 0)
+            {
+                // Если нет правил, выделить все
+                uidoc.Selection.SetElementIds(allElementsInCategories.Select(e => e.Id).ToList());
+                return;
+            }
+
+            // Применение фильтра
+            var passedIds = RevitRuleFilter.ApplyRulesToElements(allElementsInCategories, rules, doc2, unions);
+
+            var notPassedIds = allElementsInCategories
+                .Where(e => !passedIds.Contains(e.Id))
+                .Select(e => e.Id)
+                .ToList();
+
+            uidoc.Selection.SetElementIds(notPassedIds);
         }
     }
 }
