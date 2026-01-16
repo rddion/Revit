@@ -281,6 +281,7 @@ namespace Troyan
             var doc = commandData.Application.ActiveUIDocument.Document;
             SharedData.doc = doc;
             var uiDoc = commandData.Application.ActiveUIDocument;
+            SharedData.uidoc = uiDoc;
             var categories = GetCategories(doc);
             SharedData.categories = categories;
             SharedData.exitSelect = new System.Collections.ObjectModel.ObservableCollection<string>(categories.Select(c => c.Name));

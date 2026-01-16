@@ -13,7 +13,7 @@ namespace RevitAdvancedSelectionTool.Core
 {
     public static class RevitRuleFilter
     {
-        private static BuiltInCategory? FindBuiltInCategoryByName(Document doc, string categoryName)
+        private static Category FindCategoryByName(Document doc, string categoryName)
         {
             if (string.IsNullOrWhiteSpace(categoryName) || doc == null)
                 return null;
@@ -22,8 +22,7 @@ namespace RevitAdvancedSelectionTool.Core
             {
                 if (cat != null && cat.Name.Equals(categoryName, StringComparison.OrdinalIgnoreCase))
                 {
-                    if (cat.Id.IntegerValue < 0) // Built-in category
-                        return (BuiltInCategory)cat.Id.IntegerValue;
+                    return cat;
                 }
             }
             return null;
@@ -53,6 +52,13 @@ namespace RevitAdvancedSelectionTool.Core
             Document doc = uidoc.Document;
             List<Element> allElements = GetElementsForCategories(doc, selectedCategories);
 
+            if (rules.Count == 0)
+            {
+                // Если нет правил, выбрать все элементы в категориях
+                uidoc.Selection.SetElementIds(allElements.Select(e => e.Id).ToList());
+                return;
+            }
+
             // Применение фильтра
             var resultElements = ApplyRulesToElements(allElements, rules, doc, unions);
 
@@ -72,9 +78,12 @@ namespace RevitAdvancedSelectionTool.Core
 
             for (int i = 0; i < conditionCount; i++)
             {
+                var parameterName = uslovia[i, 0]?.Trim() ?? "";
+                if (string.IsNullOrWhiteSpace(parameterName)) continue;
+
                 var rule = new FilterRule
                 {
-                    ParameterName = uslovia[i, 0]?.Trim() ?? "",
+                    ParameterName = parameterName,
                     Value = uslovia[i, 2] ?? ""
                 };
 
@@ -104,11 +113,11 @@ namespace RevitAdvancedSelectionTool.Core
                 {
                     if (string.IsNullOrWhiteSpace(categoryName)) continue;
 
-                    var bic = FindBuiltInCategoryByName(doc, categoryName);
-                    if (bic.HasValue)
+                    var cat = FindCategoryByName(doc, categoryName);
+                    if (cat != null)
                     {
                         var elementsInCategory = new FilteredElementCollector(doc)
-                            .OfCategory(bic.Value)
+                            .OfCategoryId(cat.Id)
                             .WhereElementIsNotElementType()
                             .ToList();
 
@@ -332,6 +341,11 @@ namespace RevitAdvancedSelectionTool.Core
             // Получение элементов
             Document doc = uidoc.Document;
             allElementsInCategories = GetElementsForCategories(doc, SharedData.exitSelect);
+
+            if (rules.Count == 0)
+            {
+                return new HashSet<ElementId>(allElementsInCategories.Select(e => e.Id));
+            }
 
             // Применение фильтра
             return ApplyRulesToElements(allElementsInCategories, rules, doc, SharedData.unions);
