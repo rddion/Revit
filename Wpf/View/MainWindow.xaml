@@ -29,7 +29,7 @@
         </Grid>
         <Button Name="addRule" Content="Добавить правило" HorizontalAlignment="Left" Margin="594,450,0,0" VerticalAlignment="Top" Height="31" Width="151" FontFamily="ISOCPEUR" FontSize="16" Click="Add_Rule"/>
         <Button Content="Найти и выбрать" Command="{Binding FamilySearchCommand}" HorizontalAlignment="Left" Margin="237,450,0,0" VerticalAlignment="Top" Width="155" Height="31" FontFamily="ISOCPEUR" FontSize="16"/>
-        <Button Name="button_invert" Content="Инвертировать выбор" HorizontalAlignment="Left" Margin="415,450,0,0" VerticalAlignment="Top" Width="155" Height="31" FontFamily="ISOCPEUR" FontSize="16"/>
+        <Button Name="button_invert" IsEnabled="{Binding InvertButtonIsEnabled}" Content="Инвертировать выбор" HorizontalAlignment="Left" Margin="415,450,0,0" VerticalAlignment="Top" Width="155" Height="31" FontFamily="ISOCPEUR" FontSize="16"/>
         <Label Content="Категории" Margin="60,35,600,440" FontWeight="Medium" FontSize="16" FontStyle="Italic" FontFamily="ISOCPEUR"/>
         <Label Name="selCat" Content="{Binding SelectionCountState, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Left" Margin="0,319,0,0" VerticalAlignment="Top" Width="200"/>
 
