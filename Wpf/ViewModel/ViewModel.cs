@@ -154,7 +154,7 @@ namespace Wpf.ViewModel
 
         private void InvertSelection()
         {
-
+            RevitNot.GOG();
         }
 
         private void SearchPanelChanged()
