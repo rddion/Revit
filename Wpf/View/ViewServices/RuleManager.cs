@@ -221,6 +221,18 @@ namespace Wpf.View.ViewServices
                     controls = controls.Cast<object>().Where(it => it.Equals((object)control) == false).Cast<Control>().ToObservsbleCollection();
                 }
             }
+
+            if (controls.Count==4 && window.ViewModel.Conditions.Count == 4)
+            {
+                for (int i=0; i<window.ViewModel.Conditions.Count; i++)
+                {
+                    if (window.ViewModel.Conditions[i].Name == "souz")
+                    {
+                        window.ViewModel.Conditions.Remove(window.ViewModel.Conditions[i]);
+                    }
+                }
+            }
+
             marginVerticalConditions -= ((int)ControlTrigger.MarginOfNewRow);
 
             if (controls.Count > ((int)ControlTrigger.ALotOfRules))
@@ -237,8 +249,8 @@ namespace Wpf.View.ViewServices
 
         public void ClearAllRules()
         {
-            indexOfCondition = 0;
-            conditionElements.Clear();
+            //indexOfCondition = 0;
+            //conditionElements.Clear();
             
             for (int i = 0; i < controls.Count; i++)
             {
