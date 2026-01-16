@@ -44,7 +44,6 @@ namespace Wpf.View.ViewServices
 
             Guid ruleId = Guid.NewGuid();
 
-            window.button_invert.IsEnabled = false;
             if (controls.Count < ((int)ControlTrigger.FullStack))
             {
                 ViewModel.Condition conditionParam = new ViewModel.Condition("parametr", ruleId);
