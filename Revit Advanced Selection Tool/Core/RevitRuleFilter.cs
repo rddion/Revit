@@ -62,6 +62,10 @@ namespace RevitAdvancedSelectionTool.Core
             // Применение фильтра
             var resultElements = ApplyRulesToElements(allElements, rules, doc, unions);
 
+            // Сохранение результатов для инвертирования
+            SharedData.passedIds = resultElements;
+            SharedData.allElements = allElements;
+
             // Установка выбора
             uidoc.Selection.SetElementIds(resultElements.ToList());
         }
@@ -371,8 +375,14 @@ namespace RevitAdvancedSelectionTool.Core
 
         public static void GOG()
         {
-            if (SharedData.uidoc == null) return;
-            GOG(SharedData.uidoc);
+            if (SharedData.uidoc == null || SharedData.allElements == null || SharedData.passedIds == null) return;
+
+            var notPassedIds = SharedData.allElements
+                .Where(e => !SharedData.passedIds.Contains(e.Id))
+                .Select(e => e.Id)
+                .ToList();
+
+            SharedData.uidoc.Selection.SetElementIds(notPassedIds);
         }
 
         public static void GOG(string[,] uslovia, string[] unions)
@@ -411,6 +421,10 @@ namespace RevitAdvancedSelectionTool.Core
 
             // Применение фильтра
             var passedIds = RevitRuleFilter.ApplyRulesToElements(allElementsInCategories, rules, doc2, unions);
+
+            // Сохранение результатов для возможного повторного использования
+            SharedData.passedIds = passedIds;
+            SharedData.allElements = allElementsInCategories;
 
             var notPassedIds = allElementsInCategories
                 .Where(e => !passedIds.Contains(e.Id))
