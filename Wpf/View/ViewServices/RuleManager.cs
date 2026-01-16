@@ -33,7 +33,6 @@ namespace Wpf.View.ViewServices
         public RuleManager(MainWindow mainWindow)
         {
             this.window = mainWindow;
-            window.button_invert.IsEnabled = false;
         }
 
         public void AddRule()

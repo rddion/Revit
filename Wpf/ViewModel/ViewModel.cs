@@ -33,6 +33,8 @@ namespace Wpf.ViewModel
         private HashSet<string> temporaryPreviouslySelected = new HashSet<string>();
         private ObservableCollection<Condition> conditions = new ObservableCollection<Condition>();
 
+        private bool invertButtonIsEnabled=false;
+
         private string[,] uslovia;
         private string[] unions;
 
@@ -41,6 +43,15 @@ namespace Wpf.ViewModel
 
         public event PropertyChangedEventHandler PropertyChanged;
 
+        public bool InvertButtonIsEnabled
+        {
+            get { return invertButtonIsEnabled; }
+            set 
+            { 
+                invertButtonIsEnabled = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(this.InvertButtonIsEnabled)));
+            }
+        }
         public ObservableCollection<Condition> Conditions
         {
             get { return conditions; }
@@ -129,7 +140,12 @@ namespace Wpf.ViewModel
                 Categories.Add(category);
             }
             TextOfSearchPanel = null;
-            Parameters.Clear();
+            try
+            {
+                Parameters.Clear();
+            }
+            catch { }
+            InvertButtonIsEnabled = false;
         }
 
         private void SearchPanelChanged()
@@ -218,7 +234,7 @@ namespace Wpf.ViewModel
                     }
                     if (Conditions[i].Name == "Value")
                     {
-                        if (Conditions[i].Text == "")
+                        if (Conditions[i].Text == "" || Conditions[i].Text==null)
                         {
                             ShowErrorDialog();
                             breaking = true;
@@ -251,12 +267,12 @@ namespace Wpf.ViewModel
                     x++;
                 }
 
-                if (j == 3)
+                if (j == 3 && !breaking)
                 {
                     StorageType storageType = StorageType.String;
                     int actualIndex = 0;
                     
-                    StorageTypeDefinition(currentText,currentParametr,ref actualIndex, ref storageType);
+                    DefineStorageType(currentText,currentParametr,ref actualIndex, ref storageType);
 
                     if (storagetTypesOfParameters[actualIndex] == "Integer" && (storageType == StorageType.Double || storageType == StorageType.String))
                     {
@@ -278,12 +294,13 @@ namespace Wpf.ViewModel
             }
             if (!breaking)
             {
-               // data.Search(uslovia,unions);
+                // data.Search(uslovia,unions);
+                InvertButtonIsEnabled = true;
             }
 
         }
 
-        private void StorageTypeDefinition(Condition currentText, Condition currentParametr, ref int actualIndex, ref StorageType storageType)
+        private void DefineStorageType(Condition currentText, Condition currentParametr, ref int actualIndex, ref StorageType storageType)
         {
             Regex regex = new Regex(@"^\d*\.\d*$");
 
