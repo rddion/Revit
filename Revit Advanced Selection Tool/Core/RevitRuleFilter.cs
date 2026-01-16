@@ -368,5 +368,11 @@ namespace RevitAdvancedSelectionTool.Core
 
             uidoc.Selection.SetElementIds(notPassedIds);
         }
+
+        public static void GOG()
+        {
+            if (SharedData.uidoc == null) return;
+            GOG(SharedData.uidoc);
+        }
     }
 }
