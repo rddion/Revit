@@ -135,13 +135,11 @@ namespace Wpf.ViewModel
         private void SearchPanelChanged()
         {
 
-            //if (SelectedCategories.Count > 0)
-            //{
-                foreach (var selectedCategory in selectedCategories)
-                {
-                    temporaryPreviouslySelected.Add(selectedCategory);
-                }
-            //}
+            foreach (var selectedCategory in selectedCategories)
+            {
+                temporaryPreviouslySelected.Add(selectedCategory);
+            }
+ 
             temporaryPreviouslySelected = temporaryPreviouslySelected.Where(it => !(Categories.Contains(it)) || SelectedCategories.Contains(it)).ToHashSet();
 
             if (TextOfSearchPanel != null)
