@@ -1,4 +1,5 @@
-﻿using RevitAdvancedSelectionTool.Services;
+﻿using RevitAdvancedSelectionTool.Core;
+using RevitAdvancedSelectionTool.Services;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -294,7 +295,7 @@ namespace Wpf.ViewModel
             }
             if (!breaking)
             {
-                // data.Search(uslovia,unions);
+                RevitRuleFilter.ApplyFilterAndSelect(uslovia,unions);
                 InvertButtonIsEnabled = true;
             }
 
