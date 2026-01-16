@@ -68,13 +68,13 @@ namespace Troyan
         public static System.Collections.ObjectModel.ObservableCollection<string> GetCommonParameterNames(System.Collections.ObjectModel.ObservableCollection<string> selectedCategoryNames, Document doc)
         {
             var commonParams = GetCommonParameters(selectedCategoryNames, doc);
-            return new System.Collections.ObjectModel.ObservableCollection<string>(commonParams.Select(p => p.Name));
+            return new System.Collections.ObjectModel.ObservableCollection<string>(commonParams.OrderBy(p => p.Name).Select(p => p.Name));
         }
 
         public static System.Collections.ObjectModel.ObservableCollection<string> GetCommonParameterStorageTypes(System.Collections.ObjectModel.ObservableCollection<string> selectedCategoryNames, Document doc)
         {
             var commonParams = GetCommonParameters(selectedCategoryNames, doc);
-            return new System.Collections.ObjectModel.ObservableCollection<string>(commonParams.Select(p => p.StorageType.ToString()));
+            return new System.Collections.ObjectModel.ObservableCollection<string>(commonParams.OrderBy(p => p.Name).Select(p => p.StorageType.ToString()));
         }
 
         private static List<ParameterInfo> GetCommonParameters(System.Collections.ObjectModel.ObservableCollection<string> selectedCategoryNames, Document doc)
