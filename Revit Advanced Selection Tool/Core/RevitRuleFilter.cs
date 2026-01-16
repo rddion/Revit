@@ -31,6 +31,7 @@ namespace RevitAdvancedSelectionTool.Core
 
         public static void ApplyFilterAndSelect(UIDocument uidoc)
         {
+            if (uidoc == null) return;
             ApplyFilterAndSelect(uidoc, SharedData.uslovia, SharedData.unions, SharedData.exitSelect);
         }
 
@@ -61,6 +62,7 @@ namespace RevitAdvancedSelectionTool.Core
 
         public static void ApplyFilterAndSelect(string[,] uslovia, string[] unions)
         {
+            if (SharedData.uidoc == null) return;
             ApplyFilterAndSelect(SharedData.uidoc, uslovia, unions, SharedData.exitSelect);
         }
 
