@@ -109,6 +109,7 @@ namespace Wpf.ViewModel
         public ICommand ApplyCategoryCommand { get; }
         public ICommand UpdateCategoriesCommand { get; }
         public ICommand FamilySearchCommand { get; }
+        public ICommand InvertSelectionCommand { get; }
 
         public ViewModel()
         {
@@ -116,6 +117,7 @@ namespace Wpf.ViewModel
             ApplyCategoryCommand = new Contracts.CommandBinding(ApplyCategory);
             UpdateCategoriesCommand = new Contracts.CommandBinding(UpdateCollectionOfCategory);
             FamilySearchCommand = new Contracts.CommandBinding(FamilySearch);
+            InvertSelectionCommand = new Contracts.CommandBinding(InvertSelection);
 
             for (int i = 0; i < Categories.Count; i++)
             {
@@ -148,6 +150,11 @@ namespace Wpf.ViewModel
             catch { }
             Conditions.Clear();
             InvertButtonIsEnabled = false;
+        }
+
+        private void InvertSelection()
+        {
+
         }
 
         private void SearchPanelChanged()
