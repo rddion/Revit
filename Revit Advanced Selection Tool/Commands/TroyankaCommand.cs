@@ -29,6 +29,7 @@ namespace Troyan
         public static string[] unions;
         public static List<CategoryInfo> categories;
         public static Autodesk.Revit.DB.Document doc;
+        public static Autodesk.Revit.UI.UIDocument uidoc;
         public static ExternalEvent GetParamsEvent;
         public static ExternalEvent ApplyFilterEvent;
         public static ExternalEvent InvertEvent;

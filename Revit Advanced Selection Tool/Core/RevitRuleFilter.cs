@@ -31,9 +31,14 @@ namespace RevitAdvancedSelectionTool.Core
 
         public static void ApplyFilterAndSelect(UIDocument uidoc)
         {
+            ApplyFilterAndSelect(uidoc, SharedData.uslovia, SharedData.unions, SharedData.exitSelect);
+        }
+
+        public static void ApplyFilterAndSelect(UIDocument uidoc, string[,] uslovia, string[] unions, IEnumerable<string> selectedCategories)
+        {
             if (uidoc == null) throw new ArgumentNullException(nameof(uidoc));
 
-            int conditionCount = SharedData.uslovia.GetLength(0);
+            int conditionCount = uslovia.GetLength(0);
             if (conditionCount == 0)
             {
                 uidoc.Selection.SetElementIds(new List<ElementId>());
@@ -41,20 +46,25 @@ namespace RevitAdvancedSelectionTool.Core
             }
 
             // Конвертация условий в правила фильтрации
-            var rules = ConvertUsloviaToRules(conditionCount);
+            var rules = ConvertUsloviaToRules(uslovia, conditionCount);
 
             // Получение элементов
             Document doc = uidoc.Document;
-            List<Element> allElements = GetElementsForCategories(doc, SharedData.exitSelect);
+            List<Element> allElements = GetElementsForCategories(doc, selectedCategories);
 
             // Применение фильтра
-            var resultElements = ApplyRulesToElements(allElements, rules, doc);
+            var resultElements = ApplyRulesToElements(allElements, rules, doc, unions);
 
             // Установка выбора
             uidoc.Selection.SetElementIds(resultElements.ToList());
         }
 
-        private static List<FilterRule> ConvertUsloviaToRules(int conditionCount)
+        public static void ApplyFilterAndSelect(string[,] uslovia, string[] unions)
+        {
+            ApplyFilterAndSelect(SharedData.uidoc, uslovia, unions, SharedData.exitSelect);
+        }
+
+        private static List<FilterRule> ConvertUsloviaToRules(string[,] uslovia, int conditionCount)
         {
             var rules = new List<FilterRule>();
 
@@ -62,11 +72,11 @@ namespace RevitAdvancedSelectionTool.Core
             {
                 var rule = new FilterRule
                 {
-                    ParameterName = SharedData.uslovia[i, 0]?.Trim() ?? "",
-                    Value = SharedData.uslovia[i, 2] ?? ""
+                    ParameterName = uslovia[i, 0]?.Trim() ?? "",
+                    Value = uslovia[i, 2] ?? ""
                 };
 
-                string opStr = SharedData.uslovia[i, 1]?.Trim() ?? "Равно";
+                string opStr = uslovia[i, 1]?.Trim() ?? "Равно";
                 try
                 {
                     rule.Operator = FilterRule.ParseRussianOperator(opStr);
