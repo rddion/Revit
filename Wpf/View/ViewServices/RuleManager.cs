@@ -234,6 +234,23 @@ namespace Wpf.View.ViewServices
                 window.imageBad.Visibility = Visibility.Hidden;
             }
         }
+
+        public void ClearAllRules()
+        {
+            indexOfCondition = 0;
+            conditionElements.Clear();
+            
+            for (int i = 0; i < controls.Count; i++)
+            {
+                if(controls[i].Name!= "imageGood" || controls[i].Name != "imageBad")
+                {
+                    window.grid.Children.Remove(controls[i]);
+                }
+            }
+            controls.Clear();
+            marginVerticalConditions = 20;
+        } 
+
     }
 
     public static class EnumerableExtension

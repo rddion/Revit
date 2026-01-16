@@ -146,6 +146,7 @@ namespace Wpf.ViewModel
                 Parameters.Clear();
             }
             catch { }
+            Conditions.Clear();
             InvertButtonIsEnabled = false;
         }
 
