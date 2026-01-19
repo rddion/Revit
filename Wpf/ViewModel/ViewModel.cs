@@ -28,7 +28,7 @@ namespace Wpf.ViewModel
         private ObservableCollection<string> constantListOfCategories = new ObservableCollection<string>();
         private ObservableCollection<string> categories_ChangeableCollection;
         private ObservableCollection<string> parameters;
-        private ObservableCollection<string> storagetTypesOfParameters;
+        private ObservableCollection<string> storageTypesOfParameters;
         private ObservableCollection<string> selectedCategories = new ObservableCollection<string>();
         private ObservableCollection<string> previouslySelectedCategories = new ObservableCollection<string>();
         private HashSet<string> temporaryPreviouslySelected = new HashSet<string>();
@@ -132,7 +132,7 @@ namespace Wpf.ViewModel
             TextOfSearchPanel = "";
             Categories = selectedCategories;
             Parameters = TroyankaCommand.GetParameterNamesForCategories(Categories); //метод по заполнению параметров
-            storagetTypesOfParameters = TroyankaCommand.GetParameterStorageTypesForCategories(Categories);// метод по заполнению типов параметров
+            storageTypesOfParameters = TroyankaCommand.GetParameterStorageTypesForCategories(Categories);// метод по заполнению типов параметров
         }
 
         private void UpdateCollectionOfCategory()
@@ -278,14 +278,14 @@ namespace Wpf.ViewModel
 
                 if (j == 3 && !breaking)
                 {
-                    StorageType storageType = StorageType.String;
-                    int actualIndex = 0;
+                    StorageType storageTypeOfValue = StorageType.String;
+                    string storageTypeOfParameter = "String";
 
-                    DefineIndexOfCurrentParameter(ref actualIndex, currentParametr);
+                    DefineStorageTypeOfCurrentParameter(ref storageTypeOfParameter, currentParametr);
 
-                    DefineStorageTypeOfValue(currentText,currentParametr, ref storageType);
+                    DefineStorageTypeOfValue(currentText,currentParametr,storageTypeOfParameter, ref storageTypeOfValue);
 
-                    CheckErrors(actualIndex,storageType,currentText,ref breaking);
+                    CheckErrors(storageTypeOfParameter,storageTypeOfValue,currentText,ref breaking);
 
                     if (breaking)
                         break;
@@ -302,9 +302,12 @@ namespace Wpf.ViewModel
 
         }
 
-        private void DefineStorageTypeOfValue(Condition currentText, Condition currentParametr,ref StorageType storageType)
+        private void DefineStorageTypeOfValue(Condition currentText, Condition currentParametr,string storageTypeOfParameter, ref StorageType storageType)
         {
-            ReplacingPoints(ref currentText);
+            if (storageTypeOfParameter == "Double")
+            {
+                ReplacingPoints(ref currentText);
+            }
 
             try
             {
@@ -388,8 +391,10 @@ namespace Wpf.ViewModel
             }
         }
 
-        private void DefineIndexOfCurrentParameter(ref int actualIndex, Condition currentParametr)
+        private void DefineStorageTypeOfCurrentParameter(ref string storageTypeOfParameter, Condition currentParametr)
         {
+            int actualIndex = 0;
+
             for (int y = 0; y < Parameters.Count; y++)
             {
                 if (Parameters[y] == currentParametr.SelectedValue.ToString())
@@ -398,17 +403,19 @@ namespace Wpf.ViewModel
                     continue;
                 }
             }
+
+            storageTypeOfParameter = storageTypesOfParameters[actualIndex];
         }
 
-        private void CheckErrors(int actualIndex,StorageType storageType,Condition currentText,ref bool breaking)
+        private void CheckErrors(string storageTypeOfParameter, StorageType storageType,Condition currentText,ref bool breaking)
         {
-            if (storagetTypesOfParameters[actualIndex] == "Integer" && (storageType == StorageType.Double || storageType == StorageType.String))
+            if (storageTypeOfParameter == "Integer" && (storageType == StorageType.Double || storageType == StorageType.String))
             {
                 ErrorTextBox(currentText, StorageType.Integer);
                 breaking = true;
             }
 
-            if (storagetTypesOfParameters[actualIndex] == "Double" && storageType == StorageType.String)
+            if (storageTypeOfParameter == "Double" && storageType == StorageType.String)
             {
                 ErrorTextBox(currentText, StorageType.Double);
                 breaking = true;
