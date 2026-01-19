@@ -200,7 +200,8 @@ namespace RevitAdvancedSelectionTool.Core
 
             if (expected == null) expected = rule.Value;
 
-            return Compare(actual, expected, rule.Operator, doc, rule.Value);
+            string expectedStr = rule.Value.Replace(',', '.');
+            return Compare(actual, expected, rule.Operator, doc, expectedStr);
         }
 
         private static object GetParameterValue(Parameter param, Document doc)
@@ -280,6 +281,7 @@ namespace RevitAdvancedSelectionTool.Core
                     var parts = expectedStr.Split('.');
                     if (parts.Length > 1) decimals = parts[1].Length;
                 }
+                decimals = Math.Min(decimals, 15);
 
                 // Определить decimals для a
                 int decimalsA = 0;
@@ -289,6 +291,7 @@ namespace RevitAdvancedSelectionTool.Core
                     var partsA = actualStr.Split('.');
                     if (partsA.Length > 1) decimalsA = partsA[1].Length;
                 }
+                decimalsA = Math.Min(decimalsA, 15);
 
                 const double eps = 1e-9;
 
