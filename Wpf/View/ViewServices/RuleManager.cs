@@ -144,16 +144,7 @@ namespace Wpf.View.ViewServices
                     indexOfCondition--;
                 }
 
-                if (controls.Count > ((int)ControlTrigger.ALotOfRules))
-                {
-                    window.imageGood.Visibility = Visibility.Hidden;
-                    window.imageBad.Visibility = Visibility.Visible;
-                }
-                else
-                {
-                    window.imageGood.Visibility = Visibility.Visible;
-                    window.imageBad.Visibility = Visibility.Hidden;
-                }
+                DefineImageOfBackground();
 
                 indexOfCondition += ((int)ControlTrigger.IndexOfNewRow);
                 marginVerticalConditions += ((int)ControlTrigger.MarginOfNewRow);
