@@ -200,7 +200,7 @@ namespace RevitAdvancedSelectionTool.Core
 
             if (expected == null) expected = rule.Value;
 
-            return Compare(actual, expected, rule.Operator, doc);
+            return Compare(actual, expected, rule.Operator, doc, rule.Value);
         }
 
         private static object GetParameterValue(Parameter param, Document doc)
@@ -215,10 +215,6 @@ namespace RevitAdvancedSelectionTool.Core
                     var value = param.AsDouble();
                     var displayUnit = param.GetUnitTypeId();
                     var convertedValue = UnitUtils.ConvertFromInternalUnits(value, displayUnit);
-                    if (convertedValue % 1 != 0)
-                    {
-                        return Math.Round(convertedValue, 3);
-                    }
                     return convertedValue;
                 case StorageType.ElementId:
                     return param.AsElementId();
@@ -256,7 +252,7 @@ namespace RevitAdvancedSelectionTool.Core
             return input;
         }
 
-        private static bool Compare(object actual, object expected, RuleOperator op, Document doc)
+        private static bool Compare(object actual, object expected, RuleOperator op, Document doc, string expectedStr)
         {
             if (actual == null || expected == null) return false;
 
@@ -276,6 +272,18 @@ namespace RevitAdvancedSelectionTool.Core
             {
                 double a = Convert.ToDouble(actual);
                 double e = Convert.ToDouble(expected);
+
+                // Определить количество десятичных знаков в expectedStr
+                int decimals = 0;
+                if (expectedStr.Contains('.'))
+                {
+                    var parts = expectedStr.Split('.');
+                    if (parts.Length > 1) decimals = parts[1].Length;
+                }
+
+                a = Math.Round(a, decimals);
+                e = Math.Round(e, decimals);
+
                 const double eps = 1e-9;
 
                 switch (op)
@@ -288,7 +296,7 @@ namespace RevitAdvancedSelectionTool.Core
                 }
             }
 
-            if (actual is ElementId actualId && expected is string expectedStr)
+            if (actual is ElementId actualId && expected is string expectedStrLocal)
             {
                 if (actualId == ElementId.InvalidElementId) return false;
 
@@ -297,10 +305,10 @@ namespace RevitAdvancedSelectionTool.Core
 
                 switch (op)
                 {
-                    case RuleOperator.Equals: return elementName.Equals(expectedStr, StringComparison.OrdinalIgnoreCase);
-                    case RuleOperator.NotEquals: return !elementName.Equals(expectedStr, StringComparison.OrdinalIgnoreCase);
-                    case RuleOperator.Contains: return elementName.IndexOf(expectedStr, StringComparison.OrdinalIgnoreCase) >= 0;
-                    case RuleOperator.StartsWith: return elementName.StartsWith(expectedStr, StringComparison.OrdinalIgnoreCase);
+                    case RuleOperator.Equals: return elementName.Equals(expectedStrLocal, StringComparison.OrdinalIgnoreCase);
+                    case RuleOperator.NotEquals: return !elementName.Equals(expectedStrLocal, StringComparison.OrdinalIgnoreCase);
+                    case RuleOperator.Contains: return elementName.IndexOf(expectedStrLocal, StringComparison.OrdinalIgnoreCase) >= 0;
+                    case RuleOperator.StartsWith: return elementName.StartsWith(expectedStrLocal, StringComparison.OrdinalIgnoreCase);
                     default: return false;
                 }
             }
