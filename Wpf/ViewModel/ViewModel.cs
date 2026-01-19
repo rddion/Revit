@@ -280,22 +280,15 @@ namespace Wpf.ViewModel
                 {
                     StorageType storageType = StorageType.String;
                     int actualIndex = 0;
-                    
-                    DefineStorageType(currentText,currentParametr,ref actualIndex, ref storageType);
 
-                    if (storagetTypesOfParameters[actualIndex] == "Integer" && (storageType == StorageType.Double || storageType == StorageType.String))
-                    {
-                        ErrorTextBox(currentText, StorageType.Integer);
-                        breaking = true;
-                        break;
-                    }
+                    DefineIndexOfCurrentParameter(ref actualIndex, currentParametr);
 
-                    if (storagetTypesOfParameters[actualIndex] == "Double" && storageType == StorageType.String)
-                    {
-                        ErrorTextBox(currentText, StorageType.Double);
-                        breaking = true;
+                    DefineStorageTypeOfValue(currentText,currentParametr, ref storageType);
+
+                    CheckErrors(actualIndex,storageType,currentText,ref breaking);
+
+                    if (breaking)
                         break;
-                    }
 
                     k++;
                     j = 0;
@@ -309,18 +302,9 @@ namespace Wpf.ViewModel
 
         }
 
-        private void DefineStorageType(Condition currentText, Condition currentParametr, ref int actualIndex, ref StorageType storageType)
+        private void DefineStorageTypeOfValue(Condition currentText, Condition currentParametr,ref StorageType storageType)
         {
             ReplacingPoints(ref currentText);
-
-            for (int y = 0; y < Parameters.Count; y++)
-            {
-                if (Parameters[y] == currentParametr.SelectedValue.ToString())
-                {
-                    actualIndex = y;
-                    continue;
-                }
-            }
 
             try
             {
@@ -404,5 +388,31 @@ namespace Wpf.ViewModel
             }
         }
 
+        private void DefineIndexOfCurrentParameter(ref int actualIndex, Condition currentParametr)
+        {
+            for (int y = 0; y < Parameters.Count; y++)
+            {
+                if (Parameters[y] == currentParametr.SelectedValue.ToString())
+                {
+                    actualIndex = y;
+                    continue;
+                }
+            }
+        }
+
+        private void CheckErrors(int actualIndex,StorageType storageType,Condition currentText,ref bool breaking)
+        {
+            if (storagetTypesOfParameters[actualIndex] == "Integer" && (storageType == StorageType.Double || storageType == StorageType.String))
+            {
+                ErrorTextBox(currentText, StorageType.Integer);
+                breaking = true;
+            }
+
+            if (storagetTypesOfParameters[actualIndex] == "Double" && storageType == StorageType.String)
+            {
+                ErrorTextBox(currentText, StorageType.Double);
+                breaking = true;
+            }
+        }
     }
 }
