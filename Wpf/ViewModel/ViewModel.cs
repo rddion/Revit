@@ -311,17 +311,7 @@ namespace Wpf.ViewModel
 
         private void DefineStorageType(Condition currentText, Condition currentParametr, ref int actualIndex, ref StorageType storageType)
         {
-            Regex regex = new Regex(@"^\d*\.\d*$");
-
-            if (regex.IsMatch(currentText.Text))
-            {
-                try
-                {
-                    Convert.ToInt32(Regex.Replace(currentText.Text, @"\.", ""));
-                    currentText.Text = Regex.Replace(currentText.Text, @"\.", ",");
-                }
-                catch { }
-            }
+            ReplacingPoints(ref currentText);
 
             for (int y = 0; y < Parameters.Count; y++)
             {
@@ -397,6 +387,21 @@ namespace Wpf.ViewModel
                     break;
             }
 
+        }
+
+        private void ReplacingPoints(ref Condition currentText)
+        {
+            Regex regex = new Regex(@"^\d*\.\d*$");
+
+            if (regex.IsMatch(currentText.Text))
+            {
+                try
+                {
+                    Convert.ToInt32(Regex.Replace(currentText.Text, @"\.", ""));
+                    currentText.Text = Regex.Replace(currentText.Text, @"\.", ",");
+                }
+                catch { }
+            }
         }
 
     }
