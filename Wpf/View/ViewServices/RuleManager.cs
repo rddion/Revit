@@ -181,6 +181,37 @@ namespace Wpf.View.ViewServices
                 }
             }
 
+            DeleteSelectRowOfControls(keyOfCurrentRow,ruleIdToRemove,ref topMargin);
+
+            foreach (Control control in controls)
+            {
+                RaiseControlsBeforeDeletion(control,topMargin);
+
+                DeleteControlsAboveTheBorder(control,minMargin);
+            }
+
+            DeleteUnnecessaryCondition();
+
+            marginVerticalConditions -= ((int)ControlTrigger.MarginOfNewRow);
+
+            DefineImageOfBackground();
+        }
+
+        public void ClearAllRules()
+        {   
+            for (int i = 0; i < controls.Count; i++)
+            {
+                if(controls[i].Name!= "imageGood" || controls[i].Name != "imageBad")
+                {
+                    window.grid.Children.Remove(controls[i]);
+                }
+            }
+            controls.Clear();
+            marginVerticalConditions = 20;
+        } 
+
+        private void DeleteSelectRowOfControls(int keyOfCurrentRow,Guid IdRemove,ref double topMargin)
+        {
             foreach (var condition in conditionElements)
             {
 
@@ -196,45 +227,37 @@ namespace Wpf.View.ViewServices
 
                     if (condition.Value is Control ctrl && ctrl.DataContext is ViewModel.Condition cond)
                     {
-                        ruleIdToRemove = cond.RuleId;
+                        IdRemove = cond.RuleId;
                     }
                 }
-
             }
 
-            var conditionsToRemove = window.ViewModel.Conditions.Where(c => c.RuleId == ruleIdToRemove).ToList();
+            var conditionsToRemove = window.ViewModel.Conditions.Where(c => c.RuleId == IdRemove).ToList();
             foreach (var cond in conditionsToRemove)
             {
                 window.ViewModel.Conditions.Remove(cond);
             }
+        }
 
-            foreach (Control control in controls)
+        private void RaiseControlsBeforeDeletion(Control control, double topMargin)
+        {
+            if (control.Margin.Top > topMargin)
             {
-                if (control.Margin.Top > topMargin)
-                {
-                    control.Margin = new Thickness(control.Margin.Left, control.Margin.Top - ((int)ControlTrigger.MarginOfNewRow), control.Margin.Right, control.Margin.Bottom);
-                }
-
-                if (control.Margin.Top < minMargin)
-                {
-                    window.grid.Children.Remove((Control)control);
-                    controls = controls.Cast<object>().Where(it => it.Equals((object)control) == false).Cast<Control>().ToObservsbleCollection();
-                }
+                control.Margin = new Thickness(control.Margin.Left, control.Margin.Top - ((int)ControlTrigger.MarginOfNewRow), control.Margin.Right, control.Margin.Bottom);
             }
+        }
 
-            if (controls.Count==4 && window.ViewModel.Conditions.Count == 4)
+        private void DeleteControlsAboveTheBorder(Control control,double minMargin)
+        {
+            if (control.Margin.Top < minMargin)
             {
-                for (int i=0; i<window.ViewModel.Conditions.Count; i++)
-                {
-                    if (window.ViewModel.Conditions[i].Name == "souz")
-                    {
-                        window.ViewModel.Conditions.Remove(window.ViewModel.Conditions[i]);
-                    }
-                }
+                window.grid.Children.Remove((Control)control);
+                controls = controls.Cast<object>().Where(it => it.Equals((object)control) == false).Cast<Control>().ToObservsbleCollection();
             }
+        }
 
-            marginVerticalConditions -= ((int)ControlTrigger.MarginOfNewRow);
-
+        private void DefineImageOfBackground()
+        {
             if (controls.Count > ((int)ControlTrigger.ALotOfRules))
             {
                 window.imageGood.Visibility = Visibility.Hidden;
@@ -247,22 +270,19 @@ namespace Wpf.View.ViewServices
             }
         }
 
-        public void ClearAllRules()
+        private void DeleteUnnecessaryCondition()
         {
-            //indexOfCondition = 0;
-            //conditionElements.Clear();
-            
-            for (int i = 0; i < controls.Count; i++)
+            if (controls.Count == 4 && window.ViewModel.Conditions.Count == 4)
             {
-                if(controls[i].Name!= "imageGood" || controls[i].Name != "imageBad")
+                for (int i = 0; i < window.ViewModel.Conditions.Count; i++)
                 {
-                    window.grid.Children.Remove(controls[i]);
+                    if (window.ViewModel.Conditions[i].Name == "souz")
+                    {
+                        window.ViewModel.Conditions.Remove(window.ViewModel.Conditions[i]);
+                    }
                 }
             }
-            controls.Clear();
-            marginVerticalConditions = 20;
-        } 
-
+        }
     }
 
     public static class EnumerableExtension
