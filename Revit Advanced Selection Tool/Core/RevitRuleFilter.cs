@@ -296,11 +296,9 @@ namespace RevitAdvancedSelectionTool.Core
                 {
                     case RuleOperator.Equals:
                         a = Math.Round(a, decimals);
-                        e = Math.Round(e, decimals);
                         return Math.Abs(a - e) < eps;
                     case RuleOperator.NotEquals:
                         a = Math.Round(a, decimals);
-                        e = Math.Round(e, decimals);
                         return Math.Abs(a - e) >= eps;
                     case RuleOperator.GreaterThan:
                         e = Math.Round(e, decimalsA);
@@ -342,6 +340,12 @@ namespace RevitAdvancedSelectionTool.Core
             }
 
             return false;
+        }
+
+        private static double TruncateToDecimals(double value, int decimals)
+        {
+            double factor = Math.Pow(10, decimals);
+            return Math.Truncate(value * factor) / factor;
         }
 
         private static bool IsNumeric(object obj)
