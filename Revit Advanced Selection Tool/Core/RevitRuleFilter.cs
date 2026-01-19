@@ -281,17 +281,33 @@ namespace RevitAdvancedSelectionTool.Core
                     if (parts.Length > 1) decimals = parts[1].Length;
                 }
 
-                a = Math.Round(a, decimals);
-                e = Math.Round(e, decimals);
+                // Определить decimals для a
+                int decimalsA = 0;
+                string actualStr = a.ToString("G", CultureInfo.InvariantCulture);
+                if (actualStr.Contains('.'))
+                {
+                    var partsA = actualStr.Split('.');
+                    if (partsA.Length > 1) decimalsA = partsA[1].Length;
+                }
 
                 const double eps = 1e-9;
 
                 switch (op)
                 {
-                    case RuleOperator.Equals: return Math.Abs(a - e) < eps;
-                    case RuleOperator.NotEquals: return Math.Abs(a - e) >= eps;
-                    case RuleOperator.GreaterThan: return a > e;
-                    case RuleOperator.LessThan: return a < e;
+                    case RuleOperator.Equals:
+                        a = Math.Round(a, decimals);
+                        e = Math.Round(e, decimals);
+                        return Math.Abs(a - e) < eps;
+                    case RuleOperator.NotEquals:
+                        a = Math.Round(a, decimals);
+                        e = Math.Round(e, decimals);
+                        return Math.Abs(a - e) >= eps;
+                    case RuleOperator.GreaterThan:
+                        e = Math.Round(e, decimalsA);
+                        return a > e;
+                    case RuleOperator.LessThan:
+                        e = Math.Round(e, decimalsA);
+                        return a < e;
                     default: return false;
                 }
             }
