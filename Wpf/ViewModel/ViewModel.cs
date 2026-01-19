@@ -278,14 +278,7 @@ namespace Wpf.ViewModel
 
                 if (j == 3 && !breaking)
                 {
-                    StorageType storageTypeOfValue = StorageType.String;
-                    string storageTypeOfParameter = "String";
-
-                    DefineStorageTypeOfCurrentParameter(ref storageTypeOfParameter, currentParametr);
-
-                    DefineStorageTypeOfValue(currentText,currentParametr,storageTypeOfParameter, ref storageTypeOfValue);
-
-                    CheckErrors(storageTypeOfParameter,storageTypeOfValue,currentText,ref breaking);
+                    AnalysisOfStorageType(currentParametr, currentText, ref breaking);
 
                     if (breaking)
                         break;
@@ -420,6 +413,18 @@ namespace Wpf.ViewModel
                 ErrorTextBox(currentText, StorageType.Double);
                 breaking = true;
             }
+        }
+
+        private void AnalysisOfStorageType(Condition currentParametr,Condition currentText,ref bool breaking)
+        {
+            StorageType storageTypeOfValue = StorageType.String;
+            string storageTypeOfParameter = "String";
+
+            DefineStorageTypeOfCurrentParameter(ref storageTypeOfParameter, currentParametr);
+
+            DefineStorageTypeOfValue(currentText, currentParametr, storageTypeOfParameter, ref storageTypeOfValue);
+
+            CheckErrors(storageTypeOfParameter, storageTypeOfValue, currentText, ref breaking);
         }
     }
 }
