@@ -131,8 +131,8 @@ namespace Wpf.ViewModel
         {
             TextOfSearchPanel = "";
             Categories = selectedCategories;
-            Parameters = TroyankaCommand.GetParameterNamesForCategories(Categories); //метод по заполнению параметров
-            storageTypesOfParameters = TroyankaCommand.GetParameterStorageTypesForCategories(Categories);// метод по заполнению типов параметров
+            Parameters = TroyankaCommand.GetParameterNamesForCategories(Categories);
+            storageTypesOfParameters = TroyankaCommand.GetParameterStorageTypesForCategories(Categories);
         }
 
         private void UpdateCollectionOfCategory()
@@ -211,80 +211,29 @@ namespace Wpf.ViewModel
             bool breaking = false;
             uslovia = new string[0, 3];
             unions = new string[0];
-            int j = 0, k = 0, x = 0;
-            for (int i = 0; i < Conditions.Count; i++)
+            int indexOfColumn = 0, indexOfRow = 0, indexOfUnion = 0;
+            const int maxControlsInRow = 3;
+            for (int conditionIndex = 0; conditionIndex < Conditions.Count; conditionIndex++)
             {
-                if (Conditions[i].Name != "close" && Conditions[i].Name != "souz")
-                {
-                    string[,] vremUsl = uslovia;
-                    uslovia = new string[k + 1, 3];
-                    for (int q = 0; q < vremUsl.GetLength(0); q++)
-                    {
-                        for (int r = 0; r < 3; r++)
-                        {
-                            uslovia[q, r] = vremUsl[q, r];
-                        }
-                    }
+                AddUslovia(conditionIndex,indexOfRow,ref indexOfColumn,ref currentText,ref currentParametr,ref breaking);
 
-                    if (Conditions[i].Name == "parametr" || Conditions[i].Name == "condition1")
-                    {
-                        if (Conditions[i].SelectedItem == null)
-                        {
-                            ShowErrorDialog();
-                            breaking = true;
-                            break;
-                        }
+                if(breaking)
+                    break;
 
-                        if (Conditions[i].Name == "parametr")
-                        {
-                            currentParametr = Conditions[i];
-                        }
-                        uslovia[k, j] = (Conditions[i].SelectedValue).ToString();
-                    }
-                    if (Conditions[i].Name == "Value")
-                    {
-                        if (Conditions[i].Text == "" || Conditions[i].Text==null)
-                        {
-                            ShowErrorDialog();
-                            breaking = true;
-                            break;
-                        }
-                        Conditions[i].Background = Brushes.White;
-                        currentText = Conditions[i];
-                        uslovia[k, j] = Conditions[i].Text;
-                    }
-                    j++;
-                }
+                AddUnion(conditionIndex, ref indexOfUnion, ref breaking);
 
+                if(breaking)
+                    break;
 
-
-                if (Conditions[i].Name == "souz")
-                {
-                    string[] vremUnion = unions;
-                    unions = new string[x + 1];
-                    for (int q = 0; q < vremUnion.Length; q++)
-                    {
-                        unions[q] = vremUnion[q];
-                    }
-                    if (Conditions[i].SelectedItem == null)
-                    {
-                        ShowErrorDialog();
-                        breaking = true;
-                        break;
-                    }
-                    unions[x] = Conditions[i].SelectedValue.ToString();
-                    x++;
-                }
-
-                if (j == 3 && !breaking)
+                if (indexOfColumn == maxControlsInRow && !breaking)
                 {
                     AnalysisOfStorageType(currentParametr, currentText, ref breaking);
 
                     if (breaking)
                         break;
 
-                    k++;
-                    j = 0;
+                    indexOfRow++;
+                    indexOfColumn = 0;
                 }
             }
             if (!breaking)
@@ -406,12 +355,14 @@ namespace Wpf.ViewModel
             {
                 ErrorTextBox(currentText, StorageType.Integer);
                 breaking = true;
+                return;
             }
 
             if (storageTypeOfParameter == "Double" && storageType == StorageType.String)
             {
                 ErrorTextBox(currentText, StorageType.Double);
                 breaking = true;
+                return;
             }
         }
 
@@ -425,6 +376,95 @@ namespace Wpf.ViewModel
             DefineStorageTypeOfValue(currentText, currentParametr, storageTypeOfParameter, ref storageTypeOfValue);
 
             CheckErrors(storageTypeOfParameter, storageTypeOfValue, currentText, ref breaking);
+        }
+
+        private void AddRowForUslovia(int indexOfRow)
+        {
+            string[,] vremUsl = uslovia;
+            uslovia = new string[indexOfRow + 1, 3];
+            for (int q = 0; q < vremUsl.GetLength(0); q++)
+            {
+                for (int r = 0; r < 3; r++)
+                {
+                    uslovia[q, r] = vremUsl[q, r];
+                }
+            }
+        }
+
+        private void AddControl_ParameterOrCondition(int conditionIndex,int indexOfRow,int indexOfColumn, ref Condition currentParametr)
+        {
+            if (Conditions[conditionIndex].Name == "parametr")
+            {
+                currentParametr = Conditions[conditionIndex];
+            }
+            uslovia[indexOfRow, indexOfColumn] = (Conditions[conditionIndex].SelectedValue).ToString();
+        }
+
+        private void AddControl_Value(int conditionIndex, int indexOfRow, int indexOfColumn, ref Condition currentText)
+        {
+            Conditions[conditionIndex].Background = Brushes.White;
+            currentText = Conditions[conditionIndex];
+            uslovia[indexOfRow, indexOfColumn] = Conditions[conditionIndex].Text;
+        }
+
+        private void AddUslovia(int conditionIndex, int indexOfRow,ref int indexOfColumn, ref Condition currentText, ref Condition currentParametr,ref bool breaking)
+        {
+            if (Conditions[conditionIndex].Name != "close" && Conditions[conditionIndex].Name != "souz")
+            {
+                AddRowForUslovia(indexOfRow);
+
+                if (Conditions[conditionIndex].Name == "parametr" || Conditions[conditionIndex].Name == "condition1")
+                {
+                    if (Conditions[conditionIndex].SelectedItem == null)
+                    {
+                        ShowErrorDialog();
+                        breaking = true;
+                        return;
+                    }
+
+                    AddControl_ParameterOrCondition(conditionIndex, indexOfRow, indexOfColumn, ref currentParametr);
+                }
+
+                if (Conditions[conditionIndex].Name == "Value")
+                {
+                    if (Conditions[conditionIndex].Text == "" || Conditions[conditionIndex].Text == null)
+                    {
+                        ShowErrorDialog();
+                        breaking = true;
+                        return;
+                    }
+
+                    AddControl_Value(conditionIndex, indexOfRow, indexOfColumn, ref currentText);
+                }
+                indexOfColumn++;
+            }
+        }
+
+        private void AddRowForUnions(int indexOfUnion)
+        {
+            string[] vremUnion = unions;
+            unions = new string[indexOfUnion + 1];
+            for (int q = 0; q < vremUnion.Length; q++)
+            {
+                unions[q] = vremUnion[q];
+            }
+        }
+
+        private void AddUnion(int conditionIndex,ref int indexOfUnion,ref bool breaking)
+        {
+            if (Conditions[conditionIndex].Name == "souz")
+            {
+                AddRowForUnions(indexOfUnion);
+
+                if (Conditions[conditionIndex].SelectedItem == null)
+                {
+                    ShowErrorDialog();
+                    breaking = true;
+                    return;
+                }
+                unions[indexOfUnion] = Conditions[conditionIndex].SelectedValue.ToString();
+                indexOfUnion++;
+            }
         }
     }
 }
