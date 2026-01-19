@@ -23,7 +23,7 @@ namespace Wpf.ViewModel
 {
     internal class ViewModel : INotifyPropertyChanged
     {
-        private CategoryService categoryService = new CategoryService(); // экземпляр revitApi
+        private CategoryService categoryService = new CategoryService(); 
 
         private ObservableCollection<string> constantListOfCategories = new ObservableCollection<string>();
         private ObservableCollection<string> categories_ChangeableCollection;
@@ -131,9 +131,9 @@ namespace Wpf.ViewModel
         {
             TextOfSearchPanel = "";
             Categories = selectedCategories;
-            Troyan.SharedData.selectedCategoriesForFilter = new System.Collections.ObjectModel.ObservableCollection<string>(selectedCategories);
-            Parameters = TroyankaCommand.GetParameterNamesForCategories(Categories); //метод по заполнению параметров
-            storageTypesOfParameters = TroyankaCommand.GetParameterStorageTypesForCategories(Categories);// метод по заполнению типов параметров
+            SharedData.selectedCategoriesForFilter = new ObservableCollection<string>(Categories);
+            Parameters = TroyankaCommand.GetParameterNamesForCategories(Categories); 
+            storageTypesOfParameters = TroyankaCommand.GetParameterStorageTypesForCategories(Categories);
         }
 
         private void UpdateCollectionOfCategory()
