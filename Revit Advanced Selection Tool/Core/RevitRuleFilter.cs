@@ -31,7 +31,7 @@ namespace RevitAdvancedSelectionTool.Core
         public static void ApplyFilterAndSelect(UIDocument uidoc)
         {
             if (uidoc == null) return;
-            ApplyFilterAndSelect(uidoc, SharedData.uslovia, SharedData.unions, SharedData.exitSelect);
+            ApplyFilterAndSelect(uidoc, SharedData.uslovia, SharedData.unions, SharedData.selectedCategoriesForFilter);
         }
 
         public static void ApplyFilterAndSelect(UIDocument uidoc, string[,] uslovia, string[] unions, IEnumerable<string> selectedCategories)
@@ -73,7 +73,7 @@ namespace RevitAdvancedSelectionTool.Core
         public static void ApplyFilterAndSelect(string[,] uslovia, string[] unions)
         {
             if (SharedData.uidoc == null) return;
-            ApplyFilterAndSelect(SharedData.uidoc, uslovia, unions, SharedData.exitSelect);
+            ApplyFilterAndSelect(SharedData.uidoc, uslovia, unions, SharedData.selectedCategoriesForFilter);
         }
 
         internal static List<FilterRule> ConvertUsloviaToRules(string[,] uslovia, int conditionCount)
@@ -369,7 +369,7 @@ namespace RevitAdvancedSelectionTool.Core
 
             // Получение элементов
             Document doc = uidoc.Document;
-            allElementsInCategories = GetElementsForCategories(doc, SharedData.exitSelect);
+            allElementsInCategories = GetElementsForCategories(doc, SharedData.selectedCategoriesForFilter);
 
             if (rules.Count == 0)
             {
@@ -413,7 +413,7 @@ namespace RevitAdvancedSelectionTool.Core
         public static void GOG(string[,] uslovia, string[] unions)
         {
             if (SharedData.uidoc == null) return;
-            GOG(SharedData.uidoc, uslovia, unions, SharedData.exitSelect);
+            GOG(SharedData.uidoc, uslovia, unions, SharedData.selectedCategoriesForFilter);
         }
 
         public static void GOG(UIDocument uidoc, string[,] uslovia, string[] unions, IEnumerable<string> selectedCategories)
