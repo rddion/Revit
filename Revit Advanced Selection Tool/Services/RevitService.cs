@@ -12,7 +12,6 @@ namespace RevitAdvancedSelectionTool.Services
 {
     public class RevitService : IRevitService
     {
-        public event EventHandler<string> StatusChanged;
 
         public async Task<List<CategoryModel>> GetCategoriesAsync()
         {
