@@ -345,12 +345,6 @@ namespace RevitAdvancedSelectionTool.Core
             return false;
         }
 
-        private static double TruncateToDecimals(double value, int decimals)
-        {
-            double factor = Math.Pow(10, decimals);
-            return Math.Truncate(value * factor) / factor;
-        }
-
         private static bool IsNumeric(object obj)
         {
             return obj is sbyte || obj is byte || obj is short || obj is ushort ||

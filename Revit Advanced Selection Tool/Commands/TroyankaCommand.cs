@@ -374,7 +374,7 @@ namespace Troyan
                 serializer.WriteObject(stream, message);
             }
 
-            TaskDialog.Show("Revit", $"Категории сохранены!\nВсего: {categories.Count}");
+           // TaskDialog.Show("Revit", $"Категории сохранены!\nВсего: {categories.Count}");
         }
 
         public static (System.Collections.ObjectModel.ObservableCollection<string> names, System.Collections.ObjectModel.ObservableCollection<string> types) GetParametersForCategories(System.Collections.ObjectModel.ObservableCollection<string> categories)
