@@ -207,36 +207,10 @@ namespace Wpf.ViewModel
 
         private void FamilySearch()
         {
-            Condition currentText = null;
-            Condition currentParametr = null;
             bool breaking = false;
-            uslovia = new string[0, 3];
-            unions = new string[0];
-            int indexOfColumn = 0, indexOfRow = 0, indexOfUnion = 0;
-            const int maxControlsInRow = 3;
-            for (int conditionIndex = 0; conditionIndex < Conditions.Count; conditionIndex++)
-            {
-                AddUslovia(conditionIndex,indexOfRow,ref indexOfColumn,ref currentText,ref currentParametr,ref breaking);
 
-                if(breaking)
-                    break;
+            ConvertConditionsToSending(ref breaking);
 
-                AddUnion(conditionIndex, ref indexOfUnion, ref breaking);
-
-                if(breaking)
-                    break;
-
-                if (indexOfColumn == maxControlsInRow && !breaking)
-                {
-                    AnalysisOfStorageType(currentParametr, currentText, ref breaking);
-
-                    if (breaking)
-                        break;
-
-                    indexOfRow++;
-                    indexOfColumn = 0;
-                }
-            }
             if (!breaking)
             {
                 RevitRuleFilter.ApplyFilterAndSelect(uslovia,unions);
@@ -467,5 +441,39 @@ namespace Wpf.ViewModel
                 indexOfUnion++;
             }
         }
+
+        private void ConvertConditionsToSending(ref bool breaking)
+        {
+            Condition currentText = null;
+            Condition currentParametr = null;
+            uslovia = new string[0, 3];
+            unions = new string[0];
+            int indexOfColumn = 0, indexOfRow = 0, indexOfUnion = 0;
+            const int maxControlsInRow = 3;
+
+            for (int conditionIndex = 0; conditionIndex < Conditions.Count; conditionIndex++)
+            {
+                AddUslovia(conditionIndex, indexOfRow, ref indexOfColumn, ref currentText, ref currentParametr, ref breaking);
+
+                if (breaking)
+                    break;
+
+                AddUnion(conditionIndex, ref indexOfUnion, ref breaking);
+
+                if (breaking)
+                    break;
+
+                if (indexOfColumn == maxControlsInRow && !breaking)
+                {
+                    AnalysisOfStorageType(currentParametr, currentText, ref breaking);
+
+                    if (breaking)
+                        break;
+
+                    indexOfRow++;
+                    indexOfColumn = 0;
+                }
+            }
+        }
     }
-}
+} 
