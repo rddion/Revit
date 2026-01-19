@@ -25,6 +25,7 @@ namespace Troyan
         public static System.Collections.ObjectModel.ObservableCollection<string> exitParameters;
         public static System.Collections.ObjectModel.ObservableCollection<string> storageTypesOfParameters;
         public static System.Collections.ObjectModel.ObservableCollection<string> exitSelect;
+        public static System.Collections.ObjectModel.ObservableCollection<string> selectedCategoriesForFilter;
         public static string[,] uslovia;
         public static string[] unions;
         public static List<CategoryInfo> categories;
@@ -41,6 +42,7 @@ namespace Troyan
             exitParameters = new System.Collections.ObjectModel.ObservableCollection<string>();
             storageTypesOfParameters = new System.Collections.ObjectModel.ObservableCollection<string>();
             exitSelect = new System.Collections.ObjectModel.ObservableCollection<string>();
+            selectedCategoriesForFilter = new System.Collections.ObjectModel.ObservableCollection<string>();
             uslovia = new string[0, 3];
             unions = new string[0];
             categories = new List<CategoryInfo>();

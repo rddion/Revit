@@ -131,6 +131,7 @@ namespace Wpf.ViewModel
         {
             TextOfSearchPanel = "";
             Categories = selectedCategories;
+            Troyan.SharedData.selectedCategoriesForFilter = new System.Collections.ObjectModel.ObservableCollection<string>(selectedCategories);
             Parameters = TroyankaCommand.GetParameterNamesForCategories(Categories); //метод по заполнению параметров
             storageTypesOfParameters = TroyankaCommand.GetParameterStorageTypesForCategories(Categories);// метод по заполнению типов параметров
         }
