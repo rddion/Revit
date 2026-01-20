@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -46,102 +47,17 @@ namespace Wpf.View.ViewServices
 
             if (controls.Count < ((int)ControlTrigger.FullStack))
             {
-                ViewModel.Condition conditionParam = new ViewModel.Condition("parametr", ruleId);
-                window.ViewModel.Conditions.Add(conditionParam);
+                AddParameterControl(ruleId, bindingParameters);
 
-                ComboBox parametr = new ComboBox();
-                parametr.DataContext = conditionParam;
-                parametr.Height = controlHeight;
-                parametr.Width = controlParameterWidth;
-                parametr.HorizontalAlignment = HorizontalAlignment.Left;
-                parametr.VerticalAlignment = VerticalAlignment.Top;
-                parametr.Margin = new Thickness(20, marginVerticalConditions, 0, 0);
-                parametr.Name = "parametr";
-                parametr.SetBinding(ComboBox.ItemsSourceProperty, bindingParameters);
-                parametr.SetBinding(ComboBox.SelectedValueProperty, new Binding("SelectedValue") { Mode = BindingMode.TwoWay, UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged });
-                parametr.SetBinding(ComboBox.SelectedItemProperty, new Binding("SelectedItem") { Mode = BindingMode.TwoWay, UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged });
-                parametr.SetBinding(ComboBox.BackgroundProperty, new Binding("Background") { Mode = BindingMode.TwoWay, UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged });
-                window.grid.Children.Add(parametr);
-                controls.Add(parametr);
-                conditionElements.Add(indexOfCondition++, parametr);
+                AddConditionControl(ruleId);
 
-                ViewModel.Condition conditionCond = new ViewModel.Condition("condition1", ruleId);
-                window.ViewModel.Conditions.Add(conditionCond);
+                AddValueControl(ruleId);
 
-                List<string> conditionsList = new List<string> { "Равно", "Не равно", "Содержит", "Начинается с", "Больше", "Меньше" };
-                ComboBox condition1 = new ComboBox();
-                condition1.DataContext = conditionCond;
-                condition1.Height = controlHeight;
-                condition1.Width = controlConditionWidth;
-                condition1.HorizontalAlignment = HorizontalAlignment.Left;
-                condition1.VerticalAlignment = VerticalAlignment.Top;
-                condition1.Name = "condition1";
-                condition1.Margin = new Thickness(240, marginVerticalConditions, 0, 0);
-                condition1.ItemsSource = conditionsList;
-                condition1.SelectedIndex = 0;
-                condition1.SetBinding(ComboBox.SelectedValueProperty, new Binding("SelectedValue") { Mode = BindingMode.TwoWay, UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged });
-                condition1.SetBinding(ComboBox.SelectedItemProperty, new Binding("SelectedItem") { Mode = BindingMode.TwoWay, UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged });
-                condition1.SetBinding(ComboBox.BackgroundProperty, new Binding("Background") { Mode = BindingMode.TwoWay, UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged });
-                window.grid.Children.Add(condition1);
-                controls.Add(condition1);
-                conditionElements.Add(indexOfCondition++, condition1);
-
-                ViewModel.Condition conditionValue = new ViewModel.Condition("Value", ruleId);
-                window.ViewModel.Conditions.Add(conditionValue);
-
-                TextBox value = new TextBox();
-                value.DataContext = conditionValue;
-                value.Height = controlHeight;
-                value.Width = controlTextBoxWidth;
-                value.HorizontalAlignment = HorizontalAlignment.Left;
-                value.VerticalAlignment = VerticalAlignment.Top;
-                value.Background = Brushes.White;
-                value.Opacity = 1;
-                value.Name = "Value";
-                value.Margin = new Thickness(360, marginVerticalConditions, 0, 0);
-                value.SetBinding(TextBox.TextProperty, new Binding("Text") { Mode = BindingMode.TwoWay, UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged });
-                value.SetBinding(TextBox.BackgroundProperty, new Binding("Background") { Mode = BindingMode.TwoWay, UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged });
-                window.grid.Children.Add(value);
-                controls.Add(value);
-                conditionElements.Add(indexOfCondition++, value);
-
-                Button close = new Button();
-                close.Height = controlHeight;
-                close.Width = controlCloseWidth;
-                close.HorizontalAlignment = HorizontalAlignment.Left;
-                close.VerticalAlignment = VerticalAlignment.Top;
-                close.Background = Brushes.AliceBlue;
-                close.Content = "X";
-                close.Name = "close";
-                close.Foreground = Brushes.Gray;
-                close.Margin = new Thickness(515, marginVerticalConditions, 0, 0);
-                close.Click += Close_Click;
-                window.grid.Children.Add(close);
-                controls.Add(close);
-                conditionElements.Add(indexOfCondition++, close);
+                AddDeleteButtonControl();
 
                 if (marginVerticalConditions > ((int)ControlTrigger.TopMargin))
                 {
-                    ViewModel.Condition conditionSouz = new ViewModel.Condition("souz", ruleId);
-                    window.ViewModel.Conditions.Add(conditionSouz);
-
-                    ComboBox souz = new ComboBox();
-                    souz.DataContext = conditionSouz;
-                    souz.Height = controlHeight;
-                    souz.Width = controlSouzWidth;
-                    souz.HorizontalAlignment = HorizontalAlignment.Left;
-                    souz.VerticalAlignment = VerticalAlignment.Top;
-                    souz.Background = Brushes.AliceBlue;
-                    souz.Name = "souz";
-                    souz.ItemsSource = new string[] { "И", "ИЛИ" };
-                    souz.Margin = new Thickness(20, marginVerticalConditions - 25, 0, 0);
-                    souz.SetBinding(ComboBox.SelectedValueProperty, new Binding("SelectedValue") { Mode = BindingMode.TwoWay, UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged });
-                    souz.SetBinding(ComboBox.SelectedItemProperty, new Binding("SelectedItem") { Mode = BindingMode.TwoWay, UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged });
-                    souz.SetBinding(ComboBox.BackgroundProperty, new Binding("Background") { Mode = BindingMode.TwoWay, UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged });
-                    window.grid.Children.Add(souz);
-                    controls.Add(souz);
-                    conditionElements.Add(indexOfCondition++, souz);
-                    indexOfCondition--;
+                    AddUnionControl(ruleId);
                 }
 
                 DefineImageOfBackground();
@@ -273,6 +189,116 @@ namespace Wpf.View.ViewServices
                     }
                 }
             }
+        }
+
+        private void AddParameterControl(Guid ruleId,Binding bindingParameters)
+        {
+            ViewModel.Condition conditionParam = new ViewModel.Condition("parametr", ruleId);
+            window.ViewModel.Conditions.Add(conditionParam);
+
+            ComboBox parametr = new ComboBox();
+            parametr.DataContext = conditionParam;
+            parametr.Height = controlHeight;
+            parametr.Width = controlParameterWidth;
+            parametr.HorizontalAlignment = HorizontalAlignment.Left;
+            parametr.VerticalAlignment = VerticalAlignment.Top;
+            parametr.Margin = new Thickness(20, marginVerticalConditions, 0, 0);
+            parametr.Name = "parametr";
+            parametr.SetBinding(ComboBox.ItemsSourceProperty, bindingParameters);
+            parametr.SetBinding(ComboBox.SelectedValueProperty, new Binding("SelectedValue") { Mode = BindingMode.TwoWay, UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged });
+            parametr.SetBinding(ComboBox.SelectedItemProperty, new Binding("SelectedItem") { Mode = BindingMode.TwoWay, UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged });
+            parametr.SetBinding(ComboBox.BackgroundProperty, new Binding("Background") { Mode = BindingMode.TwoWay, UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged });
+            window.grid.Children.Add(parametr);
+            controls.Add(parametr);
+            conditionElements.Add(indexOfCondition++, parametr);
+        }
+
+        private void AddConditionControl(Guid ruleId)
+        {
+            ViewModel.Condition conditionCond = new ViewModel.Condition("condition1", ruleId);
+            window.ViewModel.Conditions.Add(conditionCond);
+
+            List<string> conditionsList = new List<string> { "Равно", "Не равно", "Содержит", "Начинается с", "Больше", "Меньше" };
+            ComboBox condition1 = new ComboBox();
+            condition1.DataContext = conditionCond;
+            condition1.Height = controlHeight;
+            condition1.Width = controlConditionWidth;
+            condition1.HorizontalAlignment = HorizontalAlignment.Left;
+            condition1.VerticalAlignment = VerticalAlignment.Top;
+            condition1.Name = "condition1";
+            condition1.Margin = new Thickness(240, marginVerticalConditions, 0, 0);
+            condition1.ItemsSource = conditionsList;
+            condition1.SelectedIndex = 0;
+            condition1.SetBinding(ComboBox.SelectedValueProperty, new Binding("SelectedValue") { Mode = BindingMode.TwoWay, UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged });
+            condition1.SetBinding(ComboBox.SelectedItemProperty, new Binding("SelectedItem") { Mode = BindingMode.TwoWay, UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged });
+            condition1.SetBinding(ComboBox.BackgroundProperty, new Binding("Background") { Mode = BindingMode.TwoWay, UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged });
+            window.grid.Children.Add(condition1);
+            controls.Add(condition1);
+            conditionElements.Add(indexOfCondition++, condition1);
+        }
+
+        private void AddValueControl(Guid ruleId)
+        {
+            ViewModel.Condition conditionValue = new ViewModel.Condition("Value", ruleId);
+            window.ViewModel.Conditions.Add(conditionValue);
+
+            TextBox value = new TextBox();
+            value.DataContext = conditionValue;
+            value.Height = controlHeight;
+            value.Width = controlTextBoxWidth;
+            value.HorizontalAlignment = HorizontalAlignment.Left;
+            value.VerticalAlignment = VerticalAlignment.Top;
+            value.Background = Brushes.White;
+            value.Opacity = 1;
+            value.Name = "Value";
+            value.Margin = new Thickness(360, marginVerticalConditions, 0, 0);
+            value.SetBinding(TextBox.TextProperty, new Binding("Text") { Mode = BindingMode.TwoWay, UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged });
+            value.SetBinding(TextBox.BackgroundProperty, new Binding("Background") { Mode = BindingMode.TwoWay, UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged });
+            window.grid.Children.Add(value);
+            controls.Add(value);
+            conditionElements.Add(indexOfCondition++, value);
+        }
+
+        private void AddDeleteButtonControl()
+        {
+            Button close = new Button();
+            close.Height = controlHeight;
+            close.Width = controlCloseWidth;
+            close.HorizontalAlignment = HorizontalAlignment.Left;
+            close.VerticalAlignment = VerticalAlignment.Top;
+            close.Background = Brushes.AliceBlue;
+            close.Content = "X";
+            close.Name = "close";
+            close.Foreground = Brushes.Gray;
+            close.Margin = new Thickness(515, marginVerticalConditions, 0, 0);
+            close.Click += Close_Click;
+            window.grid.Children.Add(close);
+            controls.Add(close);
+            conditionElements.Add(indexOfCondition++, close);
+        }
+
+        private void AddUnionControl(Guid ruleId)
+        {
+            ViewModel.Condition conditionSouz = new ViewModel.Condition("souz", ruleId);
+            window.ViewModel.Conditions.Add(conditionSouz);
+
+            ComboBox souz = new ComboBox();
+            souz.DataContext = conditionSouz;
+            souz.Height = controlHeight;
+            souz.Width = controlSouzWidth;
+            souz.HorizontalAlignment = HorizontalAlignment.Left;
+            souz.VerticalAlignment = VerticalAlignment.Top;
+            souz.Background = Brushes.AliceBlue;
+            souz.Name = "souz";
+            souz.ItemsSource = new string[] { "И", "ИЛИ" };
+            souz.Margin = new Thickness(20, marginVerticalConditions - 25, 0, 0);
+            souz.SetBinding(ComboBox.SelectedValueProperty, new Binding("SelectedValue") { Mode = BindingMode.TwoWay, UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged });
+            souz.SetBinding(ComboBox.SelectedItemProperty, new Binding("SelectedItem") { Mode = BindingMode.TwoWay, UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged });
+            souz.SetBinding(ComboBox.BackgroundProperty, new Binding("Background") { Mode = BindingMode.TwoWay, UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged });
+            window.grid.Children.Add(souz);
+            controls.Add(souz);
+            conditionElements.Add(indexOfCondition++, souz);
+            indexOfCondition--;
         }
     }
 
