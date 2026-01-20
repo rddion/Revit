@@ -18,7 +18,7 @@ namespace Troyan
         {
             string assemblyLocation = Assembly.GetExecutingAssembly().Location,
                 icons = Path.GetDirectoryName(assemblyLocation) + @"\icons\",
-                tabName = "Плагин P.P.";
+                tabName = "RAST";
             application.CreateRibbonTab(tabName);
             RibbonPanel panell = application.CreateRibbonPanel(tabName, "Список");
             PushButtonData buttomData = new PushButtonData(nameof(TroyankaCommand), "Запуск", assemblyLocation, typeof(TroyankaCommand).FullName)
