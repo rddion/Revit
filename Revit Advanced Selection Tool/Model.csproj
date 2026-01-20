@@ -35,9 +35,11 @@
     <Reference Include="PresentationFramework" />
     <Reference Include="RevitAPI">
       <HintPath>C:\Program Files\Autodesk\Revit 2021\RevitAPI.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="RevitAPIUI">
       <HintPath>C:\Program Files\Autodesk\Revit 2021\RevitAPIUI.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -57,11 +59,9 @@
     <Compile Include="Models\ParameterInfo.cs" />
     <Compile Include="Models\SearchResult.cs" />
     <Compile Include="Models\RevitElement.cs" />
-
     <!-- Interfaces -->
     <Compile Include="Interfaces\INotifyPropertyChanged.cs" />
     <Compile Include="Interfaces\IDataErrorInfo.cs" />
-
     <!-- Services -->
     <Compile Include="Services\IRevitService.cs" />
     <Compile Include="Services\RevitService.cs" />
@@ -69,15 +69,12 @@
     <Compile Include="Services\CategoryService.cs" />
     <Compile Include="Services\IFilterService.cs" />
     <Compile Include="Services\FilterService.cs" />
-
     <!-- Commands -->
     <Compile Include="Commands\TroyankaCommand.cs" />
     <Compile Include="Commands\ButtonApplication.cs" />
     <Compile Include="Commands\CmdFindCommonParameters.cs" />
-
     <!-- Core -->
     <Compile Include="Core\RevitRuleFilter.cs" />
-
     <!-- Properties -->
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

@@ -298,13 +298,8 @@ namespace Troyan
             SharedData.ApplyFilterEvent = ExternalEvent.Create(new ApplyFilterHandler(_revitService));
             SharedData.InvertEvent = ExternalEvent.Create(new InvertSelectionHandler(_revitService));
 
-            // Запуск WPF
-            string revitBinDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location); // D:\lk\Revit Advanced Selection Tool\bin\Debug
-            string binDir = Path.GetDirectoryName(revitBinDir); // D:\lk\Revit Advanced Selection Tool\bin
-            string projectDir = Path.GetDirectoryName(binDir); // D:\lk\Revit Advanced Selection Tool
-            string solutionDir = Path.GetDirectoryName(projectDir); // D:\lk
-            string wpfDllPath = Path.Combine(solutionDir, "Wpf", "bin", "Debug", "Wpf.dll"); // D:\lk\Wpf\bin\Debug\Wpf.dll
-            Assembly wpfAssembly = Assembly.LoadFrom(wpfDllPath);
+            
+            Assembly wpfAssembly = Assembly.LoadFrom(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),"Wpf.dll"));
             Type mainWindowType = wpfAssembly.GetType("Wpf.MainWindow");
             object mainWindow = Activator.CreateInstance(mainWindowType);
 
