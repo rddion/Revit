@@ -15,7 +15,7 @@
                 </GridView>
             </ListView.View>
         </ListView>
-        <Button Name="apply" Command="{Binding ApplyCategoryCommand}" ToolTip="Начать поиск по выбранным категориям" Content="Применить" HorizontalAlignment="Left" Margin="35,350,0,0" VerticalAlignment="Top" Height="30" Width="130" FontSize="16" Background="AliceBlue" FontFamily="ISOCPEUR"/>
+        <Button Name="apply" Command="{Binding ApplyCategoryCommand}" IsEnabled="{Binding ApplyButtonIsEnabled}" ToolTip="Начать поиск по выбранным категориям" Content="Применить" HorizontalAlignment="Left" Margin="35,350,0,0" VerticalAlignment="Top" Height="30" Width="130" FontSize="16" Background="AliceBlue" FontFamily="ISOCPEUR"/>
         <Button Content="Выбрать все" Click="SelectAllCategories" HorizontalAlignment="Left" Margin="35,385,0,0" VerticalAlignment="Top" Height="30" Width="130" FontSize="16" Background="AliceBlue" FontFamily="ISOCPEUR"/>
         <Button Content="Снять выбор" Click="CancelSelection" HorizontalAlignment="Left" Margin="35,420,0,0" VerticalAlignment="Top" Height="30" Width="130" FontSize="16" Background="AliceBlue" FontFamily="ISOCPEUR"/>
         <Button ToolTip="Очистить список выбранных категорий и показать первоначальный список" Command="{Binding UpdateCategoriesCommand}" Click="ClearRules" Content="Обновить список" HorizontalAlignment="Left" Margin="35,455,0,0" VerticalAlignment="Top" Height="30" Width="130" FontSize="16" Background="AliceBlue" FontFamily="ISOCPEUR"/>

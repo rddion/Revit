@@ -35,6 +35,7 @@ namespace Wpf.ViewModel
         private ObservableCollection<Condition> conditions = new ObservableCollection<Condition>();
 
         private bool invertButtonIsEnabled=false;
+        private bool applyButtonIsEnabled = true;
 
         private string[,] uslovia;
         private string[] unions;
@@ -51,6 +52,16 @@ namespace Wpf.ViewModel
             { 
                 invertButtonIsEnabled = value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(this.InvertButtonIsEnabled)));
+            }
+        }
+
+        public bool ApplyButtonIsEnabled
+        {
+            get { return applyButtonIsEnabled; }
+            set
+            {  
+                applyButtonIsEnabled = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(this.ApplyButtonIsEnabled)));
             }
         }
         public ObservableCollection<Condition> Conditions
@@ -134,6 +145,7 @@ namespace Wpf.ViewModel
             SharedData.selectedCategoriesForFilter = new ObservableCollection<string>(Categories);
             Parameters = TroyankaCommand.GetParameterNamesForCategories(Categories); 
             storageTypesOfParameters = TroyankaCommand.GetParameterStorageTypesForCategories(Categories);
+            ApplyButtonIsEnabled = false;
         }
 
         private void UpdateCollectionOfCategory()
@@ -151,6 +163,7 @@ namespace Wpf.ViewModel
             catch { }
             Conditions.Clear();
             InvertButtonIsEnabled = false;
+            ApplyButtonIsEnabled = true;
         }
 
         private void InvertSelection()
