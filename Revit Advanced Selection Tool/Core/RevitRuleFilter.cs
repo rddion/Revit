@@ -39,18 +39,30 @@ namespace RevitAdvancedSelectionTool.Core
             if (uidoc == null) throw new ArgumentNullException(nameof(uidoc));
 
             int conditionCount = uslovia.GetLength(0);
+            bool hasSelectedCategories = selectedCategories != null && selectedCategories.Any();
+
+            // Получение элементов
+            Document doc = uidoc.Document;
+            List<Element> allElements = GetElementsForCategories(doc, selectedCategories);
+
             if (conditionCount == 0)
             {
-                uidoc.Selection.SetElementIds(new List<ElementId>());
+                if (hasSelectedCategories)
+                {
+                    // Если нет условий, но категории выбраны, выбрать все элементы в категориях
+                    uidoc.Selection.SetElementIds(allElements.Select(e => e.Id).ToList());
+                    SharedData.passedIds = new HashSet<ElementId>(allElements.Select(e => e.Id));
+                    SharedData.allElements = allElements;
+                }
+                else
+                {
+                    uidoc.Selection.SetElementIds(new List<ElementId>());
+                }
                 return;
             }
 
             // Конвертация условий в правила фильтрации
             var rules = ConvertUsloviaToRules(uslovia, conditionCount);
-
-            // Получение элементов
-            Document doc = uidoc.Document;
-            List<Element> allElements = GetElementsForCategories(doc, selectedCategories);
 
             if (rules.Count == 0)
             {
