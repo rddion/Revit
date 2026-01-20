@@ -366,16 +366,6 @@ namespace Troyan
         {
             var message = new RevitDataMessage { Categories = categories };
             var serializer = new DataContractJsonSerializer(typeof(RevitDataMessage));
-
-            string folderPath = @"U:\02_Projects\0359-(50-23)\00.Моделирование\ТХ\НПО_Пассат системы\00_Проект\Клемантович\Плагин";
-            Directory.CreateDirectory(folderPath);
-            string filePath = Path.Combine(folderPath, "RevitCategories.json");
-
-            using (var stream = File.Create(filePath))
-            {
-                serializer.WriteObject(stream, message);
-            }
-
            // TaskDialog.Show("Revit", $"Категории сохранены!\nВсего: {categories.Count}");
         }
 
