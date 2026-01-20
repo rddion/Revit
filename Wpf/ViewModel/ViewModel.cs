@@ -161,47 +161,11 @@ namespace Wpf.ViewModel
         private void SearchPanelChanged()
         {
 
-            foreach (var selectedCategory in selectedCategories)
-            {
-                temporaryPreviouslySelected.Add(selectedCategory);
-            }
- 
-            temporaryPreviouslySelected = temporaryPreviouslySelected.Where(it => !(Categories.Contains(it)) || SelectedCategories.Contains(it)).ToHashSet();
+            FillTemporaryPreviouslySelectedCollection();
 
-            if (TextOfSearchPanel != null)
-            {
-                Categories.Clear();
-                foreach (var category in constantListOfCategories)
-                {
-                    if ((category.ToLower()).Contains((TextOfSearchPanel.ToString()).ToLower()))
-                    {
-                        Categories.Add(category);
-                    }
-                }
-            }
-            else
-            {
-                Categories.Clear();
-                foreach (var category in constantListOfCategories)
-                {
-                    Categories.Add(category);
-                }
-            }
+            FindMatchesAndFillCategoriesCollection();
 
-            if (temporaryPreviouslySelected.Count > 0)
-            {
-                PreviouslySelectedCategories.Clear();
-                foreach (var category in temporaryPreviouslySelected)
-                {
-                    PreviouslySelectedCategories.Add(category);
-                }
-
-                if (TextOfSearchPanel.Count<char>() == 0)
-                {
-                    previouslySelectedCategories.Clear();
-                    temporaryPreviouslySelected.Clear();
-                }
-            }
+            SavePreviouslySelectedCategories();
 
         }
 
@@ -472,6 +436,57 @@ namespace Wpf.ViewModel
 
                     indexOfRow++;
                     indexOfColumn = 0;
+                }
+            }
+        }
+
+        private void FillTemporaryPreviouslySelectedCollection()
+        {
+            foreach (var selectedCategory in selectedCategories)
+            {
+                temporaryPreviouslySelected.Add(selectedCategory);
+            }
+
+            temporaryPreviouslySelected = temporaryPreviouslySelected.Where(it => !(Categories.Contains(it)) || SelectedCategories.Contains(it)).ToHashSet();
+        }
+
+        private void FindMatchesAndFillCategoriesCollection()
+        {
+            if (TextOfSearchPanel != null)
+            {
+                Categories.Clear();
+                foreach (var category in constantListOfCategories)
+                {
+                    if ((category.ToLower()).Contains((TextOfSearchPanel.ToString()).ToLower()))
+                    {
+                        Categories.Add(category);
+                    }
+                }
+            }
+            else
+            {
+                Categories.Clear();
+                foreach (var category in constantListOfCategories)
+                {
+                    Categories.Add(category);
+                }
+            }
+        }
+
+        private void SavePreviouslySelectedCategories()
+        {
+            if (temporaryPreviouslySelected.Count > 0)
+            {
+                PreviouslySelectedCategories.Clear();
+                foreach (var category in temporaryPreviouslySelected)
+                {
+                    PreviouslySelectedCategories.Add(category);
+                }
+
+                if (TextOfSearchPanel.Count<char>() == 0)
+                {
+                    previouslySelectedCategories.Clear();
+                    temporaryPreviouslySelected.Clear();
                 }
             }
         }
