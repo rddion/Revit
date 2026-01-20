@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RevitAddIns>
+  <AddIn Type="Application">
+    <Name>Revit Advanced Selection Tool</Name>
+    <Assembly>D:\Revit Advanced Selection Tool\Revit Advanced Selection Tool\bin\Release\Revit Advanced Selection Tool.dll</Assembly>
+    <ClientId>4655dd65-9276-4491-9b1a-4494f32735dd</ClientId>
+    <FullClassName>Troyan.Button</FullClassName>
+    <VendorId>ADSK</VendorId>
+    <VendorDescription>Autodesk, www.autodesk.com</VendorDescription>
+  </AddIn>
+  <AddIn Type="Command">
+    <Assembly>C:\Users\d.klemantovich\AppData\Roaming\Autodesk\Revit\Addins\2021\Revit Advanced Selection Tool.dll</Assembly>
+    <ClientId>58d5691f-770a-4c5e-9875-2130a9bdb586</ClientId>
+    <FullClassName>Troyan.CmdFindCommonParameters</FullClassName>
+    <Text>CmdFindCommonParameters</Text>
+    <Description>Find common parameters</Description>
+    <VisibilityMode>AlwaysVisible</VisibilityMode>
+    <VendorId>ADSK</VendorId>
+    <VendorDescription>Autodesk, www.autodesk.com</VendorDescription>
+  </AddIn>
+  <AddIn Type="Command">
+    <Assembly>D:\Revit Advanced Selection Tool\Revit Advanced Selection Tool\bin\Release\Revit Advanced Selection Tool.dll</Assembly>
+    <ClientId>bf7ff4a2-dae9-4237-97aa-64aebaa0be4a</ClientId>
+    <FullClassName>Troyan.TroyankaCommand</FullClassName>
+    <Text>Troyanka</Text>
+    <Description>Advanced selection tool</Description>
+    <VisibilityMode>AlwaysVisible</VisibilityMode>
+    <VendorId>ADSK</VendorId>
+    <VendorDescription>Autodesk, www.autodesk.com</VendorDescription>
+  </AddIn>
+</RevitAddIns>
