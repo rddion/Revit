@@ -36,6 +36,7 @@ namespace Troyan
         public static ExternalEvent GetParamsEvent;
         public static ExternalEvent ApplyFilterEvent;
         public static ExternalEvent InvertEvent;
+        public static object mainWindowInstance;
 
         static SharedData()
         {
@@ -298,15 +299,30 @@ namespace Troyan
             SharedData.ApplyFilterEvent = ExternalEvent.Create(new ApplyFilterHandler(_revitService));
             SharedData.InvertEvent = ExternalEvent.Create(new InvertSelectionHandler(_revitService));
 
-            
             Assembly wpfAssembly = Assembly.LoadFrom(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),"Wpf.dll"));
             Type mainWindowType = wpfAssembly.GetType("Wpf.MainWindow");
-            object mainWindow = Activator.CreateInstance(mainWindowType);
 
-           
-            // Показать
-            var showMethod = mainWindowType.GetMethod("Show");
-            showMethod.Invoke(mainWindow, null);
+            if (SharedData.mainWindowInstance != null && (bool)mainWindowType.GetProperty("IsVisible").GetValue(SharedData.mainWindowInstance))
+            {
+                // Активировать существующее окно
+                var activateMethod = mainWindowType.GetMethod("Activate");
+                activateMethod.Invoke(SharedData.mainWindowInstance, null);
+            }
+            else
+            {
+                // Создать новое окно
+                SharedData.mainWindowInstance = Activator.CreateInstance(mainWindowType);
+
+                // Подписаться на событие Closing
+                var closingEvent = mainWindowType.GetEvent("Closing");
+                var handlerType = typeof(System.ComponentModel.CancelEventHandler);
+                var handler = Delegate.CreateDelegate(handlerType, this, "MainWindow_Closing");
+                closingEvent.AddEventHandler(SharedData.mainWindowInstance, handler);
+
+                // Показать
+                var showMethod = mainWindowType.GetMethod("Show");
+                showMethod.Invoke(SharedData.mainWindowInstance, null);
+            }
             return Result.Succeeded;
 
         }
@@ -314,6 +330,7 @@ namespace Troyan
         private void MainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             Test = false;
+            SharedData.mainWindowInstance = null;
         }
 
         private List<CategoryInfo> GetCategories(Document doc)
